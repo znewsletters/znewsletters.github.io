@@ -488,23 +488,6 @@ canvas {
       <button class="primary" onclick="addGoal()">＋ Add financial goal</button>
     </div>
 
-    <div class="card">
-      <h2>📈 Investment Goal</h2>
-
-      <div class="help">
-        Set the investment amount you're aiming to reach over time. You can then track it against your actual investments in the Progress section.
-      </div>
-
-      <div class="field">
-        <label>Long-term investment goal</label>
-        <div class="money">
-          <span>$</span>
-          <input type="number" id="investmentGoal" min="0" step="100">
-        </div>
-      </div>
-
-    </div>
-
   </div>
 
   <!-- ================= PROGRESS ================= -->
@@ -577,6 +560,77 @@ canvas {
       </button>
     </div>
 
+    <div class="card">
+      <h2>📈 Customize Investment Goal</h2>
+
+      <div class="help">
+        Set your own starting investment amount, starting year, goal amount and goal year. The goal line in the Progress section will automatically spread evenly between the two points.
+      </div>
+
+      <div class="grid">
+
+        <div class="field">
+          <label>Starting year</label>
+          <input
+            type="number"
+            id="investmentStartYear"
+            min="1900"
+            max="2200"
+            step="1"
+          >
+        </div>
+
+        <div class="field">
+          <label>Starting investment amount</label>
+          <div class="money">
+            <span>$</span>
+            <input
+              type="number"
+              id="investmentStartAmount"
+              min="0"
+              step="100"
+            >
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Goal year</label>
+          <input
+            type="number"
+            id="investmentEndYear"
+            min="1900"
+            max="2200"
+            step="1"
+          >
+        </div>
+
+        <div class="field">
+          <label>Goal amount</label>
+          <div class="money">
+            <span>$</span>
+            <input
+              type="number"
+              id="investmentFinalGoal"
+              min="0"
+              step="100"
+            >
+          </div>
+        </div>
+
+      </div>
+
+      <button class="primary" onclick="saveInvestmentSettings()">
+        💾 Save investment settings
+      </button>
+
+      <div
+        id="investmentSettingsMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+    </div>
+
   </div>
 
 </div>
@@ -644,8 +698,42 @@ let netWorthHistory =
 let investmentHistory =
   JSON.parse(localStorage.getItem("zaraInvestmentHistory")) || [];
 
-let investmentGoal =
-  Number(localStorage.getItem("zaraInvestmentGoal")) || 0;
+
+/* ============================================================
+   CUSTOM INVESTMENT GOAL SETTINGS
+   ============================================================ */
+
+const savedInvestmentStartYear =
+  localStorage.getItem("zaraInvestmentStartYear");
+
+const savedInvestmentStartAmount =
+  localStorage.getItem("zaraInvestmentStartAmount");
+
+const savedInvestmentEndYear =
+  localStorage.getItem("zaraInvestmentEndYear");
+
+const savedInvestmentFinalGoal =
+  localStorage.getItem("zaraInvestmentFinalGoal");
+
+let investmentStartYear =
+  savedInvestmentStartYear !== null
+    ? Number(savedInvestmentStartYear)
+    : 2025;
+
+let investmentStartAmount =
+  savedInvestmentStartAmount !== null
+    ? Number(savedInvestmentStartAmount)
+    : 85000;
+
+let investmentEndYear =
+  savedInvestmentEndYear !== null
+    ? Number(savedInvestmentEndYear)
+    : 2042;
+
+let investmentFinalGoal =
+  savedInvestmentFinalGoal !== null
+    ? Number(savedInvestmentFinalGoal)
+    : 1000000;
 
 
 /* ============================================================
@@ -653,19 +741,56 @@ let investmentGoal =
    ============================================================ */
 
 function saveEverything() {
-  localStorage.setItem("zaraExpenses", JSON.stringify(expenses));
-  localStorage.setItem("zaraBuckets", JSON.stringify(buckets));
-  localStorage.setItem("zaraIncome", JSON.stringify(income));
-  localStorage.setItem("zaraGoals", JSON.stringify(goals));
+
+  localStorage.setItem(
+    "zaraExpenses",
+    JSON.stringify(expenses)
+  );
+
+  localStorage.setItem(
+    "zaraBuckets",
+    JSON.stringify(buckets)
+  );
+
+  localStorage.setItem(
+    "zaraIncome",
+    JSON.stringify(income)
+  );
+
+  localStorage.setItem(
+    "zaraGoals",
+    JSON.stringify(goals)
+  );
+
   localStorage.setItem(
     "zaraNetWorthHistory",
     JSON.stringify(netWorthHistory)
   );
+
   localStorage.setItem(
     "zaraInvestmentHistory",
     JSON.stringify(investmentHistory)
   );
-  localStorage.setItem("zaraInvestmentGoal", investmentGoal);
+
+  localStorage.setItem(
+    "zaraInvestmentStartYear",
+    investmentStartYear
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentStartAmount",
+    investmentStartAmount
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentEndYear",
+    investmentEndYear
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentFinalGoal",
+    investmentFinalGoal
+  );
 }
 
 
@@ -700,24 +825,26 @@ function showSection(id, button) {
 
 function setupIncome() {
 
-  document.getElementById("salary").value = income.salary || "";
-  document.getElementById("rental").value = income.rental || "";
-  document.getElementById("otherIncome").value = income.other || "";
+  document.getElementById("salary").value =
+    income.salary || "";
 
-  document.getElementById("salary").addEventListener("input", updateIncome);
-  document.getElementById("rental").addEventListener("input", updateIncome);
-  document.getElementById("otherIncome").addEventListener("input", updateIncome);
+  document.getElementById("rental").value =
+    income.rental || "";
 
-  document.getElementById("investmentGoal").value =
-    investmentGoal || "";
-  
+  document.getElementById("otherIncome").value =
+    income.other || "";
+
   document
-    .getElementById("investmentGoal")
-    .addEventListener("input", function() {
-      investmentGoal = Number(this.value) || 0;
-      saveEverything();
-      drawInvestmentChart();
-    });
+    .getElementById("salary")
+    .addEventListener("input", updateIncome);
+
+  document
+    .getElementById("rental")
+    .addEventListener("input", updateIncome);
+
+  document
+    .getElementById("otherIncome")
+    .addEventListener("input", updateIncome);
 }
 
 function updateIncome() {
@@ -742,18 +869,23 @@ function updateIncome() {
 
 function renderExpenses() {
 
-  const container = document.getElementById("expenseInputs");
+  const container =
+    document.getElementById("expenseInputs");
+
   container.innerHTML = "";
 
   expenses.forEach((expense, index) => {
 
     const div = document.createElement("div");
+
     div.className = "field";
 
     div.innerHTML = `
       <label>${escapeHtml(expense.name)}</label>
+
       <div class="money">
         <span>$</span>
+
         <input
           type="number"
           min="0"
@@ -770,7 +902,8 @@ function renderExpenses() {
 
 function updateExpense(index, value) {
 
-  expenses[index].amount = Number(value) || 0;
+  expenses[index].amount =
+    Number(value) || 0;
 
   saveEverything();
   updateTotals();
@@ -783,18 +916,23 @@ function updateExpense(index, value) {
 
 function renderBuckets() {
 
-  const container = document.getElementById("bucketInputs");
+  const container =
+    document.getElementById("bucketInputs");
+
   container.innerHTML = "";
 
   buckets.forEach((bucket, index) => {
 
     const div = document.createElement("div");
+
     div.className = "field";
 
     div.innerHTML = `
       <label>${escapeHtml(bucket.name)}</label>
+
       <div class="money">
         <span>$</span>
+
         <input
           type="number"
           min="0"
@@ -811,7 +949,8 @@ function renderBuckets() {
 
 function updateBucket(index, value) {
 
-  buckets[index].amount = Number(value) || 0;
+  buckets[index].amount =
+    Number(value) || 0;
 
   saveEverything();
   updateTotals();
@@ -830,10 +969,18 @@ function updateTotals() {
     income.other;
 
   const totalExpenses =
-    expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    expenses.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
 
   const totalBuckets =
-    buckets.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    buckets.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
 
   const remaining =
     totalIncome -
@@ -849,7 +996,8 @@ function updateTotals() {
   document.getElementById("totalBuckets").textContent =
     money(totalBuckets);
 
-  const balance = document.getElementById("balanceMessage");
+  const balance =
+    document.getElementById("balanceMessage");
 
   balance.className = "balance";
 
@@ -902,19 +1050,32 @@ const chartColors = [
 
 function drawBudgetChart() {
 
-  const canvas = document.getElementById("budgetChart");
-  const ctx = canvas.getContext("2d");
+  const canvas =
+    document.getElementById("budgetChart");
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
   const totalExpenses =
-    expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    expenses.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
 
   const data = [
     {
       name: "Daily expenses",
       value: totalExpenses
     },
+
     ...buckets.map(bucket => ({
       name: bucket.name,
       value: Number(bucket.amount || 0)
@@ -922,7 +1083,11 @@ function drawBudgetChart() {
   ].filter(item => item.value > 0);
 
   const total =
-    data.reduce((sum, item) => sum + item.value, 0);
+    data.reduce(
+      (sum, item) =>
+        sum + item.value,
+      0
+    );
 
   const cx = 235;
   const cy = 235;
@@ -931,14 +1096,27 @@ function drawBudgetChart() {
   if (total <= 0) {
 
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
     ctx.fillStyle = "#eadbea";
     ctx.fill();
 
     ctx.fillStyle = "#806b8d";
     ctx.textAlign = "center";
     ctx.font = "600 18px DM Sans";
-    ctx.fillText("Add your budget", cx, cy);
+
+    ctx.fillText(
+      "Add your budget",
+      cx,
+      cy
+    );
 
     document.getElementById("budgetLegend").innerHTML =
       "<div class='small'>Your chart will appear as you add amounts.</div>";
@@ -951,15 +1129,28 @@ function drawBudgetChart() {
   data.forEach((item, index) => {
 
     const slice =
-      (item.value / total) * Math.PI * 2;
+      (item.value / total) *
+      Math.PI *
+      2;
 
     ctx.beginPath();
+
     ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, radius, angle, angle + slice);
+
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      angle,
+      angle + slice
+    );
+
     ctx.closePath();
 
     ctx.fillStyle =
-      chartColors[index % chartColors.length];
+      chartColors[
+        index % chartColors.length
+      ];
 
     ctx.fill();
 
@@ -969,7 +1160,15 @@ function drawBudgetChart() {
   /* Hole in centre */
 
   ctx.beginPath();
-  ctx.arc(cx, cy, 82, 0, Math.PI * 2);
+
+  ctx.arc(
+    cx,
+    cy,
+    82,
+    0,
+    Math.PI * 2
+  );
+
   ctx.fillStyle = "#ffffff";
   ctx.fill();
 
@@ -977,10 +1176,20 @@ function drawBudgetChart() {
   ctx.textAlign = "center";
 
   ctx.font = "700 17px Fredoka";
-  ctx.fillText("Total budget", cx, cy - 7);
+
+  ctx.fillText(
+    "Total budget",
+    cx,
+    cy - 7
+  );
 
   ctx.font = "700 20px DM Sans";
-  ctx.fillText(money(total), cx, cy + 20);
+
+  ctx.fillText(
+    money(total),
+    cx,
+    cy + 20
+  );
 
   const legend =
     document.getElementById("budgetLegend");
@@ -990,9 +1199,13 @@ function drawBudgetChart() {
   data.forEach((item, index) => {
 
     const percentage =
-      Math.round((item.value / total) * 100);
+      Math.round(
+        (item.value / total) * 100
+      );
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "legend-item";
 
     row.innerHTML = `
@@ -1034,7 +1247,9 @@ function renderCustomExpenses() {
 
   expenses.forEach((expense, index) => {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "category-row";
 
     row.innerHTML = `
@@ -1072,8 +1287,10 @@ function addExpenseCategory() {
   });
 
   saveEverything();
+
   renderExpenses();
   renderCustomExpenses();
+
   updateTotals();
 }
 
@@ -1088,8 +1305,10 @@ function renameExpense(index, name) {
   expenses[index].name = name;
 
   saveEverything();
+
   renderExpenses();
   renderCustomExpenses();
+
   updateTotals();
 }
 
@@ -1099,6 +1318,7 @@ function updateCustomExpenseAmount(index, value) {
     Number(value) || 0;
 
   saveEverything();
+
   renderExpenses();
   updateTotals();
 }
@@ -1116,8 +1336,10 @@ function deleteExpense(index) {
     expenses.splice(index, 1);
 
     saveEverything();
+
     renderExpenses();
     renderCustomExpenses();
+
     updateTotals();
   }
 }
@@ -1144,7 +1366,9 @@ function renderCustomBuckets() {
 
   buckets.forEach((bucket, index) => {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "bucket-row";
 
     row.innerHTML = `
@@ -1182,8 +1406,10 @@ function addBucketCategory() {
   });
 
   saveEverything();
+
   renderBuckets();
   renderCustomBuckets();
+
   updateTotals();
 }
 
@@ -1198,8 +1424,10 @@ function renameBucket(index, name) {
   buckets[index].name = name;
 
   saveEverything();
+
   renderBuckets();
   renderCustomBuckets();
+
   updateTotals();
 }
 
@@ -1209,6 +1437,7 @@ function updateCustomBucketAmount(index, value) {
     Number(value) || 0;
 
   saveEverything();
+
   renderBuckets();
   updateTotals();
 }
@@ -1226,8 +1455,10 @@ function deleteBucket(index) {
     buckets.splice(index, 1);
 
     saveEverything();
+
     renderBuckets();
     renderCustomBuckets();
+
     updateTotals();
   }
 }
@@ -1265,35 +1496,50 @@ function renderGoals() {
         ? Math.min(100, (saved / target) * 100)
         : 0;
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
+
     div.className = "goal";
 
     div.innerHTML = `
 
       <div class="goal-title">
-        <span>${escapeHtml(goal.name)}</span>
+
+        <span>
+          ${escapeHtml(goal.name)}
+        </span>
 
         <button
           class="delete"
           onclick="deleteGoal(${index})"
         >✕</button>
+
       </div>
 
-      <div class="field" style="margin-top:10px;">
+      <div
+        class="field"
+        style="margin-top:10px;"
+      >
+
         <label>Goal name</label>
+
         <input
           type="text"
           value="${escapeAttr(goal.name)}"
           onchange="updateGoalName(${index}, this.value)"
         >
+
       </div>
 
       <div class="grid">
 
         <div class="field">
+
           <label>Target</label>
+
           <div class="money">
             <span>$</span>
+
             <input
               type="number"
               min="0"
@@ -1301,12 +1547,16 @@ function renderGoals() {
               oninput="updateGoalTarget(${index}, this.value)"
             >
           </div>
+
         </div>
 
         <div class="field">
+
           <label>Saved so far</label>
+
           <div class="money">
             <span>$</span>
+
             <input
               type="number"
               min="0"
@@ -1314,15 +1564,18 @@ function renderGoals() {
               oninput="updateGoalSaved(${index}, this.value)"
             >
           </div>
+
         </div>
 
       </div>
 
       <div class="progress">
+
         <div
           class="progress-bar"
           style="width:${percentage}%"
         ></div>
+
       </div>
 
       <div class="small">
@@ -1397,11 +1650,17 @@ function renderNetWorthInputs() {
 
   container.innerHTML = "";
 
-  netWorthHistory.sort((a,b) => Number(a.year) - Number(b.year));
+  netWorthHistory.sort(
+    (a,b) =>
+      Number(a.year) -
+      Number(b.year)
+  );
 
   netWorthHistory.forEach((item, index) => {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "year-row";
 
     row.innerHTML = `
@@ -1414,7 +1673,9 @@ function renderNetWorthInputs() {
       >
 
       <div class="money">
+
         <span>$</span>
+
         <input
           type="number"
           min="0"
@@ -1423,12 +1684,14 @@ function renderNetWorthInputs() {
           oninput="updateNetWorthValue(${index}, this.value)"
           placeholder="Net worth"
         >
+
       </div>
 
       <button
         class="delete"
         onclick="deleteNetWorthYear(${index})"
       >✕</button>
+
     `;
 
     container.appendChild(row);
@@ -1442,7 +1705,11 @@ function addNetWorthYear() {
 
   let newYear = year;
 
-  if (netWorthHistory.some(x => Number(x.year) === newYear)) {
+  if (
+    netWorthHistory.some(
+      x => Number(x.year) === newYear
+    )
+  ) {
     newYear++;
   }
 
@@ -1452,6 +1719,7 @@ function addNetWorthYear() {
   });
 
   saveEverything();
+
   renderNetWorthInputs();
   drawNetWorthChart();
 }
@@ -1459,9 +1727,11 @@ function addNetWorthYear() {
 function updateNetWorthYear(index, value) {
 
   netWorthHistory[index].year =
-    Number(value) || new Date().getFullYear();
+    Number(value) ||
+    new Date().getFullYear();
 
   saveEverything();
+
   renderNetWorthInputs();
   drawNetWorthChart();
 }
@@ -1480,6 +1750,7 @@ function deleteNetWorthYear(index) {
   netWorthHistory.splice(index, 1);
 
   saveEverything();
+
   renderNetWorthInputs();
   drawNetWorthChart();
 }
@@ -1499,14 +1770,26 @@ function drawNetWorthChart() {
   const ctx =
     canvas.getContext("2d");
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
   const data =
     [...netWorthHistory]
-      .sort((a,b) => Number(a.year) - Number(b.year));
+      .sort(
+        (a,b) =>
+          Number(a.year) -
+          Number(b.year)
+      );
 
-  const width = canvas.width;
-  const height = canvas.height;
+  const width =
+    canvas.width;
+
+  const height =
+    canvas.height;
 
   const padding = {
     left: 65,
@@ -1516,10 +1799,14 @@ function drawNetWorthChart() {
   };
 
   const graphWidth =
-    width - padding.left - padding.right;
+    width -
+    padding.left -
+    padding.right;
 
   const graphHeight =
-    height - padding.top - padding.bottom;
+    height -
+    padding.top -
+    padding.bottom;
 
   if (data.length === 0) {
 
@@ -1537,7 +1824,12 @@ function drawNetWorthChart() {
   }
 
   const maxValue =
-    Math.max(...data.map(x => Number(x.value) || 0), 1);
+    Math.max(
+      ...data.map(
+        x => Number(x.value) || 0
+      ),
+      1
+    );
 
   /* Axes */
 
@@ -1545,9 +1837,22 @@ function drawNetWorthChart() {
   ctx.lineWidth = 2;
 
   ctx.beginPath();
-  ctx.moveTo(padding.left, padding.top);
-  ctx.lineTo(padding.left, height - padding.bottom);
-  ctx.lineTo(width - padding.right, height - padding.bottom);
+
+  ctx.moveTo(
+    padding.left,
+    padding.top
+  );
+
+  ctx.lineTo(
+    padding.left,
+    height - padding.bottom
+  );
+
+  ctx.lineTo(
+    width - padding.right,
+    height - padding.bottom
+  );
+
   ctx.stroke();
 
   /* Horizontal guide lines */
@@ -1563,8 +1868,17 @@ function drawNetWorthChart() {
     ctx.lineWidth = 1;
 
     ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
+
+    ctx.moveTo(
+      padding.left,
+      y
+    );
+
+    ctx.lineTo(
+      width - padding.right,
+      y
+    );
+
     ctx.stroke();
 
     ctx.fillStyle = "#806b8d";
@@ -1572,7 +1886,9 @@ function drawNetWorthChart() {
     ctx.textAlign = "right";
 
     ctx.fillText(
-      moneyShort(maxValue * i / 4),
+      moneyShort(
+        maxValue * i / 4
+      ),
       padding.left - 8,
       y + 4
     );
@@ -1582,7 +1898,10 @@ function drawNetWorthChart() {
     graphWidth / data.length;
 
   const barWidth =
-    Math.min(70, barSpace * .55);
+    Math.min(
+      70,
+      barSpace * .55
+    );
 
   data.forEach((item, index) => {
 
@@ -1590,7 +1909,8 @@ function drawNetWorthChart() {
       Number(item.value) || 0;
 
     const barHeight =
-      (value / maxValue) * graphHeight;
+      (value / maxValue) *
+      graphHeight;
 
     const x =
       padding.left +
@@ -1643,12 +1963,8 @@ function drawNetWorthChart() {
 
 
 /* ============================================================
-   INVESTMENT HISTORY
+   INVESTMENT HISTORY + CUSTOM GOAL
    ============================================================ */
-
-const INVESTMENT_START_YEAR = 2025;
-const INVESTMENT_END_YEAR = 2042;
-const INVESTMENT_FINAL_GOAL = 1000000;
 
 function renderInvestmentInputs() {
 
@@ -1658,12 +1974,16 @@ function renderInvestmentInputs() {
   container.innerHTML = "";
 
   investmentHistory.sort(
-    (a,b) => Number(a.year) - Number(b.year)
+    (a,b) =>
+      Number(a.year) -
+      Number(b.year)
   );
 
   investmentHistory.forEach((item, index) => {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "investment-row";
 
     row.innerHTML = `
@@ -1676,7 +1996,9 @@ function renderInvestmentInputs() {
       >
 
       <div class="money">
+
         <span>$</span>
+
         <input
           type="number"
           min="0"
@@ -1685,6 +2007,7 @@ function renderInvestmentInputs() {
           oninput="updateInvestmentActual(${index}, this.value)"
           placeholder="Actual"
         >
+
       </div>
 
       <div
@@ -1696,13 +2019,16 @@ function renderInvestmentInputs() {
           font-size:13px;
         "
       >
-        ${moneyShort(getInvestmentGoal(item.year))}
+        ${moneyShort(
+          getInvestmentGoal(item.year)
+        )}
       </div>
 
       <button
         class="delete"
         onclick="deleteInvestmentYear(${index})"
       >✕</button>
+
     `;
 
     container.appendChild(row);
@@ -1712,30 +2038,152 @@ function renderInvestmentInputs() {
 
 /*
   The investment goal is automatically spread evenly
-  from $85,000.00 in 2025 to $1,000,000 in 2042.
+  between the custom starting amount/year
+  and the custom goal amount/year.
 */
 
 function getInvestmentGoal(year) {
 
   year = Number(year);
 
-  const startAmount = 85000;
-
-  if (year <= INVESTMENT_START_YEAR) {
-    return startAmount;
+  if (year <= investmentStartYear) {
+    return investmentStartAmount;
   }
 
-  if (year >= INVESTMENT_END_YEAR) {
-    return INVESTMENT_FINAL_GOAL;
+  if (year >= investmentEndYear) {
+    return investmentFinalGoal;
   }
 
   const progress =
-    (year - INVESTMENT_START_YEAR) /
-    (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR);
+    (year - investmentStartYear) /
+    (investmentEndYear - investmentStartYear);
 
-  return startAmount +
-    (INVESTMENT_FINAL_GOAL - startAmount) * progress;
+  return (
+    investmentStartAmount +
+    (
+      investmentFinalGoal -
+      investmentStartAmount
+    ) * progress
+  );
 }
+
+
+/* ============================================================
+   INVESTMENT SETTINGS
+   ============================================================ */
+
+function renderInvestmentSettings() {
+
+  document.getElementById(
+    "investmentStartYear"
+  ).value =
+    investmentStartYear;
+
+  document.getElementById(
+    "investmentStartAmount"
+  ).value =
+    investmentStartAmount;
+
+  document.getElementById(
+    "investmentEndYear"
+  ).value =
+    investmentEndYear;
+
+  document.getElementById(
+    "investmentFinalGoal"
+  ).value =
+    investmentFinalGoal;
+}
+
+
+function saveInvestmentSettings() {
+
+  const newStartYear =
+    Number(
+      document.getElementById(
+        "investmentStartYear"
+      ).value
+    );
+
+  const newStartAmount =
+    Number(
+      document.getElementById(
+        "investmentStartAmount"
+      ).value
+    );
+
+  const newEndYear =
+    Number(
+      document.getElementById(
+        "investmentEndYear"
+      ).value
+    );
+
+  const newFinalGoal =
+    Number(
+      document.getElementById(
+        "investmentFinalGoal"
+      ).value
+    );
+
+  if (!newStartYear || !newEndYear) {
+
+    alert(
+      "Please enter a starting year and goal year."
+    );
+
+    return;
+  }
+
+  if (newEndYear <= newStartYear) {
+
+    alert(
+      "The goal year must be after the starting year."
+    );
+
+    return;
+  }
+
+  if (
+    newStartAmount < 0 ||
+    newFinalGoal < 0
+  ) {
+
+    alert(
+      "Investment amounts cannot be negative."
+    );
+
+    return;
+  }
+
+  investmentStartYear =
+    newStartYear;
+
+  investmentStartAmount =
+    newStartAmount;
+
+  investmentEndYear =
+    newEndYear;
+
+  investmentFinalGoal =
+    newFinalGoal;
+
+  saveEverything();
+
+  renderInvestmentSettings();
+  renderInvestmentInputs();
+  drawInvestmentChart();
+
+  document.getElementById(
+    "investmentSettingsMessage"
+  ).textContent =
+    "✓ Investment goal settings saved!";
+}
+
+
+/* ============================================================
+   INVESTMENT HISTORY
+   ============================================================ */
 
 function addInvestmentYear() {
 
@@ -1758,6 +2206,7 @@ function addInvestmentYear() {
   });
 
   saveEverything();
+
   renderInvestmentInputs();
   drawInvestmentChart();
 }
@@ -1766,9 +2215,11 @@ function addInvestmentYear() {
 function updateInvestmentYear(index, value) {
 
   investmentHistory[index].year =
-    Number(value) || new Date().getFullYear();
+    Number(value) ||
+    new Date().getFullYear();
 
   saveEverything();
+
   renderInvestmentInputs();
   drawInvestmentChart();
 }
@@ -1780,6 +2231,7 @@ function updateInvestmentActual(index, value) {
     Number(value) || 0;
 
   saveEverything();
+
   drawInvestmentChart();
 }
 
@@ -1789,6 +2241,7 @@ function deleteInvestmentYear(index) {
   investmentHistory.splice(index, 1);
 
   saveEverything();
+
   renderInvestmentInputs();
   drawInvestmentChart();
 }
@@ -1817,10 +2270,17 @@ function drawInvestmentChart() {
 
   const data =
     [...investmentHistory]
-      .sort((a,b) => Number(a.year) - Number(b.year));
+      .sort(
+        (a,b) =>
+          Number(a.year) -
+          Number(b.year)
+      );
 
-  const width = canvas.width;
-  const height = canvas.height;
+  const width =
+    canvas.width;
+
+  const height =
+    canvas.height;
 
   const padding = {
     left: 65,
@@ -1840,16 +2300,20 @@ function drawInvestmentChart() {
     padding.bottom;
 
   /*
-    The goal line always runs from $0 in 2025
-    to $1,000,000 in 2042.
+    The goal line runs from the custom
+    starting year/amount to the custom
+    goal year/amount.
   */
 
   const allActualValues =
-    data.map(x => Number(x.actual) || 0);
+    data.map(
+      x => Number(x.actual) || 0
+    );
 
   const maxValue =
     Math.max(
-      INVESTMENT_FINAL_GOAL,
+      investmentStartAmount,
+      investmentFinalGoal,
       ...allActualValues,
       1
     );
@@ -1867,8 +2331,17 @@ function drawInvestmentChart() {
     ctx.lineWidth = 1;
 
     ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
+
+    ctx.moveTo(
+      padding.left,
+      y
+    );
+
+    ctx.lineTo(
+      width - padding.right,
+      y
+    );
+
     ctx.stroke();
 
     ctx.fillStyle = "#806b8d";
@@ -1876,7 +2349,9 @@ function drawInvestmentChart() {
     ctx.textAlign = "right";
 
     ctx.fillText(
-      moneyShort(maxValue * i / 4),
+      moneyShort(
+        maxValue * i / 4
+      ),
       padding.left - 8,
       y + 4
     );
@@ -1913,9 +2388,16 @@ function drawInvestmentChart() {
   ctx.textAlign = "left";
 
   ctx.fillStyle = "#ff6f91";
-  ctx.fillRect(90, 8, 12, 12);
+
+  ctx.fillRect(
+    90,
+    8,
+    12,
+    12
+  );
 
   ctx.fillStyle = "#39234d";
+
   ctx.fillText(
     "Actual investments",
     108,
@@ -1923,9 +2405,16 @@ function drawInvestmentChart() {
   );
 
   ctx.fillStyle = "#9b5de5";
-  ctx.fillRect(285, 8, 12, 12);
+
+  ctx.fillRect(
+    285,
+    8,
+    12,
+    12
+  );
 
   ctx.fillStyle = "#39234d";
+
   ctx.fillText(
     "Goal amount",
     303,
@@ -1946,13 +2435,26 @@ function drawInvestmentChart() {
     const year =
       Number(item.year);
 
-    const x =
-      padding.left +
-      (
-        (year - INVESTMENT_START_YEAR) /
-        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
-      ) *
-      graphWidth;
+    const yearRange =
+      investmentEndYear -
+      investmentStartYear;
+
+    let x;
+
+    if (yearRange <= 0) {
+
+      x = padding.left;
+
+    } else {
+
+      x =
+        padding.left +
+        (
+          (year - investmentStartYear) /
+          yearRange
+        ) *
+        graphWidth;
+    }
 
     const actual =
       Number(item.actual) || 0;
@@ -1973,30 +2475,43 @@ function drawInvestmentChart() {
 
 
   /*
-    Build the fixed goal line.
+    Build the goal line.
 
-    It contains every year from 2025 through 2042
-    so the line progresses evenly toward $1m.
+    It contains every year from the custom
+    starting year through the custom goal year.
   */
 
   const pointsGoal = [];
 
   for (
-    let year = INVESTMENT_START_YEAR;
-    year <= INVESTMENT_END_YEAR;
+    let year = investmentStartYear;
+    year <= investmentEndYear;
     year++
   ) {
 
     const goal =
       getInvestmentGoal(year);
 
-    const x =
-      padding.left +
-      (
-        (year - INVESTMENT_START_YEAR) /
-        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
-      ) *
-      graphWidth;
+    const yearRange =
+      investmentEndYear -
+      investmentStartYear;
+
+    let x;
+
+    if (yearRange <= 0) {
+
+      x = padding.left;
+
+    } else {
+
+      x =
+        padding.left +
+        (
+          (year - investmentStartYear) /
+          yearRange
+        ) *
+        graphWidth;
+    }
 
     const y =
       padding.top +
@@ -2018,30 +2533,45 @@ function drawInvestmentChart() {
   */
 
   for (
-    let year = INVESTMENT_START_YEAR;
-    year <= INVESTMENT_END_YEAR;
+    let year = investmentStartYear;
+    year <= investmentEndYear;
     year++
   ) {
 
-    const x =
-      padding.left +
-      (
-        (year - INVESTMENT_START_YEAR) /
-        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
-      ) *
-      graphWidth;
+    const yearRange =
+      investmentEndYear -
+      investmentStartYear;
+
+    let x;
+
+    if (yearRange <= 0) {
+
+      x = padding.left;
+
+    } else {
+
+      x =
+        padding.left +
+        (
+          (year - investmentStartYear) /
+          yearRange
+        ) *
+        graphWidth;
+    }
 
     ctx.fillStyle = "#806b8d";
     ctx.textAlign = "center";
     ctx.font = "600 11px DM Sans";
 
     /*
-      Show every second year to keep the mobile graph readable.
+      Show every second year to keep
+      the mobile graph readable.
     */
 
     if (
       year % 2 === 1 ||
-      year === INVESTMENT_END_YEAR
+      year === investmentEndYear ||
+      year === investmentStartYear
     ) {
 
       ctx.fillText(
@@ -2062,7 +2592,7 @@ function drawInvestmentChart() {
   );
 
 
-  /* Draw fixed goal line */
+  /* Draw goal line */
 
   drawLine(
     ctx,
@@ -2103,32 +2633,35 @@ function drawInvestmentChart() {
 
   /* Goal endpoint */
 
-  const finalGoal =
-    pointsGoal[pointsGoal.length - 1];
+  if (pointsGoal.length > 0) {
 
-  ctx.fillStyle = "#9b5de5";
+    const finalGoal =
+      pointsGoal[pointsGoal.length - 1];
 
-  ctx.beginPath();
+    ctx.fillStyle = "#9b5de5";
 
-  ctx.arc(
-    finalGoal.x,
-    finalGoal.y,
-    6,
-    0,
-    Math.PI * 2
-  );
+    ctx.beginPath();
 
-  ctx.fill();
+    ctx.arc(
+      finalGoal.x,
+      finalGoal.y,
+      6,
+      0,
+      Math.PI * 2
+    );
 
-  ctx.fillStyle = "#39234d";
-  ctx.font = "700 11px DM Sans";
-  ctx.textAlign = "right";
+    ctx.fill();
 
-  ctx.fillText(
-    "$1m",
-    finalGoal.x - 8,
-    finalGoal.y - 12
-  );
+    ctx.fillStyle = "#39234d";
+    ctx.font = "700 11px DM Sans";
+    ctx.textAlign = "right";
+
+    ctx.fillText(
+      moneyShort(investmentFinalGoal),
+      finalGoal.x - 8,
+      finalGoal.y - 12
+    );
+  }
 }
 
 
@@ -2146,11 +2679,14 @@ function drawLine(ctx, points, color) {
   points.forEach((point, index) => {
 
     if (index === 0) {
+
       ctx.moveTo(
         point.x,
         point.y
       );
+
     } else {
+
       ctx.lineTo(
         point.x,
         point.y
@@ -2160,6 +2696,8 @@ function drawLine(ctx, points, color) {
 
   ctx.stroke();
 }
+
+
 /* ============================================================
    HELPERS
    ============================================================ */
@@ -2178,17 +2716,25 @@ function money(value) {
 
 function moneyShort(value) {
 
-  value = Number(value) || 0;
+  value =
+    Number(value) || 0;
 
   if (value >= 1000000) {
-    return "$" + (value / 1000000).toFixed(1) + "m";
+
+    return "$" +
+      (value / 1000000).toFixed(1) +
+      "m";
   }
 
   if (value >= 1000) {
-    return "$" + (value / 1000).toFixed(0) + "k";
+
+    return "$" +
+      (value / 1000).toFixed(0) +
+      "k";
   }
 
-  return "$" + Math.round(value);
+  return "$" +
+    Math.round(value);
 }
 
 function escapeHtml(value) {
@@ -2202,20 +2748,33 @@ function escapeHtml(value) {
 }
 
 function escapeAttr(value) {
+
   return escapeHtml(value);
 }
 
-function roundRect(ctx, x, y, width, height, radius) {
+function roundRect(
+  ctx,
+  x,
+  y,
+  width,
+  height,
+  radius
+) {
 
-  radius = Math.min(
-    radius,
-    width / 2,
-    height / 2
-  );
+  radius =
+    Math.min(
+      radius,
+      width / 2,
+      height / 2
+    );
 
   ctx.beginPath();
 
-  ctx.moveTo(x + radius, y);
+  ctx.moveTo(
+    x + radius,
+    y
+  );
+
   ctx.arcTo(
     x + width,
     y,
@@ -2267,6 +2826,8 @@ function initialise() {
   renderCustomBuckets();
 
   renderGoals();
+
+  renderInvestmentSettings();
 
   renderNetWorthInputs();
   renderInvestmentInputs();
