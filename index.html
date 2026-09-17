@@ -1719,28 +1719,23 @@ function getInvestmentGoal(year) {
 
   year = Number(year);
 
+  const startAmount = 85000;
+
   if (year <= INVESTMENT_START_YEAR) {
-    return 85000;
+    return startAmount;
   }
 
   if (year >= INVESTMENT_END_YEAR) {
     return INVESTMENT_FINAL_GOAL;
   }
 
-  const totalYears =
-    INVESTMENT_END_YEAR -
-    INVESTMENT_START_YEAR;
+  const progress =
+    (year - INVESTMENT_START_YEAR) /
+    (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR);
 
-  const yearsElapsed =
-    year -
-    INVESTMENT_START_YEAR;
-
-  return (
-    INVESTMENT_FINAL_GOAL *
-    (yearsElapsed / totalYears)
-  );
+  return startAmount +
+    (INVESTMENT_FINAL_GOAL - startAmount) * progress;
 }
-
 
 function addInvestmentYear() {
 
