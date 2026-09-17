@@ -1636,15 +1636,15 @@ function drawNetWorthChart() {
     ctx.fillText(
       item.year,
       x + barWidth / 2,
-      height - padding.bottom + 24
-    );
-  });
-}
-
-
-/* ============================================================
+      height - padding.bottom + 
+      
+    /* ============================================================
    INVESTMENT HISTORY
    ============================================================ */
+
+const INVESTMENT_START_YEAR = 2025;
+const INVESTMENT_END_YEAR = 2042;
+const INVESTMENT_FINAL_GOAL = 1000000;
 
 function renderInvestmentInputs() {
 
@@ -1683,16 +1683,16 @@ function renderInvestmentInputs() {
         >
       </div>
 
-      <div class="money">
-        <span>$</span>
-        <input
-          type="number"
-          min="0"
-          step="100"
-          value="${item.goal || ""}"
-          oninput="updateInvestmentTarget(${index}, this.value)"
-          placeholder="Goal"
-        >
+      <div
+        style="
+          padding:9px 6px;
+          text-align:center;
+          font-weight:700;
+          color:#9b5de5;
+          font-size:13px;
+        "
+      >
+        ${moneyShort(getInvestmentGoal(item.year))}
       </div>
 
       <button
@@ -1704,6 +1704,39 @@ function renderInvestmentInputs() {
     container.appendChild(row);
   });
 }
+
+
+/*
+  The investment goal is automatically spread evenly
+  from $0 in 2025 to $1,000,000 in 2042.
+*/
+
+function getInvestmentGoal(year) {
+
+  year = Number(year);
+
+  if (year <= INVESTMENT_START_YEAR) {
+    return 0;
+  }
+
+  if (year >= INVESTMENT_END_YEAR) {
+    return INVESTMENT_FINAL_GOAL;
+  }
+
+  const totalYears =
+    INVESTMENT_END_YEAR -
+    INVESTMENT_START_YEAR;
+
+  const yearsElapsed =
+    year -
+    INVESTMENT_START_YEAR;
+
+  return (
+    INVESTMENT_FINAL_GOAL *
+    (yearsElapsed / totalYears)
+  );
+}
+
 
 function addInvestmentYear() {
 
@@ -1722,14 +1755,14 @@ function addInvestmentYear() {
 
   investmentHistory.push({
     year: newYear,
-    actual: 0,
-    goal: investmentGoal || 0
+    actual: 0
   });
 
   saveEverything();
   renderInvestmentInputs();
   drawInvestmentChart();
 }
+
 
 function updateInvestmentYear(index, value) {
 
@@ -1741,6 +1774,7 @@ function updateInvestmentYear(index, value) {
   drawInvestmentChart();
 }
 
+
 function updateInvestmentActual(index, value) {
 
   investmentHistory[index].actual =
@@ -1750,14 +1784,6 @@ function updateInvestmentActual(index, value) {
   drawInvestmentChart();
 }
 
-function updateInvestmentTarget(index, value) {
-
-  investmentHistory[index].goal =
-    Number(value) || 0;
-
-  saveEverything();
-  drawInvestmentChart();
-}
 
 function deleteInvestmentYear(index) {
 
@@ -1805,32 +1831,27 @@ function drawInvestmentChart() {
   };
 
   const graphWidth =
-    width - padding.left - padding.right;
+    width -
+    padding.left -
+    padding.right;
 
   const graphHeight =
-    height - padding.top - padding.bottom;
+    height -
+    padding.top -
+    padding.bottom;
 
-  if (data.length === 0) {
+  /*
+    The goal line always runs from $0 in 2025
+    to $1,000,000 in 2042.
+  */
 
-    ctx.fillStyle = "#806b8d";
-    ctx.textAlign = "center";
-    ctx.font = "600 17px DM Sans";
-
-    ctx.fillText(
-      "Add your investment tracking years",
-      width / 2,
-      height / 2
-    );
-
-    return;
-  }
+  const allActualValues =
+    data.map(x => Number(x.actual) || 0);
 
   const maxValue =
     Math.max(
-      ...data.flatMap(x => [
-        Number(x.actual) || 0,
-        Number(x.goal) || 0
-      ]),
+      INVESTMENT_FINAL_GOAL,
+      ...allActualValues,
       1
     );
 
@@ -1868,7 +1889,12 @@ function drawInvestmentChart() {
   ctx.lineWidth = 2;
 
   ctx.beginPath();
-  ctx.moveTo(padding.left, padding.top);
+
+  ctx.moveTo(
+    padding.left,
+    padding.top
+  );
+
   ctx.lineTo(
     padding.left,
     height - padding.bottom
@@ -1881,6 +1907,7 @@ function drawInvestmentChart() {
 
   ctx.stroke();
 
+
   /* Legend */
 
   ctx.font = "700 12px DM Sans";
@@ -1890,77 +1917,177 @@ function drawInvestmentChart() {
   ctx.fillRect(90, 8, 12, 12);
 
   ctx.fillStyle = "#39234d";
-  ctx.fillText("Actual investments", 108, 19);
+  ctx.fillText(
+    "Actual investments",
+    108,
+    19
+  );
 
   ctx.fillStyle = "#9b5de5";
   ctx.fillRect(285, 8, 12, 12);
 
   ctx.fillStyle = "#39234d";
-  ctx.fillText("Investment goal", 303, 19);
+  ctx.fillText(
+    "Goal amount",
+    303,
+    19
+  );
 
-  /* Lines */
+
+  /*
+    Build actual investment points.
+
+    These use the years the user has entered.
+  */
 
   const pointsActual = [];
-  const pointsGoal = [];
 
-  data.forEach((item, index) => {
+  data.forEach(item => {
+
+    const year =
+      Number(item.year);
 
     const x =
-      data.length === 1
-        ? padding.left + graphWidth / 2
-        : padding.left +
-          (graphWidth * index / (data.length - 1));
+      padding.left +
+      (
+        (year - INVESTMENT_START_YEAR) /
+        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
+      ) *
+      graphWidth;
 
     const actual =
       Number(item.actual) || 0;
 
-    const goal =
-      Number(item.goal) || 0;
-
-    const yActual =
+    const y =
       padding.top +
       graphHeight -
-      (actual / maxValue) * graphHeight;
-
-    const yGoal =
-      padding.top +
-      graphHeight -
-      (goal / maxValue) * graphHeight;
+      (actual / maxValue) *
+      graphHeight;
 
     pointsActual.push({
       x,
-      y: yActual,
-      value: actual
+      y,
+      value: actual,
+      year
     });
+  });
+
+
+  /*
+    Build the fixed goal line.
+
+    It contains every year from 2025 through 2042
+    so the line progresses evenly toward $1m.
+  */
+
+  const pointsGoal = [];
+
+  for (
+    let year = INVESTMENT_START_YEAR;
+    year <= INVESTMENT_END_YEAR;
+    year++
+  ) {
+
+    const goal =
+      getInvestmentGoal(year);
+
+    const x =
+      padding.left +
+      (
+        (year - INVESTMENT_START_YEAR) /
+        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
+      ) *
+      graphWidth;
+
+    const y =
+      padding.top +
+      graphHeight -
+      (goal / maxValue) *
+      graphHeight;
 
     pointsGoal.push({
       x,
-      y: yGoal,
-      value: goal
+      y,
+      value: goal,
+      year
     });
+  }
+
+
+  /*
+    Year labels
+  */
+
+  for (
+    let year = INVESTMENT_START_YEAR;
+    year <= INVESTMENT_END_YEAR;
+    year++
+  ) {
+
+    const x =
+      padding.left +
+      (
+        (year - INVESTMENT_START_YEAR) /
+        (INVESTMENT_END_YEAR - INVESTMENT_START_YEAR)
+      ) *
+      graphWidth;
 
     ctx.fillStyle = "#806b8d";
     ctx.textAlign = "center";
-    ctx.font = "600 12px DM Sans";
+    ctx.font = "600 11px DM Sans";
 
-    ctx.fillText(
-      item.year,
-      x,
-      height - padding.bottom + 25
-    );
-  });
+    /*
+      Show every second year to keep the mobile graph readable.
+    */
 
-  drawLine(ctx, pointsActual, "#ff6f91");
-  drawLine(ctx, pointsGoal, "#9b5de5");
+    if (
+      year % 2 === 1 ||
+      year === INVESTMENT_END_YEAR
+    ) {
 
-  /* Values */
+      ctx.fillText(
+        year,
+        x,
+        height - padding.bottom + 25
+      );
+    }
+  }
+
+
+  /* Draw actual investment line */
+
+  drawLine(
+    ctx,
+    pointsActual,
+    "#ff6f91"
+  );
+
+
+  /* Draw fixed goal line */
+
+  drawLine(
+    ctx,
+    pointsGoal,
+    "#9b5de5"
+  );
+
+
+  /* Actual investment dots + values */
 
   pointsActual.forEach(point => {
 
     ctx.fillStyle = "#ff6f91";
 
     ctx.beginPath();
-    ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+
+    ctx.arc(
+      point.x,
+      point.y,
+      5,
+      0,
+      Math.PI * 2
+    );
+
     ctx.fill();
 
     ctx.fillStyle = "#39234d";
@@ -1974,15 +2101,37 @@ function drawInvestmentChart() {
     );
   });
 
-  pointsGoal.forEach(point => {
 
-    ctx.fillStyle = "#9b5de5";
+  /* Goal endpoint */
 
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-    ctx.fill();
-  });
+  const finalGoal =
+    pointsGoal[pointsGoal.length - 1];
+
+  ctx.fillStyle = "#9b5de5";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    finalGoal.x,
+    finalGoal.y,
+    6,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle = "#39234d";
+  ctx.font = "700 11px DM Sans";
+  ctx.textAlign = "right";
+
+  ctx.fillText(
+    "$1m",
+    finalGoal.x - 8,
+    finalGoal.y - 12
+  );
 }
+
 
 function drawLine(ctx, points, color) {
 
@@ -1998,16 +2147,20 @@ function drawLine(ctx, points, color) {
   points.forEach((point, index) => {
 
     if (index === 0) {
-      ctx.moveTo(point.x, point.y);
+      ctx.moveTo(
+        point.x,
+        point.y
+      );
     } else {
-      ctx.lineTo(point.x, point.y);
+      ctx.lineTo(
+        point.x,
+        point.y
+      );
     }
   });
 
   ctx.stroke();
 }
-
-
 /* ============================================================
    HELPERS
    ============================================================ */
