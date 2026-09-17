@@ -631,6 +631,48 @@ canvas {
 
     </div>
 
+    <!-- ================= BACKUP & RESTORE ================= -->
+
+    <div class="card">
+      <h2>☁️ Backup & Restore</h2>
+
+      <div class="help">
+        Keep a safe copy of all your budgeting data. Back up your budget and save the file to OneDrive. You can use the same file to restore your budget later.
+      </div>
+
+      <button class="primary" onclick="backupData()">
+        ☁️ Back Up My Data
+      </button>
+
+      <div
+        id="backupMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+      <div style="margin-top:18px;">
+
+        <div class="small" style="margin-bottom:8px;">
+          Restore a previous backup from OneDrive or Files.
+        </div>
+
+        <input
+          type="file"
+          id="restoreFile"
+          accept=".json,application/json"
+          onchange="restoreData(this)"
+        >
+
+      </div>
+
+      <div
+        id="restoreMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+    </div>
+
   </div>
 
 </div>
@@ -2776,6 +2818,407 @@ function roundRect(
   );
 
   ctx.closePath();
+}
+
+/* ============================================================
+   BACKUP & RESTORE
+   ============================================================ */
+
+/*
+  Creates a backup containing all of this app's
+  localStorage data.
+
+  Using the "zara" prefix means future data added
+  to the app will also be included automatically.
+*/
+
+function createBackupData() {
+
+  const savedData = {};
+
+  for (
+    let i = 0;
+    i < localStorage.length;
+    i++
+  ) {
+
+    const key =
+      localStorage.key(i);
+
+    if (
+      key &&
+      key.startsWith("zara")
+    ) {
+
+      savedData[key] =
+        localStorage.getItem(key);
+    }
+  }
+
+  return {
+
+    app: "Zara's Zero Based Budget",
+
+    backupVersion: 1,
+
+    backedUpAt:
+      new Date().toISOString(),
+
+    localStorage: savedData
+
+  };
+}
+
+/*
+  BACK UP DATA
+*/
+
+async function backupData() {
+
+  /*
+    Make sure the latest budget changes
+    have been saved before creating
+    the backup.
+  */
+
+  saveEverything();
+
+  const backup =
+    createBackupData();
+
+  const json =
+    JSON.stringify(
+      backup,
+      null,
+      2
+    );
+
+  const now =
+    new Date();
+
+  const filename =
+    `zara-budget-backup-${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-${String(
+      now.getDate()
+    ).padStart(2, "0")}.json`;
+
+  const message =
+    document.getElementById(
+      "backupMessage"
+    );
+
+  /*
+    On iPhone/iPad this opens the
+    normal iOS share sheet.
+
+    From there you can choose OneDrive
+    or Save to Files.
+  */
+
+  try {
+
+    const file =
+      new File(
+        [json],
+        filename,
+        {
+          type: "application/json"
+        }
+      );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({
+        files: [file]
+      })
+    ) {
+
+      await navigator.share({
+
+        files: [file],
+
+        title:
+          "Zara's Budget Backup",
+
+        text:
+          "Save this backup file to OneDrive or another safe location."
+
+      });
+
+      message.textContent =
+        "✓ Backup ready. Save the file somewhere safe.";
+
+      return;
+    }
+
+  } catch (error) {
+
+    /*
+      Closing the iPhone share sheet
+      isn't an error that needs reporting.
+    */
+
+    if (
+      error &&
+      error.name === "AbortError"
+    ) {
+
+      message.textContent =
+        "Backup cancelled.";
+
+      return;
+    }
+
+  }
+
+  /*
+    Fallback for browsers that don't
+    support the share sheet.
+  */
+
+  try {
+
+    const blob =
+      new Blob(
+        [json],
+        {
+          type: "application/json"
+        }
+      );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+      filename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(
+      () => {
+        URL.revokeObjectURL(url);
+      },
+      1000
+    );
+
+    message.textContent =
+      "✓ Backup file created. Save it to OneDrive or Files.";
+
+  } catch (error) {
+
+    message.textContent =
+      "⚠️ Sorry, the backup could not be created.";
+
+  }
+
+}
+
+/*
+  RESTORE DATA
+*/
+
+function restoreData(input) {
+
+  const file =
+    input.files &&
+    input.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const message =
+    document.getElementById(
+      "restoreMessage"
+    );
+
+  const reader =
+    new FileReader();
+
+  reader.onload =
+    function(event) {
+
+      try {
+
+        const backup =
+          JSON.parse(
+            event.target.result
+          );
+
+        /*
+          Make sure the selected file
+          is actually one of our backups.
+        */
+
+        if (
+          !backup ||
+          backup.app !==
+            "Zara's Zero Based Budget" ||
+          !backup.localStorage ||
+          typeof backup.localStorage !==
+            "object"
+        ) {
+
+          throw new Error(
+            "Invalid backup"
+          );
+
+        }
+
+        const keys =
+          Object.keys(
+            backup.localStorage
+          );
+
+        /*
+          Extra safety check so you don't
+          accidentally restore a random
+          JSON file.
+        */
+
+        const looksLikeBudgetBackup =
+          keys.includes("zaraExpenses") ||
+          keys.includes("zaraBuckets") ||
+          keys.includes("zaraIncome") ||
+          keys.includes("zaraGoals") ||
+          keys.includes("zaraNetWorthHistory") ||
+          keys.includes("zaraInvestmentHistory");
+
+        if (!looksLikeBudgetBackup) {
+
+          throw new Error(
+            "Invalid backup"
+          );
+
+        }
+
+        /*
+          Ask for confirmation before
+          replacing the current budget.
+        */
+
+        const confirmed =
+          confirm(
+            "Restore this backup?\n\n" +
+            "This will replace the budget data currently stored in this app with the data from the backup file."
+          );
+
+        if (!confirmed) {
+
+          input.value = "";
+
+          message.textContent =
+            "Restore cancelled.";
+
+          return;
+
+        }
+
+        /*
+          Remove the current Zara budget data.
+        */
+
+        const keysToRemove = [];
+
+        for (
+          let i = 0;
+          i < localStorage.length;
+          i++
+        ) {
+
+          const key =
+            localStorage.key(i);
+
+          if (
+            key &&
+            key.startsWith("zara")
+          ) {
+
+            keysToRemove.push(key);
+
+          }
+
+        }
+
+        keysToRemove.forEach(
+          key => {
+            localStorage.removeItem(key);
+          }
+        );
+
+        /*
+          Put the backup data back
+          into localStorage.
+        */
+
+        keys.forEach(key => {
+
+          if (
+            key.startsWith("zara")
+          ) {
+
+            localStorage.setItem(
+              key,
+              String(
+                backup.localStorage[key]
+              )
+            );
+
+          }
+
+        });
+
+        message.textContent =
+          "✓ Backup restored successfully. Reloading your budget...";
+
+        /*
+          Reload the app so all of the
+          restored information appears.
+        */
+
+        setTimeout(
+          () => {
+            location.reload();
+          },
+          700
+        );
+
+      }
+
+      catch (error) {
+
+        message.textContent =
+          "⚠️ That file doesn't look like a valid Zara budget backup.";
+
+        input.value = "";
+
+      }
+
+    };
+
+  reader.onerror =
+    function() {
+
+      message.textContent =
+        "⚠️ The backup file could not be read.";
+
+      input.value = "";
+
+    };
+
+  reader.readAsText(file);
+
 }
 
 /* ============================================================
