@@ -3,376 +3,274 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ff6f91">
+
+<meta name="theme-color" content="#ff7a59">
+
 <title>Zara's Zero Based Budget</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap');
 
 :root {
-  --pink: #ff6f91;
-  --hot-pink: #ff477e;
-  --orange: #ff9f43;
-  --yellow: #ffd166;
-  --purple: #9b5de5;
-  --deep-purple: #6c3fc5;
-  --cream: #fff8f0;
-  --white: #ffffff;
-  --dark: #39234d;
-  --muted: #806b8d;
-  --green: #50b86c;
-  --red: #ed5a6a;
-  --border: #eadbea;
+  --pink:#ff5fa2;
+  --orange:#ff7a59;
+  --purple:#7b61ff;
+  --yellow:#ffd166;
+  --cream:#fff8ef;
+  --dark:#29242f;
+  --green:#39b54a;
+  --red:#e74c3c;
 }
 
 * {
-  box-sizing: border-box;
+  box-sizing:border-box;
 }
 
 body {
-  margin: 0;
-  background: linear-gradient(135deg, #fff3f7 0%, #fff8ef 50%, #f6efff 100%);
-  color: var(--dark);
-  font-family: 'DM Sans', sans-serif;
+  margin:0;
+  background:linear-gradient(135deg,#fff3f8,#fff8ef);
+  color:var(--dark);
+  font-family:'DM Sans',sans-serif;
 }
 
 .container {
-  max-width: 900px;
-  margin: auto;
-  padding: 18px;
+  max-width:900px;
+  margin:auto;
+  padding:18px;
 }
 
-.header {
-  background: linear-gradient(135deg, var(--pink), var(--orange));
-  color: white;
-  padding: 22px;
-  border-radius: 24px;
-  box-shadow: 0 8px 25px rgba(155, 93, 229, .15);
-  margin-bottom: 14px;
+header {
+  text-align:center;
+  margin-bottom:20px;
 }
 
-.logo {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+h1,h2,h3 {
+  font-family:'Fredoka',sans-serif;
+}
+
+h1 {
+  font-size:32px;
+  margin:10px 0 4px;
+}
+
+h2 {
+  margin-top:0;
 }
 
 .subtitle {
-  margin-top: 4px;
-  opacity: .9;
-  font-size: 14px;
+  color:#777;
 }
 
-.nav {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  margin-bottom: 15px;
+nav {
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:20px;
+  padding-bottom:4px;
 }
 
-.nav button {
-  border: 0;
-  background: white;
-  color: var(--dark);
-  padding: 11px 5px;
-  border-radius: 14px;
-  font-family: 'DM Sans';
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 3px 12px rgba(80, 50, 90, .08);
+nav button {
+  border:none;
+  border-radius:999px;
+  padding:10px 16px;
+  background:#fff;
+  font-weight:700;
+  white-space:nowrap;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 
-.nav button.active {
-  background: var(--purple);
-  color: white;
+nav button.active {
+  background:var(--pink);
+  color:white;
 }
 
 .section {
-  display: none;
+  display:none;
 }
 
 .section.active {
-  display: block;
+  display:block;
 }
 
 .card {
-  background: rgba(255,255,255,.92);
-  border: 2px solid var(--border);
-  border-radius: 22px;
-  padding: 18px;
-  margin-bottom: 15px;
-  box-shadow: 0 6px 20px rgba(80, 50, 90, .06);
-}
-
-.card h2 {
-  margin: 0 0 14px;
-  font-family: 'Fredoka', sans-serif;
-  color: var(--deep-purple);
-  font-size: 21px;
-}
-
-.card h3 {
-  font-family: 'Fredoka', sans-serif;
-  margin-bottom: 8px;
+  background:white;
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(71,44,80,.08);
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
 }
 
-.field {
-  margin-bottom: 11px;
+@media(max-width:600px) {
+  .grid {
+    grid-template-columns:1fr;
+  }
 }
 
-.field label {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 5px;
-  color: var(--muted);
+label {
+  display:block;
+  font-weight:700;
+  margin-bottom:6px;
 }
 
-input {
-  width: 100%;
-  padding: 11px 12px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  font-family: 'DM Sans';
-  font-size: 15px;
-  color: var(--dark);
-  background: #fffdfd;
+input,select {
+  width:100%;
+  padding:11px;
+  border:2px solid #eee;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:16px;
+  background:white;
 }
 
 input:focus {
-  outline: none;
-  border-color: var(--pink);
-}
-
-.money {
-  position: relative;
-}
-
-.money span {
-  position: absolute;
-  left: 12px;
-  top: 11px;
-  color: var(--muted);
-}
-
-.money input {
-  padding-left: 27px;
-}
-
-.total {
-  background: linear-gradient(135deg, #fff0f5, #fff6e8);
-  border-radius: 15px;
-  padding: 13px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  margin-top: 8px;
-}
-
-.balance {
-  padding: 16px;
-  border-radius: 17px;
-  text-align: center;
-  font-weight: 700;
-  margin-top: 12px;
-}
-
-.balance.good {
-  background: #e9f8ed;
-  color: #24763b;
-}
-
-.balance.left {
-  background: #fff4d8;
-  color: #9a6900;
-}
-
-.balance.over {
-  background: #ffe7eb;
-  color: #a82e3e;
+  outline:none;
+  border-color:var(--pink);
 }
 
 button.primary {
-  border: 0;
-  background: linear-gradient(135deg, var(--pink), var(--hot-pink));
-  color: white;
-  padding: 11px 17px;
-  border-radius: 13px;
-  font-family: 'DM Sans';
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 6px;
+  border:none;
+  border-radius:14px;
+  padding:12px 16px;
+  background:var(--pink);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
 }
 
 button.secondary {
-  border: 0;
-  background: var(--purple);
-  color: white;
-  padding: 9px 13px;
-  border-radius: 11px;
-  font-family: 'DM Sans';
-  font-weight: 700;
-  cursor: pointer;
+  border:none;
+  border-radius:14px;
+  padding:10px 14px;
+  background:#f1ecff;
+  color:#5c48c9;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
 }
 
-button.delete {
-  border: 0;
-  background: #ffe5e9;
-  color: var(--red);
-  padding: 8px 11px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
+button.danger {
+  border:none;
+  border-radius:12px;
+  padding:8px 12px;
+  background:#ffe5e2;
+  color:#c0392b;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
 }
 
-.chart-wrap {
-  position: relative;
-  width: 100%;
-  max-width: 470px;
-  margin: 5px auto 15px;
+.row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
 }
 
-canvas {
-  width: 100%;
-  height: auto;
-  display: block;
+.total {
+  font-size:22px;
+  font-weight:700;
 }
 
-.legend {
-  display: grid;
-  gap: 7px;
-  margin-top: 8px;
+.positive {
+  color:var(--green);
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.goal {
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 10px;
-}
-
-.goal-title {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-}
-
-.progress {
-  height: 11px;
-  background: #eee5ef;
-  border-radius: 20px;
-  overflow: hidden;
-  margin: 9px 0;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--pink), var(--orange));
-  border-radius: 20px;
+.negative {
+  color:var(--red);
 }
 
 .small {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.category-row {
-  display: grid;
-  grid-template-columns: 1fr 110px auto;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.bucket-row {
-  display: grid;
-  grid-template-columns: 1fr 110px auto;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.empty {
-  color: var(--muted);
-  font-size: 14px;
-  padding: 10px 0;
-}
-
-.year-row {
-  display: grid;
-  grid-template-columns: 90px 1fr auto;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.investment-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 1fr auto;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
+  font-size:13px;
+  color:#777;
 }
 
 .help {
-  background: #f8efff;
-  border-radius: 14px;
-  padding: 11px;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 12px;
+  background:#fff5fb;
+  border-radius:14px;
+  padding:12px;
+  font-size:14px;
+  margin-bottom:14px;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 10px;
-  }
+.category-row {
+  display:grid;
+  grid-template-columns:1fr 130px;
+  gap:10px;
+  align-items:center;
+  margin-bottom:9px;
+}
 
-  .logo {
-    font-size: 24px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
+@media(max-width:500px) {
   .category-row {
-    grid-template-columns: 1fr 90px auto;
-  }
-
-  .investment-row {
-    grid-template-columns: 65px 1fr 1fr auto;
-  }
-
-  .investment-row input {
-    font-size: 13px;
-    padding: 9px 6px;
-  }
-
-  .nav button {
-    font-size: 12px;
+    grid-template-columns:1fr 110px;
   }
 }
+
+.bucket-row {
+  display:grid;
+  grid-template-columns:1fr 130px;
+  gap:10px;
+  align-items:center;
+  margin-bottom:9px;
+}
+
+.chart-wrap {
+  position:relative;
+  width:100%;
+  max-width:650px;
+  margin:20px auto;
+}
+
+canvas {
+  width:100%;
+  max-width:100%;
+}
+
+.goal-card {
+  border-left:6px solid var(--purple);
+}
+
+.progress-bar {
+  height:18px;
+  background:#eee;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg,var(--pink),var(--purple));
+  border-radius:999px;
+}
+
+hr {
+  border:none;
+  border-top:1px solid #eee;
+  margin:18px 0;
+}
+
+.file-input {
+  padding:10px;
+  background:#fafafa;
+}
+
+.backup-box {
+  background:linear-gradient(135deg,#fff5fb,#f4f0ff);
+  border-radius:16px;
+  padding:15px;
+}
+
 </style>
 </head>
 
@@ -380,365 +278,571 @@ canvas {
 
 <div class="container">
 
-  <div class="header">
-    <div class="logo">🌸 Zara's Zero Based Budget</div>
-    <div class="subtitle">Give every dollar a job ✨</div>
+<header>
+  <h1>🌸 Zara's Zero Based Budget</h1>
+  <div class="subtitle">
+    Give every dollar a job ✨
   </div>
+</header>
 
-  <div class="nav">
-    <button class="nav-btn active" onclick="showSection('budget', this)">💰 Budget</button>
-    <button class="nav-btn" onclick="showSection('goals', this)">🎯 Goals</button>
-    <button class="nav-btn" onclick="showSection('progress', this)">📈 Progress</button>
-    <button class="nav-btn" onclick="showSection('customize', this)">✨ Customize</button>
-  </div>
+<nav>
+  <button class="active" onclick="showSection('budget',this)">💰 Budget</button>
+  <button onclick="showSection('goals',this)">🎯 Goals</button>
+  <button onclick="showSection('progress',this)">📈 Progress</button>
+  <button onclick="showSection('customize',this)">🎨 Customize</button>
+</nav>
 
-  <!-- ================= BUDGET ================= -->
 
-  <div id="budget" class="section active">
+<!-- ========================= -->
+<!-- BUDGET -->
+<!-- ========================= -->
 
-    <div class="card">
-      <h2>🌈 Your Budget</h2>
+<section id="budget" class="section active">
 
-      <div class="chart-wrap">
-        <canvas id="budgetChart" width="470" height="470"></canvas>
-      </div>
+<div class="card">
 
-      <div id="budgetLegend" class="legend"></div>
-    </div>
+<h2>💵 Income</h2>
 
-    <div class="card">
-      <h2>💵 Income</h2>
+<div class="grid">
 
-      <div class="grid">
+<div>
+<label for="salary">Salary</label>
+<input
+  id="salary"
+  type="number"
+  inputmode="decimal"
+  min="0"
+  step="0.01"
+  placeholder="0"
+  onchange="updateIncome()"
+>
+</div>
 
-        <div class="field">
-          <label>Salary</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="salary" min="0" step="0.01">
-          </div>
-        </div>
+<div>
+<label for="rental">Rental income</label>
+<input
+  id="rental"
+  type="number"
+  inputmode="decimal"
+  min="0"
+  step="0.01"
+  placeholder="0"
+  onchange="updateIncome()"
+>
+</div>
 
-        <div class="field">
-          <label>Rental income</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="rental" min="0" step="0.01">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Other income</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="otherIncome" min="0" step="0.01">
-          </div>
-        </div>
-
-      </div>
-
-      <div class="total">
-        <span>Total income</span>
-        <span id="totalIncome">$0.00</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🧾 Daily Expenses</h2>
-      <div id="expenseInputs"></div>
-
-      <div class="total">
-        <span>Total expenses</span>
-        <span id="totalExpenses">$0.00</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🪣 Buckets</h2>
-      <div id="bucketInputs"></div>
-
-      <div class="total">
-        <span>Total buckets</span>
-        <span id="totalBuckets">$0.00</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>⚖️ Zero-Based Check</h2>
-      <div id="balanceMessage" class="balance good">
-        Your budget is balanced!
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ================= GOALS ================= -->
-
-  <div id="goals" class="section">
-
-    <div class="card">
-      <h2>🎯 Financial Goals</h2>
-
-      <div class="help">
-        Track savings goals, holidays, big purchases — whatever you're working toward.
-      </div>
-
-      <div id="goalsList"></div>
-
-      <button class="primary" onclick="addGoal()">＋ Add financial goal</button>
-    </div>
-
-  </div>
-
-  <!-- ================= PROGRESS ================= -->
-
-  <div id="progress" class="section">
-
-    <div class="card">
-      <h2>💎 Net Worth by Year</h2>
-
-      <div class="help">
-        Enter your net worth at the end of each year and watch your progress over time.
-      </div>
-
-      <div class="chart-wrap">
-        <canvas id="netWorthChart" width="700" height="420"></canvas>
-      </div>
-
-      <div id="netWorthInputs"></div>
-
-      <button class="primary" onclick="addNetWorthYear()">＋ Add year</button>
-    </div>
-
-    <div class="card">
-      <h2>📈 Investments vs Goal</h2>
-
-      <div class="help">
-        Add your actual investment total and your target for each year. The graph shows both lines so you can see how you're tracking.
-      </div>
-
-      <div class="chart-wrap">
-        <canvas id="investmentChart" width="700" height="420"></canvas>
-      </div>
-
-      <div id="investmentInputs"></div>
-
-      <button class="primary" onclick="addInvestmentYear()">＋ Add year</button>
-    </div>
-
-  </div>
-
-  <!-- ================= CUSTOMIZE ================= -->
-
-  <div id="customize" class="section">
-
-    <div class="card">
-      <h2>🧾 Customize Expenses</h2>
-
-      <div class="help">
-        Everyone can make this budget their own. Add, rename or remove expense categories. Your changes are saved only on your device.
-      </div>
-
-      <div id="customExpenseList"></div>
-
-      <button class="primary" onclick="addExpenseCategory()">
-        ＋ Add expense category
-      </button>
-    </div>
-
-    <div class="card">
-      <h2>🪣 Customize Buckets</h2>
-
-      <div class="help">
-        Create your own buckets — savings, investments, holidays, fun money, emergency funds, or anything else.
-      </div>
-
-      <div id="customBucketList"></div>
-
-      <button class="primary" onclick="addBucketCategory()">
-        ＋ Add bucket category
-      </button>
-    </div>
-
-    <div class="card">
-      <h2>📈 Customize Investment Goal</h2>
-
-      <div class="help">
-        Set your own starting investment amount, starting year, goal amount and goal year. The goal line in the Progress section will automatically spread evenly between the two points.
-      </div>
-
-      <div class="grid">
-
-        <div class="field">
-          <label>Starting year</label>
-          <input
-            type="number"
-            id="investmentStartYear"
-            min="1900"
-            max="2200"
-            step="1"
-          >
-        </div>
-
-        <div class="field">
-          <label>Starting investment amount</label>
-          <div class="money">
-            <span>$</span>
-            <input
-              type="number"
-              id="investmentStartAmount"
-              min="0"
-              step="100"
-            >
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Goal year</label>
-          <input
-            type="number"
-            id="investmentEndYear"
-            min="1900"
-            max="2200"
-            step="1"
-          >
-        </div>
-
-        <div class="field">
-          <label>Goal amount</label>
-          <div class="money">
-            <span>$</span>
-            <input
-              type="number"
-              id="investmentFinalGoal"
-              min="0"
-              step="100"
-            >
-          </div>
-        </div>
-
-      </div>
-
-      <button class="primary" onclick="saveInvestmentSettings()">
-        💾 Save investment settings
-      </button>
-
-      <div
-        id="investmentSettingsMessage"
-        class="small"
-        style="margin-top:10px;"
-      ></div>
-
-    </div>
-
-  </div>
+<div>
+<label for="otherIncome">Other income</label>
+<input
+  id="otherIncome"
+  type="number"
+  inputmode="decimal"
+  min="0"
+  step="0.01"
+  placeholder="0"
+  onchange="updateIncome()"
+>
+</div>
 
 </div>
 
+<hr>
+
+<div class="row">
+  <span>Total income</span>
+  <span id="totalIncome" class="total">$0</span>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🧾 Daily Expenses</h2>
+
+<div id="expensesContainer"></div>
+
+<hr>
+
+<div class="row">
+  <span>Total expenses</span>
+  <span id="totalExpenses" class="total">$0</span>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🪣 Buckets</h2>
+
+<div id="bucketsContainer"></div>
+
+<hr>
+
+<div class="row">
+  <span>Total buckets</span>
+  <span id="totalBuckets" class="total">$0</span>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🥧 Zero-Based Check</h2>
+
+<div class="row">
+  <span>Income</span>
+  <span id="checkIncome">$0</span>
+</div>
+
+<div class="row">
+  <span>Expenses</span>
+  <span id="checkExpenses">$0</span>
+</div>
+
+<div class="row">
+  <span>Buckets</span>
+  <span id="checkBuckets">$0</span>
+</div>
+
+<hr>
+
+<div class="row">
+  <span><strong>Remaining</strong></span>
+  <span id="remaining" class="total">$0</span>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="budgetChart"></canvas>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- GOALS -->
+<!-- ========================= -->
+
+<section id="goals" class="section">
+
+<div class="card">
+
+<h2>🎯 Financial Goals</h2>
+
+<div class="help">
+  Add a goal and track your progress over time.
+</div>
+
+<div class="grid">
+
+<div>
+<label for="goalName">Goal name</label>
+<input
+  id="goalName"
+  type="text"
+  placeholder="Emergency fund"
+>
+</div>
+
+<div>
+<label for="goalTarget">Target amount</label>
+<input
+  id="goalTarget"
+  type="number"
+  inputmode="decimal"
+  min="0"
+  step="0.01"
+  placeholder="10000"
+>
+</div>
+
+<div>
+<label for="goalCurrent">Current amount</label>
+<input
+  id="goalCurrent"
+  type="number"
+  inputmode="decimal"
+  min="0"
+  step="0.01"
+  placeholder="0"
+>
+</div>
+
+</div>
+
+<br>
+
+<button class="primary" onclick="addGoal()">
+  ➕ Add Goal
+</button>
+
+</div>
+
+<div id="goalsContainer"></div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- PROGRESS -->
+<!-- ========================= -->
+
+<section id="progress" class="section">
+
+<div class="card">
+
+<h2>📊 Net Worth</h2>
+
+<div class="help">
+  Record your net worth for each year to build a long-term picture.
+</div>
+
+<div class="grid">
+
+<div>
+<label for="netWorthYear">Year</label>
+<input
+  id="netWorthYear"
+  type="number"
+  inputmode="numeric"
+  placeholder="2026"
+>
+</div>
+
+<div>
+<label for="netWorthAmount">Net worth</label>
+<input
+  id="netWorthAmount"
+  type="number"
+  inputmode="decimal"
+  step="0.01"
+  placeholder="0"
+>
+</div>
+
+</div>
+
+<br>
+
+<button class="primary" onclick="saveNetWorth()">
+  💾 Save Net Worth
+</button>
+
+<div class="chart-wrap">
+  <canvas id="netWorthChart"></canvas>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📈 Investments vs Goal</h2>
+
+<div class="help">
+  Your investment progress is compared against your custom investment goal.
+</div>
+
+<div class="chart-wrap">
+  <canvas id="investmentChart"></canvas>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- CUSTOMIZE -->
+<!-- ========================= -->
+
+<section id="customize" class="section">
+
+<div class="card">
+
+<h2>🧾 Customize Expenses</h2>
+
+<div class="help">
+  Add, rename or delete your expense categories.
+</div>
+
+<div id="customExpensesContainer"></div>
+
+<hr>
+
+<div class="grid">
+
+<div>
+<label for="newExpenseName">New expense</label>
+<input
+  id="newExpenseName"
+  type="text"
+  placeholder="Example: Gym"
+>
+</div>
+
+</div>
+
+<br>
+
+<button class="primary" onclick="addExpenseCategory()">
+  ➕ Add Expense
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>🪣 Customize Buckets</h2>
+
+<div class="help">
+  Buckets are for money you intentionally set aside for specific purposes.
+</div>
+
+<div id="customBucketsContainer"></div>
+
+<hr>
+
+<div>
+<label for="newBucketName">New bucket</label>
+<input
+  id="newBucketName"
+  type="text"
+  placeholder="Example: Christmas"
+>
+</div>
+
+<br>
+
+<button class="primary" onclick="addBucketCategory()">
+  ➕ Add Bucket
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>📈 Customize Investment Goal</h2>
+
+<div class="help">
+  Set the starting point and final target for your investment journey.
+  The app creates an evenly increasing goal line between the two dates.
+</div>
+
+<div class="grid">
+
+<div>
+<label for="investmentStartYear">Starting year</label>
+<input
+  id="investmentStartYear"
+  type="number"
+  inputmode="numeric"
+>
+</div>
+
+<div>
+<label for="investmentStartAmount">Starting amount</label>
+<input
+  id="investmentStartAmount"
+  type="number"
+  inputmode="decimal"
+  step="0.01"
+>
+</div>
+
+<div>
+<label for="investmentEndYear">Goal year</label>
+<input
+  id="investmentEndYear"
+  type="number"
+  inputmode="numeric"
+>
+</div>
+
+<div>
+<label for="investmentFinalGoal">Goal amount</label>
+<input
+  id="investmentFinalGoal"
+  type="number"
+  inputmode="decimal"
+  step="0.01"
+>
+</div>
+
+</div>
+
+<br>
+
+<button class="primary" onclick="saveInvestmentSettings()">
+  💾 Save Investment Goal
+</button>
+
+<div
+  id="investmentSettingsMessage"
+  class="small"
+  style="margin-top:10px;"
+></div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- BACKUP / RESTORE -->
+<!-- ========================= -->
+
+<div class="card">
+
+<h2>☁️ Data Backup</h2>
+
+<div class="backup-box">
+
+<div class="help">
+  Keep a safe copy of all your budgeting data. Tap
+  <strong>Back Up My Data</strong> after making changes and save the
+  backup file to OneDrive or another safe location.
+</div>
+
+<button class="primary" onclick="backupData()">
+  ☁️ Back Up My Data
+</button>
+
+<div
+  id="backupMessage"
+  class="small"
+  style="margin-top:10px;"
+></div>
+
+<hr>
+
+<div class="small" style="margin-bottom:8px;">
+  <strong>Restore a previous backup</strong>
+</div>
+
+<div class="small" style="margin-bottom:10px;">
+  Choose a backup file from OneDrive, iCloud Drive, or the Files app.
+  Restoring will replace the data currently in this app.
+</div>
+
+<input
+  class="file-input"
+  type="file"
+  id="restoreFile"
+  accept=".json,application/json"
+  onchange="restoreData(this)"
+>
+
+<div
+  id="restoreMessage"
+  class="small"
+  style="margin-top:10px;"
+></div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
 <script>
 
-/* ============================================================
+/* =========================================================
    DEFAULT DATA
-   ============================================================ */
+========================================================= */
 
 const defaultExpenses = [
-  "Mortgage",
-  "Rates",
-  "Power",
-  "Phone bill",
-  "Contents insurance",
-  "Car insurance",
-  "Health insurance",
-  "Spotify",
-  "Gas",
-  "Food",
-  "Pets",
-  "Car",
-  "Health & beauty",
-  "Gifts",
-  "House maintenance"
+  {name:"Mortgage", amount:0},
+  {name:"Rates", amount:0},
+  {name:"Power", amount:0},
+  {name:"Phone bill", amount:0},
+  {name:"Contents insurance", amount:0},
+  {name:"Car insurance", amount:0},
+  {name:"Health insurance", amount:0},
+  {name:"Spotify", amount:0},
+  {name:"Gas", amount:0},
+  {name:"Food", amount:0},
+  {name:"Pets", amount:0},
+  {name:"Car", amount:0},
+  {name:"Health & beauty", amount:0},
+  {name:"Gifts", amount:0},
+  {name:"House maintenance", amount:0}
 ];
 
 const defaultBuckets = [
-  "Life Raft",
-  "Investments",
-  "Treat Yourself",
-  "Holidays"
+  {name:"Life Raft", amount:0},
+  {name:"Investments", amount:0},
+  {name:"Treat Yourself", amount:0},
+  {name:"Holidays", amount:0}
 ];
 
-let expenses = JSON.parse(localStorage.getItem("zaraExpenses"));
-
-if (!expenses) {
-  expenses = defaultExpenses.map(name => ({
-    name: name,
-    amount: 0
-  }));
-}
-
-let buckets = JSON.parse(localStorage.getItem("zaraBuckets"));
-
-if (!buckets) {
-  buckets = defaultBuckets.map(name => ({
-    name: name,
-    amount: 0
-  }));
-}
-
-let income = JSON.parse(localStorage.getItem("zaraIncome")) || {
-  salary: 0,
-  rental: 0,
-  other: 0
+const defaultIncome = {
+  salary:0,
+  rental:0,
+  other:0
 };
 
-let goals = JSON.parse(localStorage.getItem("zaraGoals")) || [];
+
+/* =========================================================
+   LOAD SAVED DATA
+========================================================= */
+
+let expenses =
+  JSON.parse(localStorage.getItem("zaraExpenses")) ||
+  defaultExpenses.map(x => ({...x}));
+
+let buckets =
+  JSON.parse(localStorage.getItem("zaraBuckets")) ||
+  defaultBuckets.map(x => ({...x}));
+
+let income =
+  JSON.parse(localStorage.getItem("zaraIncome")) ||
+  {...defaultIncome};
+
+let goals =
+  JSON.parse(localStorage.getItem("zaraGoals")) ||
+  [];
 
 let netWorthHistory =
-  JSON.parse(localStorage.getItem("zaraNetWorthHistory")) || [];
+  JSON.parse(localStorage.getItem("zaraNetWorthHistory")) ||
+  [];
 
 let investmentHistory =
-  JSON.parse(localStorage.getItem("zaraInvestmentHistory")) || [];
+  JSON.parse(localStorage.getItem("zaraInvestmentHistory")) ||
+  [];
 
 
-/* ============================================================
-   CUSTOM INVESTMENT GOAL SETTINGS
-   ============================================================ */
-
-const savedInvestmentStartYear =
-  localStorage.getItem("zaraInvestmentStartYear");
-
-const savedInvestmentStartAmount =
-  localStorage.getItem("zaraInvestmentStartAmount");
-
-const savedInvestmentEndYear =
-  localStorage.getItem("zaraInvestmentEndYear");
-
-const savedInvestmentFinalGoal =
-  localStorage.getItem("zaraInvestmentFinalGoal");
+/* =========================================================
+   INVESTMENT SETTINGS
+========================================================= */
 
 let investmentStartYear =
-  savedInvestmentStartYear !== null
-    ? Number(savedInvestmentStartYear)
-    : 2025;
+  Number(localStorage.getItem("zaraInvestmentStartYear")) ||
+  2025;
 
 let investmentStartAmount =
-  savedInvestmentStartAmount !== null
-    ? Number(savedInvestmentStartAmount)
-    : 85000;
+  Number(localStorage.getItem("zaraInvestmentStartAmount")) ||
+  85000;
 
 let investmentEndYear =
-  savedInvestmentEndYear !== null
-    ? Number(savedInvestmentEndYear)
-    : 2042;
+  Number(localStorage.getItem("zaraInvestmentEndYear")) ||
+  2042;
 
 let investmentFinalGoal =
-  savedInvestmentFinalGoal !== null
-    ? Number(savedInvestmentFinalGoal)
-    : 1000000;
+  Number(localStorage.getItem("zaraInvestmentFinalGoal")) ||
+  1000000;
 
 
-/* ============================================================
-   SAVE
-   ============================================================ */
+/* =========================================================
+   SAVE EVERYTHING
+========================================================= */
 
 function saveEverything() {
 
@@ -794,34 +898,38 @@ function saveEverything() {
 }
 
 
-/* ============================================================
+/* =========================================================
    NAVIGATION
-   ============================================================ */
+========================================================= */
 
-function showSection(id, button) {
+function showSection(sectionId, button) {
 
   document.querySelectorAll(".section").forEach(section => {
     section.classList.remove("active");
   });
 
-  document.getElementById(id).classList.add("active");
+  document.getElementById(sectionId).classList.add("active");
 
-  document.querySelectorAll(".nav-btn").forEach(btn => {
+  document.querySelectorAll("nav button").forEach(btn => {
     btn.classList.remove("active");
   });
 
   button.classList.add("active");
 
-  if (id === "progress") {
+  if(sectionId === "progress") {
     drawNetWorthChart();
     drawInvestmentChart();
+  }
+
+  if(sectionId === "budget") {
+    drawBudgetChart();
   }
 }
 
 
-/* ============================================================
+/* =========================================================
    INCOME
-   ============================================================ */
+========================================================= */
 
 function setupIncome() {
 
@@ -833,19 +941,8 @@ function setupIncome() {
 
   document.getElementById("otherIncome").value =
     income.other || "";
-
-  document
-    .getElementById("salary")
-    .addEventListener("input", updateIncome);
-
-  document
-    .getElementById("rental")
-    .addEventListener("input", updateIncome);
-
-  document
-    .getElementById("otherIncome")
-    .addEventListener("input", updateIncome);
 }
+
 
 function updateIncome() {
 
@@ -863,44 +960,44 @@ function updateIncome() {
 }
 
 
-/* ============================================================
+/* =========================================================
    EXPENSES
-   ============================================================ */
+========================================================= */
 
 function renderExpenses() {
 
   const container =
-    document.getElementById("expenseInputs");
+    document.getElementById("expensesContainer");
 
   container.innerHTML = "";
 
-  expenses.forEach((expense, index) => {
+  expenses.forEach((expense,index) => {
 
-    const div = document.createElement("div");
+    const row = document.createElement("div");
 
-    div.className = "field";
+    row.className = "category-row";
 
-    div.innerHTML = `
-      <label>${escapeHtml(expense.name)}</label>
+    row.innerHTML = `
+      <div>${escapeHtml(expense.name)}</div>
 
-      <div class="money">
-        <span>$</span>
-
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          value="${expense.amount || ""}"
-          oninput="updateExpense(${index}, this.value)"
-        >
-      </div>
+      <input
+        type="number"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+        value="${expense.amount || ""}"
+        onchange="updateExpense(${index},this.value)"
+      >
     `;
 
-    container.appendChild(div);
+    container.appendChild(row);
+
   });
+
 }
 
-function updateExpense(index, value) {
+
+function updateExpense(index,value) {
 
   expenses[index].amount =
     Number(value) || 0;
@@ -910,44 +1007,44 @@ function updateExpense(index, value) {
 }
 
 
-/* ============================================================
+/* =========================================================
    BUCKETS
-   ============================================================ */
+========================================================= */
 
 function renderBuckets() {
 
   const container =
-    document.getElementById("bucketInputs");
+    document.getElementById("bucketsContainer");
 
   container.innerHTML = "";
 
-  buckets.forEach((bucket, index) => {
+  buckets.forEach((bucket,index) => {
 
-    const div = document.createElement("div");
+    const row = document.createElement("div");
 
-    div.className = "field";
+    row.className = "bucket-row";
 
-    div.innerHTML = `
-      <label>${escapeHtml(bucket.name)}</label>
+    row.innerHTML = `
+      <div>${escapeHtml(bucket.name)}</div>
 
-      <div class="money">
-        <span>$</span>
-
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          value="${bucket.amount || ""}"
-          oninput="updateBucket(${index}, this.value)"
-        >
-      </div>
+      <input
+        type="number"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+        value="${bucket.amount || ""}"
+        onchange="updateBucket(${index},this.value)"
+      >
     `;
 
-    container.appendChild(div);
+    container.appendChild(row);
+
   });
+
 }
 
-function updateBucket(index, value) {
+
+function updateBucket(index,value) {
 
   buckets[index].amount =
     Number(value) || 0;
@@ -957,27 +1054,27 @@ function updateBucket(index, value) {
 }
 
 
-/* ============================================================
-   TOTALS + ZERO BASED
-   ============================================================ */
+/* =========================================================
+   TOTALS
+========================================================= */
 
 function updateTotals() {
 
   const totalIncome =
-    income.salary +
-    income.rental +
-    income.other;
+    Number(income.salary || 0) +
+    Number(income.rental || 0) +
+    Number(income.other || 0);
 
   const totalExpenses =
     expenses.reduce(
-      (sum, item) =>
+      (sum,item) =>
         sum + Number(item.amount || 0),
       0
     );
 
   const totalBuckets =
     buckets.reduce(
-      (sum, item) =>
+      (sum,item) =>
         sum + Number(item.amount || 0),
       0
     );
@@ -996,65 +1093,82 @@ function updateTotals() {
   document.getElementById("totalBuckets").textContent =
     money(totalBuckets);
 
-  const balance =
-    document.getElementById("balanceMessage");
+  document.getElementById("checkIncome").textContent =
+    money(totalIncome);
 
-  balance.className = "balance";
+  document.getElementById("checkExpenses").textContent =
+    money(totalExpenses);
 
-  if (Math.abs(remaining) < 0.01) {
+  document.getElementById("checkBuckets").textContent =
+    money(totalBuckets);
 
-    balance.classList.add("good");
+  const remainingElement =
+    document.getElementById("remaining");
 
-    balance.innerHTML =
-      "🎉 Your budget is balanced! Every dollar has a job.";
+  remainingElement.textContent =
+    money(remaining);
 
-  } else if (remaining > 0) {
+  remainingElement.classList.remove(
+    "positive",
+    "negative"
+  );
 
-    balance.classList.add("left");
+  if(remaining > 0.005) {
+    remainingElement.classList.add("positive");
+  }
 
-    balance.innerHTML =
-      "✨ You have " +
-      money(remaining) +
-      " left to give a job.";
-
-  } else {
-
-    balance.classList.add("over");
-
-    balance.innerHTML =
-      "⚠️ You're " +
-      money(Math.abs(remaining)) +
-      " over budget.";
+  if(remaining < -0.005) {
+    remainingElement.classList.add("negative");
   }
 
   drawBudgetChart();
 }
 
 
-/* ============================================================
+/* =========================================================
    BUDGET PIE CHART
-   ============================================================ */
-
-const chartColors = [
-  "#ff6f91",
-  "#ff9f43",
-  "#9b5de5",
-  "#50b86c",
-  "#ffd166",
-  "#00b4d8",
-  "#f15bb5",
-  "#8338ec",
-  "#fb5607",
-  "#43aa8b"
-];
+========================================================= */
 
 function drawBudgetChart() {
 
   const canvas =
     document.getElementById("budgetChart");
 
-  const ctx =
-    canvas.getContext("2d");
+  if(!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  const totalIncome =
+    Number(income.salary || 0) +
+    Number(income.rental || 0) +
+    Number(income.other || 0);
+
+  const totalExpenses =
+    expenses.reduce(
+      (sum,item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const totalBuckets =
+    buckets.reduce(
+      (sum,item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const values = [
+    totalExpenses,
+    totalBuckets
+  ];
+
+  const labels = [
+    "Expenses",
+    "Buckets"
+  ];
+
+  const total =
+    values.reduce((a,b) => a+b,0);
 
   ctx.clearRect(
     0,
@@ -1063,712 +1177,448 @@ function drawBudgetChart() {
     canvas.height
   );
 
-  const totalExpenses =
-    expenses.reduce(
-      (sum, item) =>
-        sum + Number(item.amount || 0),
-      0
-    );
-
-  const data = [
-    {
-      name: "Daily expenses",
-      value: totalExpenses
-    },
-
-    ...buckets.map(bucket => ({
-      name: bucket.name,
-      value: Number(bucket.amount || 0)
-    }))
-  ].filter(item => item.value > 0);
-
-  const total =
-    data.reduce(
-      (sum, item) =>
-        sum + item.value,
-      0
-    );
-
-  const cx = 235;
-  const cy = 235;
-  const radius = 165;
-
-  if (total <= 0) {
-
-    ctx.beginPath();
-
-    ctx.arc(
-      cx,
-      cy,
-      radius,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fillStyle = "#eadbea";
-    ctx.fill();
-
-    ctx.fillStyle = "#806b8d";
-    ctx.textAlign = "center";
-    ctx.font = "600 18px DM Sans";
-
-    ctx.fillText(
-      "Add your budget",
-      cx,
-      cy
-    );
-
-    document.getElementById("budgetLegend").innerHTML =
-      "<div class='small'>Your chart will appear as you add amounts.</div>";
-
+  if(total <= 0) {
     return;
   }
 
-  let angle = -Math.PI / 2;
+  const size = 300;
 
-  data.forEach((item, index) => {
+  canvas.width = size;
+  canvas.height = size;
+
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const radius = 105;
+
+  let startAngle = -Math.PI / 2;
+
+  const pieColors = [
+    "#ff5fa2",
+    "#7b61ff"
+  ];
+
+  values.forEach((value,index) => {
+
+    if(value <= 0) return;
 
     const slice =
-      (item.value / total) *
-      Math.PI *
-      2;
+      (value / total) *
+      Math.PI * 2;
 
     ctx.beginPath();
 
-    ctx.moveTo(cx, cy);
+    ctx.moveTo(centerX,centerY);
 
     ctx.arc(
-      cx,
-      cy,
+      centerX,
+      centerY,
       radius,
-      angle,
-      angle + slice
+      startAngle,
+      startAngle + slice
     );
 
     ctx.closePath();
 
     ctx.fillStyle =
-      chartColors[
-        index % chartColors.length
-      ];
+      pieColors[index];
 
     ctx.fill();
 
-    angle += slice;
-  });
+    startAngle += slice;
 
-  /* Hole in centre */
+  });
 
   ctx.beginPath();
 
   ctx.arc(
-    cx,
-    cy,
-    82,
+    centerX,
+    centerY,
+    52,
     0,
     Math.PI * 2
   );
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#fff";
+
   ctx.fill();
 
-  ctx.fillStyle = "#39234d";
-  ctx.textAlign = "center";
-
-  ctx.font = "700 17px Fredoka";
-
-  ctx.fillText(
-    "Total budget",
-    cx,
-    cy - 7
-  );
-
-  ctx.font = "700 20px DM Sans";
-
-  ctx.fillText(
-    money(total),
-    cx,
-    cy + 20
-  );
-
-  const legend =
-    document.getElementById("budgetLegend");
-
-  legend.innerHTML = "";
-
-  data.forEach((item, index) => {
-
-    const percentage =
-      Math.round(
-        (item.value / total) * 100
-      );
-
-    const row =
-      document.createElement("div");
-
-    row.className = "legend-item";
-
-    row.innerHTML = `
-      <span
-        class="dot"
-        style="background:${chartColors[index % chartColors.length]}"
-      ></span>
-
-      <span>
-        ${escapeHtml(item.name)}
-        — ${money(item.value)}
-        (${percentage}%)
-      </span>
-    `;
-
-    legend.appendChild(row);
-  });
 }
 
 
-/* ============================================================
-   CUSTOMIZE EXPENSES
-   ============================================================ */
+/* =========================================================
+   CUSTOM EXPENSES
+========================================================= */
 
 function renderCustomExpenses() {
 
   const container =
-    document.getElementById("customExpenseList");
+    document.getElementById(
+      "customExpensesContainer"
+    );
 
   container.innerHTML = "";
 
-  if (expenses.length === 0) {
-
-    container.innerHTML =
-      "<div class='empty'>No expense categories yet.</div>";
-
-    return;
-  }
-
-  expenses.forEach((expense, index) => {
+  expenses.forEach((expense,index) => {
 
     const row =
       document.createElement("div");
 
-    row.className = "category-row";
+    row.className = "row";
 
     row.innerHTML = `
-      <input
-        type="text"
-        value="${escapeAttr(expense.name)}"
-        onchange="renameExpense(${index}, this.value)"
-        placeholder="Category name"
-      >
-
-      <input
-        type="number"
-        min="0"
-        step="0.01"
-        value="${expense.amount || ""}"
-        oninput="updateCustomExpenseAmount(${index}, this.value)"
-        placeholder="Amount"
-      >
+      <span>${escapeHtml(expense.name)}</span>
 
       <button
-        class="delete"
-        onclick="deleteExpense(${index})"
-      >✕</button>
+        class="danger"
+        onclick="deleteExpenseCategory(${index})"
+      >
+        Delete
+      </button>
     `;
 
     container.appendChild(row);
+
   });
+
 }
+
 
 function addExpenseCategory() {
 
+  const input =
+    document.getElementById("newExpenseName");
+
+  const name =
+    input.value.trim();
+
+  if(!name) return;
+
   expenses.push({
-    name: "New expense",
-    amount: 0
+    name:name,
+    amount:0
   });
 
-  saveEverything();
-
-  renderExpenses();
-  renderCustomExpenses();
-
-  updateTotals();
-}
-
-function renameExpense(index, name) {
-
-  name = name.trim();
-
-  if (!name) {
-    name = "Expense";
-  }
-
-  expenses[index].name = name;
+  input.value = "";
 
   saveEverything();
 
   renderExpenses();
   renderCustomExpenses();
-
   updateTotals();
 }
 
-function updateCustomExpenseAmount(index, value) {
 
-  expenses[index].amount =
-    Number(value) || 0;
+function deleteExpenseCategory(index) {
+
+  if(!confirm(
+    "Delete this expense category?"
+  )) {
+    return;
+  }
+
+  expenses.splice(index,1);
 
   saveEverything();
 
   renderExpenses();
+  renderCustomExpenses();
   updateTotals();
 }
 
-function deleteExpense(index) {
 
-  if (
-    confirm(
-      "Delete " +
-      expenses[index].name +
-      "? Its budget amount will also be removed."
-    )
-  ) {
-
-    expenses.splice(index, 1);
-
-    saveEverything();
-
-    renderExpenses();
-    renderCustomExpenses();
-
-    updateTotals();
-  }
-}
-
-
-/* ============================================================
-   CUSTOMIZE BUCKETS
-   ============================================================ */
+/* =========================================================
+   CUSTOM BUCKETS
+========================================================= */
 
 function renderCustomBuckets() {
 
   const container =
-    document.getElementById("customBucketList");
+    document.getElementById(
+      "customBucketsContainer"
+    );
 
   container.innerHTML = "";
 
-  if (buckets.length === 0) {
-
-    container.innerHTML =
-      "<div class='empty'>No bucket categories yet.</div>";
-
-    return;
-  }
-
-  buckets.forEach((bucket, index) => {
+  buckets.forEach((bucket,index) => {
 
     const row =
       document.createElement("div");
 
-    row.className = "bucket-row";
+    row.className = "row";
 
     row.innerHTML = `
-      <input
-        type="text"
-        value="${escapeAttr(bucket.name)}"
-        onchange="renameBucket(${index}, this.value)"
-        placeholder="Bucket name"
-      >
-
-      <input
-        type="number"
-        min="0"
-        step="0.01"
-        value="${bucket.amount || ""}"
-        oninput="updateCustomBucketAmount(${index}, this.value)"
-        placeholder="Amount"
-      >
+      <span>${escapeHtml(bucket.name)}</span>
 
       <button
-        class="delete"
-        onclick="deleteBucket(${index})"
-      >✕</button>
+        class="danger"
+        onclick="deleteBucketCategory(${index})"
+      >
+        Delete
+      </button>
     `;
 
     container.appendChild(row);
+
   });
+
 }
+
 
 function addBucketCategory() {
 
+  const input =
+    document.getElementById("newBucketName");
+
+  const name =
+    input.value.trim();
+
+  if(!name) return;
+
   buckets.push({
-    name: "New bucket",
-    amount: 0
+    name:name,
+    amount:0
   });
 
-  saveEverything();
-
-  renderBuckets();
-  renderCustomBuckets();
-
-  updateTotals();
-}
-
-function renameBucket(index, name) {
-
-  name = name.trim();
-
-  if (!name) {
-    name = "Bucket";
-  }
-
-  buckets[index].name = name;
+  input.value = "";
 
   saveEverything();
 
   renderBuckets();
   renderCustomBuckets();
-
   updateTotals();
 }
 
-function updateCustomBucketAmount(index, value) {
 
-  buckets[index].amount =
-    Number(value) || 0;
+function deleteBucketCategory(index) {
+
+  if(!confirm(
+    "Delete this bucket?"
+  )) {
+    return;
+  }
+
+  buckets.splice(index,1);
 
   saveEverything();
 
   renderBuckets();
+  renderCustomBuckets();
   updateTotals();
 }
 
-function deleteBucket(index) {
 
-  if (
-    confirm(
-      "Delete " +
-      buckets[index].name +
-      "? Its budget amount will also be removed."
-    )
-  ) {
+/* =========================================================
+   GOALS
+========================================================= */
 
-    buckets.splice(index, 1);
+function addGoal() {
 
-    saveEverything();
+  const name =
+    document.getElementById("goalName")
+      .value.trim();
 
-    renderBuckets();
-    renderCustomBuckets();
+  const target =
+    Number(
+      document.getElementById("goalTarget").value
+    ) || 0;
 
-    updateTotals();
+  const current =
+    Number(
+      document.getElementById("goalCurrent").value
+    ) || 0;
+
+  if(!name || target <= 0) {
+    alert(
+      "Please enter a goal name and target amount."
+    );
+
+    return;
   }
+
+  goals.push({
+    name:name,
+    target:target,
+    current:current
+  });
+
+  document.getElementById("goalName").value = "";
+  document.getElementById("goalTarget").value = "";
+  document.getElementById("goalCurrent").value = "";
+
+  saveEverything();
+
+  renderGoals();
 }
 
-
-/* ============================================================
-   FINANCIAL GOALS
-   ============================================================ */
 
 function renderGoals() {
 
   const container =
-    document.getElementById("goalsList");
+    document.getElementById("goalsContainer");
 
   container.innerHTML = "";
 
-  if (goals.length === 0) {
-
-    container.innerHTML =
-      "<div class='empty'>No goals yet. Add your first one below ✨</div>";
-
-    return;
-  }
-
-  goals.forEach((goal, index) => {
-
-    const target =
-      Number(goal.target) || 0;
-
-    const saved =
-      Number(goal.saved) || 0;
+  goals.forEach((goal,index) => {
 
     const percentage =
-      target > 0
-        ? Math.min(100, (saved / target) * 100)
+      goal.target > 0
+        ? Math.min(
+            100,
+            (goal.current / goal.target) * 100
+          )
         : 0;
 
-    const div =
+    const card =
       document.createElement("div");
 
-    div.className = "goal";
+    card.className =
+      "card goal-card";
 
-    div.innerHTML = `
+    card.innerHTML = `
 
-      <div class="goal-title">
-
-        <span>
+      <div class="row">
+        <h2 style="margin:0;">
           ${escapeHtml(goal.name)}
-        </span>
+        </h2>
 
         <button
-          class="delete"
+          class="danger"
           onclick="deleteGoal(${index})"
-        >✕</button>
-
-      </div>
-
-      <div
-        class="field"
-        style="margin-top:10px;"
-      >
-
-        <label>Goal name</label>
-
-        <input
-          type="text"
-          value="${escapeAttr(goal.name)}"
-          onchange="updateGoalName(${index}, this.value)"
         >
-
-      </div>
-
-      <div class="grid">
-
-        <div class="field">
-
-          <label>Target</label>
-
-          <div class="money">
-            <span>$</span>
-
-            <input
-              type="number"
-              min="0"
-              value="${target || ""}"
-              oninput="updateGoalTarget(${index}, this.value)"
-            >
-          </div>
-
-        </div>
-
-        <div class="field">
-
-          <label>Saved so far</label>
-
-          <div class="money">
-            <span>$</span>
-
-            <input
-              type="number"
-              min="0"
-              value="${saved || ""}"
-              oninput="updateGoalSaved(${index}, this.value)"
-            >
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="progress">
-
-        <div
-          class="progress-bar"
-          style="width:${percentage}%"
-        ></div>
-
+          Delete
+        </button>
       </div>
 
       <div class="small">
-        ${money(saved)} of ${money(target)}
-        — ${Math.round(percentage)}%
+        ${money(goal.current)}
+        of
+        ${money(goal.target)}
       </div>
-    `;
 
-    container.appendChild(div);
-  });
-}
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          style="width:${percentage}%"
+        ></div>
+      </div>
 
-function addGoal() {
+      <div
+        class="small"
+        style="margin-top:8px;"
+      >
+        ${percentage.toFixed(0)}% complete
+      </div>
 
-  goals.push({
-    name: "New goal",
-    target: 0,
-    saved: 0
-  });
+      <hr>
 
-  saveEverything();
-  renderGoals();
-}
-
-function updateGoalName(index, value) {
-
-  goals[index].name =
-    value.trim() || "Goal";
-
-  saveEverything();
-  renderGoals();
-}
-
-function updateGoalTarget(index, value) {
-
-  goals[index].target =
-    Number(value) || 0;
-
-  saveEverything();
-  renderGoals();
-}
-
-function updateGoalSaved(index, value) {
-
-  goals[index].saved =
-    Number(value) || 0;
-
-  saveEverything();
-  renderGoals();
-}
-
-function deleteGoal(index) {
-
-  if (confirm("Delete this financial goal?")) {
-
-    goals.splice(index, 1);
-
-    saveEverything();
-    renderGoals();
-  }
-}
-
-
-/* ============================================================
-   NET WORTH HISTORY
-   ============================================================ */
-
-function renderNetWorthInputs() {
-
-  const container =
-    document.getElementById("netWorthInputs");
-
-  container.innerHTML = "";
-
-  netWorthHistory.sort(
-    (a,b) =>
-      Number(a.year) -
-      Number(b.year)
-  );
-
-  netWorthHistory.forEach((item, index) => {
-
-    const row =
-      document.createElement("div");
-
-    row.className = "year-row";
-
-    row.innerHTML = `
+      <label>
+        Current amount
+      </label>
 
       <input
         type="number"
-        value="${item.year}"
-        onchange="updateNetWorthYear(${index}, this.value)"
-        placeholder="Year"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+        value="${goal.current || ""}"
+        onchange="updateGoal(${index},this.value)"
       >
-
-      <div class="money">
-
-        <span>$</span>
-
-        <input
-          type="number"
-          min="0"
-          step="100"
-          value="${item.value || ""}"
-          oninput="updateNetWorthValue(${index}, this.value)"
-          placeholder="Net worth"
-        >
-
-      </div>
-
-      <button
-        class="delete"
-        onclick="deleteNetWorthYear(${index})"
-      >✕</button>
 
     `;
 
-    container.appendChild(row);
-  });
-}
+    container.appendChild(card);
 
-function addNetWorthYear() {
-
-  const year =
-    new Date().getFullYear();
-
-  let newYear = year;
-
-  if (
-    netWorthHistory.some(
-      x => Number(x.year) === newYear
-    )
-  ) {
-    newYear++;
-  }
-
-  netWorthHistory.push({
-    year: newYear,
-    value: 0
   });
 
-  saveEverything();
-
-  renderNetWorthInputs();
-  drawNetWorthChart();
 }
 
-function updateNetWorthYear(index, value) {
 
-  netWorthHistory[index].year =
-    Number(value) ||
-    new Date().getFullYear();
+function updateGoal(index,value) {
 
-  saveEverything();
-
-  renderNetWorthInputs();
-  drawNetWorthChart();
-}
-
-function updateNetWorthValue(index, value) {
-
-  netWorthHistory[index].value =
+  goals[index].current =
     Number(value) || 0;
 
   saveEverything();
-  drawNetWorthChart();
+
+  renderGoals();
 }
 
-function deleteNetWorthYear(index) {
 
-  netWorthHistory.splice(index, 1);
+function deleteGoal(index) {
+
+  if(!confirm(
+    "Delete this goal?"
+  )) {
+    return;
+  }
+
+  goals.splice(index,1);
 
   saveEverything();
 
-  renderNetWorthInputs();
-  drawNetWorthChart();
+  renderGoals();
 }
 
 
-/* ============================================================
-   NET WORTH BAR GRAPH
-   ============================================================ */
+/* =========================================================
+   NET WORTH
+========================================================= */
+
+function saveNetWorth() {
+
+  const year =
+    Number(
+      document.getElementById("netWorthYear").value
+    );
+
+  const amount =
+    Number(
+      document.getElementById("netWorthAmount").value
+    );
+
+  if(!year) {
+    alert("Please enter a year.");
+    return;
+  }
+
+  const existing =
+    netWorthHistory.find(
+      item => Number(item.year) === year
+    );
+
+  if(existing) {
+    existing.amount = amount || 0;
+  } else {
+    netWorthHistory.push({
+      year:year,
+      amount:amount || 0
+    });
+  }
+
+  netWorthHistory.sort(
+    (a,b) => Number(a.year) - Number(b.year)
+  );
+
+  saveEverything();
+
+  document.getElementById("netWorthAmount").value = "";
+
+  drawNetWorthChart();
+}
+
 
 function drawNetWorthChart() {
 
   const canvas =
     document.getElementById("netWorthChart");
 
-  if (!canvas) return;
+  if(!canvas) return;
 
   const ctx =
     canvas.getContext("2d");
+
+  canvas.width = 700;
+  canvas.height = 350;
 
   ctx.clearRect(
     0,
@@ -1777,280 +1627,129 @@ function drawNetWorthChart() {
     canvas.height
   );
 
-  const data =
-    [...netWorthHistory]
-      .sort(
-        (a,b) =>
-          Number(a.year) -
-          Number(b.year)
-      );
-
-  const width =
-    canvas.width;
-
-  const height =
-    canvas.height;
-
-  const padding = {
-    left: 65,
-    right: 25,
-    top: 30,
-    bottom: 60
-  };
-
-  const graphWidth =
-    width -
-    padding.left -
-    padding.right;
-
-  const graphHeight =
-    height -
-    padding.top -
-    padding.bottom;
-
-  if (data.length === 0) {
-
-    ctx.fillStyle = "#806b8d";
-    ctx.textAlign = "center";
-    ctx.font = "600 17px DM Sans";
-
-    ctx.fillText(
-      "Add your yearly net worth",
-      width / 2,
-      height / 2
-    );
-
+  if(netWorthHistory.length === 0) {
     return;
   }
 
-  const maxValue =
+  const padding = 55;
+
+  const width =
+    canvas.width - padding * 2;
+
+  const height =
+    canvas.height - padding * 2;
+
+  const max =
     Math.max(
-      ...data.map(
-        x => Number(x.value) || 0
+      ...netWorthHistory.map(
+        item => Number(item.amount) || 0
       ),
       1
     );
 
-  /* Axes */
-
-  ctx.strokeStyle = "#eadbea";
-  ctx.lineWidth = 2;
+  const min = 0;
 
   ctx.beginPath();
 
-  ctx.moveTo(
-    padding.left,
-    padding.top
-  );
-
-  ctx.lineTo(
-    padding.left,
-    height - padding.bottom
-  );
-
-  ctx.lineTo(
-    width - padding.right,
-    height - padding.bottom
-  );
-
-  ctx.stroke();
-
-  /* Horizontal guide lines */
-
-  for (let i = 0; i <= 4; i++) {
-
-    const y =
-      padding.top +
-      graphHeight -
-      (graphHeight * i / 4);
-
-    ctx.strokeStyle = "#f1e8f2";
-    ctx.lineWidth = 1;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      padding.left,
-      y
-    );
-
-    ctx.lineTo(
-      width - padding.right,
-      y
-    );
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#806b8d";
-    ctx.font = "11px DM Sans";
-    ctx.textAlign = "right";
-
-    ctx.fillText(
-      moneyShort(
-        maxValue * i / 4
-      ),
-      padding.left - 8,
-      y + 4
-    );
-  }
-
-  const barSpace =
-    graphWidth / data.length;
-
-  const barWidth =
-    Math.min(
-      70,
-      barSpace * .55
-    );
-
-  data.forEach((item, index) => {
-
-    const value =
-      Number(item.value) || 0;
-
-    const barHeight =
-      (value / maxValue) *
-      graphHeight;
+  netWorthHistory.forEach((item,index) => {
 
     const x =
-      padding.left +
-      barSpace * index +
-      (barSpace - barWidth) / 2;
+      padding +
+      (
+        index /
+        Math.max(netWorthHistory.length - 1,1)
+      ) *
+      width;
 
     const y =
-      height -
-      padding.bottom -
-      barHeight;
+      canvas.height -
+      padding -
+      (
+        (
+          Number(item.amount) - min
+        ) /
+        (max - min)
+      ) *
+      height;
 
-    ctx.fillStyle =
-      index % 2 === 0
-        ? "#ff6f91"
-        : "#9b5de5";
+    if(index === 0) {
+      ctx.moveTo(x,y);
+    } else {
+      ctx.lineTo(x,y);
+    }
+
+  });
+
+  ctx.strokeStyle = "#ff5fa2";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  netWorthHistory.forEach((item,index) => {
+
+    const x =
+      padding +
+      (
+        index /
+        Math.max(netWorthHistory.length - 1,1)
+      ) *
+      width;
+
+    const y =
+      canvas.height -
+      padding -
+      (
+        (
+          Number(item.amount) - min
+        ) /
+        (max - min)
+      ) *
+      height;
 
     ctx.beginPath();
 
-    roundRect(
-      ctx,
+    ctx.arc(
       x,
       y,
-      barWidth,
-      barHeight,
-      10
+      6,
+      0,
+      Math.PI * 2
     );
+
+    ctx.fillStyle = "#7b61ff";
 
     ctx.fill();
 
-    ctx.fillStyle = "#39234d";
+    ctx.fillStyle = "#29242f";
+
+    ctx.font =
+      "12px DM Sans";
+
     ctx.textAlign = "center";
-    ctx.font = "700 11px DM Sans";
-
-    ctx.fillText(
-      moneyShort(value),
-      x + barWidth / 2,
-      Math.max(y - 8, 15)
-    );
-
-    ctx.fillStyle = "#806b8d";
-    ctx.font = "600 12px DM Sans";
 
     ctx.fillText(
       item.year,
-      x + barWidth / 2,
-      height - padding.bottom + 24
+      x,
+      canvas.height - 25
     );
+
   });
+
 }
 
 
-/* ============================================================
-   INVESTMENT HISTORY + CUSTOM GOAL
-   ============================================================ */
-
-function renderInvestmentInputs() {
-
-  const container =
-    document.getElementById("investmentInputs");
-
-  container.innerHTML = "";
-
-  investmentHistory.sort(
-    (a,b) =>
-      Number(a.year) -
-      Number(b.year)
-  );
-
-  investmentHistory.forEach((item, index) => {
-
-    const row =
-      document.createElement("div");
-
-    row.className = "investment-row";
-
-    row.innerHTML = `
-
-      <input
-        type="number"
-        value="${item.year}"
-        onchange="updateInvestmentYear(${index}, this.value)"
-        placeholder="Year"
-      >
-
-      <div class="money">
-
-        <span>$</span>
-
-        <input
-          type="number"
-          min="0"
-          step="100"
-          value="${item.actual || ""}"
-          oninput="updateInvestmentActual(${index}, this.value)"
-          placeholder="Actual"
-        >
-
-      </div>
-
-      <div
-        style="
-          padding:9px 6px;
-          text-align:center;
-          font-weight:700;
-          color:#9b5de5;
-          font-size:13px;
-        "
-      >
-        ${moneyShort(
-          getInvestmentGoal(item.year)
-        )}
-      </div>
-
-      <button
-        class="delete"
-        onclick="deleteInvestmentYear(${index})"
-      >✕</button>
-
-    `;
-
-    container.appendChild(row);
-  });
-}
-
-
-/*
-  The investment goal is automatically spread evenly
-  between the custom starting amount/year
-  and the custom goal amount/year.
-*/
+/* =========================================================
+   INVESTMENT GOAL
+========================================================= */
 
 function getInvestmentGoal(year) {
 
   year = Number(year);
 
-  if (year <= investmentStartYear) {
+  if(year <= investmentStartYear) {
     return investmentStartAmount;
   }
 
-  if (year >= investmentEndYear) {
+  if(year >= investmentEndYear) {
     return investmentFinalGoal;
   }
 
@@ -2068,11 +1767,7 @@ function getInvestmentGoal(year) {
 }
 
 
-/* ============================================================
-   INVESTMENT SETTINGS
-   ============================================================ */
-
-function renderInvestmentSettings() {
+function setupInvestmentSettings() {
 
   document.getElementById(
     "investmentStartYear"
@@ -2098,168 +1793,57 @@ function renderInvestmentSettings() {
 
 function saveInvestmentSettings() {
 
-  const newStartYear =
+  investmentStartYear =
     Number(
       document.getElementById(
         "investmentStartYear"
       ).value
-    );
+    ) || 2025;
 
-  const newStartAmount =
+  investmentStartAmount =
     Number(
       document.getElementById(
         "investmentStartAmount"
       ).value
-    );
+    ) || 0;
 
-  const newEndYear =
+  investmentEndYear =
     Number(
       document.getElementById(
         "investmentEndYear"
       ).value
-    );
+    ) || 2042;
 
-  const newFinalGoal =
+  investmentFinalGoal =
     Number(
       document.getElementById(
         "investmentFinalGoal"
       ).value
-    );
-
-  if (!newStartYear || !newEndYear) {
-
-    alert(
-      "Please enter a starting year and goal year."
-    );
-
-    return;
-  }
-
-  if (newEndYear <= newStartYear) {
-
-    alert(
-      "The goal year must be after the starting year."
-    );
-
-    return;
-  }
-
-  if (
-    newStartAmount < 0 ||
-    newFinalGoal < 0
-  ) {
-
-    alert(
-      "Investment amounts cannot be negative."
-    );
-
-    return;
-  }
-
-  investmentStartYear =
-    newStartYear;
-
-  investmentStartAmount =
-    newStartAmount;
-
-  investmentEndYear =
-    newEndYear;
-
-  investmentFinalGoal =
-    newFinalGoal;
+    ) || 0;
 
   saveEverything();
-
-  renderInvestmentSettings();
-  renderInvestmentInputs();
-  drawInvestmentChart();
 
   document.getElementById(
     "investmentSettingsMessage"
   ).textContent =
-    "✓ Investment goal settings saved!";
-}
-
-
-/* ============================================================
-   INVESTMENT HISTORY
-   ============================================================ */
-
-function addInvestmentYear() {
-
-  const year =
-    new Date().getFullYear();
-
-  let newYear = year;
-
-  if (
-    investmentHistory.some(
-      x => Number(x.year) === newYear
-    )
-  ) {
-    newYear++;
-  }
-
-  investmentHistory.push({
-    year: newYear,
-    actual: 0
-  });
-
-  saveEverything();
-
-  renderInvestmentInputs();
-  drawInvestmentChart();
-}
-
-
-function updateInvestmentYear(index, value) {
-
-  investmentHistory[index].year =
-    Number(value) ||
-    new Date().getFullYear();
-
-  saveEverything();
-
-  renderInvestmentInputs();
-  drawInvestmentChart();
-}
-
-
-function updateInvestmentActual(index, value) {
-
-  investmentHistory[index].actual =
-    Number(value) || 0;
-
-  saveEverything();
+    "✓ Investment goal saved.";
 
   drawInvestmentChart();
 }
 
-
-function deleteInvestmentYear(index) {
-
-  investmentHistory.splice(index, 1);
-
-  saveEverything();
-
-  renderInvestmentInputs();
-  drawInvestmentChart();
-}
-
-
-/* ============================================================
-   INVESTMENT TWO-LINE GRAPH
-   ============================================================ */
 
 function drawInvestmentChart() {
 
   const canvas =
     document.getElementById("investmentChart");
 
-  if (!canvas) return;
+  if(!canvas) return;
 
   const ctx =
     canvas.getContext("2d");
+
+  canvas.width = 700;
+  canvas.height = 400;
 
   ctx.clearRect(
     0,
@@ -2268,7 +1852,17 @@ function drawInvestmentChart() {
     canvas.height
   );
 
-  const data =
+  const years = [];
+
+  for(
+    let year = investmentStartYear;
+    year <= investmentEndYear;
+    year++
+  ) {
+    years.push(year);
+  }
+
+  const actualHistory =
     [...investmentHistory]
       .sort(
         (a,b) =>
@@ -2276,569 +1870,646 @@ function drawInvestmentChart() {
           Number(b.year)
       );
 
-  const width =
-    canvas.width;
+  const allYears =
+    Array.from(
+      new Set(
+        years.concat(
+          actualHistory.map(
+            item => Number(item.year)
+          )
+        )
+      )
+    ).sort((a,b) => a-b);
 
-  const height =
-    canvas.height;
+  if(allYears.length === 0) {
+    return;
+  }
 
-  const padding = {
-    left: 65,
-    right: 25,
-    top: 35,
-    bottom: 65
-  };
+  const values = allYears.map(
+    year => getInvestmentGoal(year)
+  );
 
-  const graphWidth =
-    width -
-    padding.left -
-    padding.right;
-
-  const graphHeight =
-    height -
-    padding.top -
-    padding.bottom;
-
-  /*
-    The goal line runs from the custom
-    starting year/amount to the custom
-    goal year/amount.
-  */
-
-  const allActualValues =
-    data.map(
-      x => Number(x.actual) || 0
+  const actualValues =
+    actualHistory.map(
+      item => Number(item.amount) || 0
     );
 
-  const maxValue =
+  const max =
     Math.max(
-      investmentStartAmount,
       investmentFinalGoal,
-      ...allActualValues,
+      ...actualValues,
       1
     );
 
-  /* Grid */
+  const padding = 55;
 
-  for (let i = 0; i <= 4; i++) {
+  const width =
+    canvas.width - padding * 2;
 
-    const y =
-      padding.top +
-      graphHeight -
-      (graphHeight * i / 4);
+  const height =
+    canvas.height - padding * 2;
 
-    ctx.strokeStyle = "#f1e8f2";
-    ctx.lineWidth = 1;
+  function xFor(index) {
 
-    ctx.beginPath();
-
-    ctx.moveTo(
-      padding.left,
-      y
+    return (
+      padding +
+      (
+        index /
+        Math.max(allYears.length - 1,1)
+      ) *
+      width
     );
 
-    ctx.lineTo(
-      width - padding.right,
-      y
-    );
-
-    ctx.stroke();
-
-    ctx.fillStyle = "#806b8d";
-    ctx.font = "11px DM Sans";
-    ctx.textAlign = "right";
-
-    ctx.fillText(
-      moneyShort(
-        maxValue * i / 4
-      ),
-      padding.left - 8,
-      y + 4
-    );
   }
 
-  /* Axes */
+  function yFor(value) {
 
-  ctx.strokeStyle = "#eadbea";
-  ctx.lineWidth = 2;
+    return (
+      canvas.height -
+      padding -
+      (
+        value / max
+      ) *
+      height
+    );
+
+  }
+
+
+  /* Goal line */
 
   ctx.beginPath();
 
-  ctx.moveTo(
-    padding.left,
-    padding.top
-  );
+  values.forEach((value,index) => {
 
-  ctx.lineTo(
-    padding.left,
-    height - padding.bottom
-  );
+    const x =
+      xFor(index);
 
-  ctx.lineTo(
-    width - padding.right,
-    height - padding.bottom
-  );
+    const y =
+      yFor(value);
 
+    if(index === 0) {
+      ctx.moveTo(x,y);
+    } else {
+      ctx.lineTo(x,y);
+    }
+
+  });
+
+  ctx.strokeStyle = "#7b61ff";
+  ctx.lineWidth = 4;
   ctx.stroke();
+
+
+  /* Actual investment line */
+
+  if(actualHistory.length > 0) {
+
+    ctx.beginPath();
+
+    actualHistory.forEach(
+      (item,index) => {
+
+        const year =
+          Number(item.year);
+
+        const yearIndex =
+          allYears.indexOf(year);
+
+        const x =
+          xFor(yearIndex);
+
+        const y =
+          yFor(
+            Number(item.amount) || 0
+          );
+
+        if(index === 0) {
+          ctx.moveTo(x,y);
+        } else {
+          ctx.lineTo(x,y);
+        }
+
+      }
+    );
+
+    ctx.strokeStyle = "#ff5fa2";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+  }
 
 
   /* Legend */
 
-  ctx.font = "700 12px DM Sans";
-  ctx.textAlign = "left";
+  ctx.font =
+    "14px DM Sans";
 
-  ctx.fillStyle = "#ff6f91";
-
-  ctx.fillRect(
-    90,
-    8,
-    12,
-    12
-  );
-
-  ctx.fillStyle = "#39234d";
+  ctx.fillStyle =
+    "#7b61ff";
 
   ctx.fillText(
-    "Actual investments",
-    108,
-    19
+    "Goal",
+    padding,
+    25
   );
 
-  ctx.fillStyle = "#9b5de5";
-
-  ctx.fillRect(
-    285,
-    8,
-    12,
-    12
-  );
-
-  ctx.fillStyle = "#39234d";
+  ctx.fillStyle =
+    "#ff5fa2";
 
   ctx.fillText(
-    "Goal amount",
-    303,
-    19
+    "Actual",
+    padding + 70,
+    25
   );
 
-
-  /*
-    Build actual investment points.
-
-    These use the years the user has entered.
-  */
-
-  const pointsActual = [];
-
-  data.forEach(item => {
-
-    const year =
-      Number(item.year);
-
-    const yearRange =
-      investmentEndYear -
-      investmentStartYear;
-
-    let x;
-
-    if (yearRange <= 0) {
-
-      x = padding.left;
-
-    } else {
-
-      x =
-        padding.left +
-        (
-          (year - investmentStartYear) /
-          yearRange
-        ) *
-        graphWidth;
-    }
-
-    const actual =
-      Number(item.actual) || 0;
-
-    const y =
-      padding.top +
-      graphHeight -
-      (actual / maxValue) *
-      graphHeight;
-
-    pointsActual.push({
-      x,
-      y,
-      value: actual,
-      year
-    });
-  });
+}
 
 
-  /*
-    Build the goal line.
+/* =========================================================
+   BACKUP
+========================================================= */
 
-    It contains every year from the custom
-    starting year through the custom goal year.
-  */
+/*
+  The backup system saves every localStorage item
+  belonging to this app (keys beginning with "zara").
 
-  const pointsGoal = [];
+  That means if we add more app settings in future,
+  they will automatically be included in backups.
+*/
 
-  for (
-    let year = investmentStartYear;
-    year <= investmentEndYear;
-    year++
+function createBackupData() {
+
+  const savedData = {};
+
+  for(
+    let i = 0;
+    i < localStorage.length;
+    i++
   ) {
 
-    const goal =
-      getInvestmentGoal(year);
+    const key =
+      localStorage.key(i);
 
-    const yearRange =
-      investmentEndYear -
-      investmentStartYear;
-
-    let x;
-
-    if (yearRange <= 0) {
-
-      x = padding.left;
-
-    } else {
-
-      x =
-        padding.left +
-        (
-          (year - investmentStartYear) /
-          yearRange
-        ) *
-        graphWidth;
-    }
-
-    const y =
-      padding.top +
-      graphHeight -
-      (goal / maxValue) *
-      graphHeight;
-
-    pointsGoal.push({
-      x,
-      y,
-      value: goal,
-      year
-    });
-  }
-
-
-  /*
-    Year labels
-  */
-
-  for (
-    let year = investmentStartYear;
-    year <= investmentEndYear;
-    year++
-  ) {
-
-    const yearRange =
-      investmentEndYear -
-      investmentStartYear;
-
-    let x;
-
-    if (yearRange <= 0) {
-
-      x = padding.left;
-
-    } else {
-
-      x =
-        padding.left +
-        (
-          (year - investmentStartYear) /
-          yearRange
-        ) *
-        graphWidth;
-    }
-
-    ctx.fillStyle = "#806b8d";
-    ctx.textAlign = "center";
-    ctx.font = "600 11px DM Sans";
-
-    /*
-      Show every second year to keep
-      the mobile graph readable.
-    */
-
-    if (
-      year % 2 === 1 ||
-      year === investmentEndYear ||
-      year === investmentStartYear
+    if(
+      key &&
+      key.startsWith("zara")
     ) {
 
-      ctx.fillText(
-        year,
-        x,
-        height - padding.bottom + 25
-      );
+      savedData[key] =
+        localStorage.getItem(key);
+
     }
+
   }
 
+  return {
 
-  /* Draw actual investment line */
+    app:
+      "Zara's Zero Based Budget",
 
-  drawLine(
-    ctx,
-    pointsActual,
-    "#ff6f91"
-  );
+    backupVersion:
+      1,
 
+    backedUpAt:
+      new Date().toISOString(),
 
-  /* Draw goal line */
+    localStorage:
+      savedData
 
-  drawLine(
-    ctx,
-    pointsGoal,
-    "#9b5de5"
-  );
+  };
 
-
-  /* Actual investment dots + values */
-
-  pointsActual.forEach(point => {
-
-    ctx.fillStyle = "#ff6f91";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      point.x,
-      point.y,
-      5,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle = "#39234d";
-    ctx.font = "700 10px DM Sans";
-    ctx.textAlign = "center";
-
-    ctx.fillText(
-      moneyShort(point.value),
-      point.x,
-      point.y - 10
-    );
-  });
-
-
-  /* Goal endpoint */
-
-  if (pointsGoal.length > 0) {
-
-    const finalGoal =
-      pointsGoal[pointsGoal.length - 1];
-
-    ctx.fillStyle = "#9b5de5";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      finalGoal.x,
-      finalGoal.y,
-      6,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle = "#39234d";
-    ctx.font = "700 11px DM Sans";
-    ctx.textAlign = "right";
-
-    ctx.fillText(
-      moneyShort(investmentFinalGoal),
-      finalGoal.x - 8,
-      finalGoal.y - 12
-    );
-  }
 }
 
 
-function drawLine(ctx, points, color) {
+async function backupData() {
 
-  if (points.length === 0) return;
+  /*
+    Make absolutely sure the latest values currently
+    displayed in the app have been written to storage
+    before creating the backup.
+  */
 
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 4;
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
+  saveEverything();
 
-  ctx.beginPath();
+  const backup =
+    createBackupData();
 
-  points.forEach((point, index) => {
+  const json =
+    JSON.stringify(
+      backup,
+      null,
+      2
+    );
 
-    if (index === 0) {
+  const now =
+    new Date();
 
-      ctx.moveTo(
-        point.x,
-        point.y
+  const year =
+    now.getFullYear();
+
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(2,"0");
+
+  const day =
+    String(
+      now.getDate()
+    ).padStart(2,"0");
+
+  const filename =
+    `zara-budget-backup-${year}-${month}-${day}.json`;
+
+  const message =
+    document.getElementById(
+      "backupMessage"
+    );
+
+
+  /*
+    iPhone/iPad:
+    Try the native Share sheet first.
+
+    This gives you the option of sending the backup
+    directly to OneDrive if OneDrive is available
+    in the Share sheet.
+  */
+
+  try {
+
+    const file =
+      new File(
+        [json],
+        filename,
+        {
+          type:"application/json"
+        }
       );
 
-    } else {
+    if(
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({
+        files:[file]
+      })
+    ) {
 
-      ctx.lineTo(
-        point.x,
-        point.y
-      );
+      await navigator.share({
+
+        files:[file],
+
+        title:
+          "Zara's Budget Backup",
+
+        text:
+          "Save this backup file to OneDrive or another safe location."
+
+      });
+
+      message.textContent =
+        "✓ Backup ready. Save the file somewhere safe.";
+
+      return;
+
     }
-  });
 
-  ctx.stroke();
+  } catch(error) {
+
+    /*
+      If the user simply closes the Share sheet,
+      don't treat it as an app error.
+    */
+
+    if(
+      error &&
+      error.name === "AbortError"
+    ) {
+
+      message.textContent =
+        "Backup cancelled. Your budget data was not changed.";
+
+      return;
+
+    }
+
+  }
+
+
+  /*
+    Fallback for browsers that don't support
+    file sharing.
+  */
+
+  try {
+
+    const blob =
+      new Blob(
+        [json],
+        {
+          type:"application/json"
+        }
+      );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+      filename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(
+      () => URL.revokeObjectURL(url),
+      1000
+    );
+
+    message.textContent =
+      "✓ Backup file created. Save it to OneDrive or Files.";
+
+  } catch(error) {
+
+    message.textContent =
+      "⚠️ Sorry, the backup could not be created.";
+
+  }
+
 }
 
 
-/* ============================================================
+/* =========================================================
+   RESTORE
+========================================================= */
+
+function restoreData(input) {
+
+  const file =
+    input.files &&
+    input.files[0];
+
+  if(!file) {
+    return;
+  }
+
+  const message =
+    document.getElementById(
+      "restoreMessage"
+    );
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload = function(event) {
+
+    try {
+
+      const backup =
+        JSON.parse(
+          event.target.result
+        );
+
+
+      /*
+        Basic safety checks so a random JSON file
+        isn't accidentally treated as a backup.
+      */
+
+      if(
+        !backup ||
+        backup.app !==
+          "Zara's Zero Based Budget" ||
+        !backup.localStorage ||
+        typeof backup.localStorage !== "object"
+      ) {
+
+        throw new Error(
+          "Invalid backup"
+        );
+
+      }
+
+
+      const keys =
+        Object.keys(
+          backup.localStorage
+        );
+
+
+      /*
+        Make sure there is at least one of the
+        app's expected data keys.
+      */
+
+      const looksLikeBudgetBackup =
+        keys.includes("zaraExpenses") ||
+        keys.includes("zaraBuckets") ||
+        keys.includes("zaraIncome") ||
+        keys.includes("zaraGoals") ||
+        keys.includes("zaraNetWorthHistory") ||
+        keys.includes("zaraInvestmentHistory");
+
+
+      if(!looksLikeBudgetBackup) {
+
+        throw new Error(
+          "Invalid backup"
+        );
+
+      }
+
+
+      const confirmed =
+        confirm(
+          "Restore this backup?\n\n" +
+          "This will replace the budget data currently " +
+          "stored in this app with the data from the backup file."
+        );
+
+
+      if(!confirmed) {
+
+        input.value = "";
+
+        message.textContent =
+          "Restore cancelled.";
+
+        return;
+
+      }
+
+
+      /*
+        Remove the current app data.
+      */
+
+      const keysToRemove = [];
+
+      for(
+        let i = 0;
+        i < localStorage.length;
+        i++
+      ) {
+
+        const key =
+          localStorage.key(i);
+
+        if(
+          key &&
+          key.startsWith("zara")
+        ) {
+
+          keysToRemove.push(key);
+
+        }
+
+      }
+
+      keysToRemove.forEach(
+        key =>
+          localStorage.removeItem(key)
+      );
+
+
+      /*
+        Restore the backup data.
+      */
+
+      keys.forEach(key => {
+
+        /*
+          Only restore keys belonging to
+          this app.
+        */
+
+        if(
+          key.startsWith("zara")
+        ) {
+
+          const value =
+            backup.localStorage[key];
+
+          /*
+            localStorage stores strings.
+          */
+
+          localStorage.setItem(
+            key,
+            String(value)
+          );
+
+        }
+
+      });
+
+
+      message.textContent =
+        "✓ Backup restored successfully. Reloading your budget...";
+
+
+      /*
+        Reload the page so all of the app's
+        variables are freshly loaded from
+        the restored localStorage data.
+      */
+
+      setTimeout(
+        () => location.reload(),
+        500
+      );
+
+
+    } catch(error) {
+
+      message.textContent =
+        "⚠️ That file doesn't look like a valid Zara budget backup.";
+
+      input.value = "";
+
+    }
+
+  };
+
+
+  reader.onerror = function() {
+
+    message.textContent =
+      "⚠️ The backup file could not be read.";
+
+    input.value = "";
+
+  };
+
+
+  reader.readAsText(file);
+
+}
+
+
+/* =========================================================
    HELPERS
-   ============================================================ */
+========================================================= */
 
 function money(value) {
 
-  return "$" +
-    Number(value || 0).toLocaleString(
-      "en-NZ",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
+  return new Intl.NumberFormat(
+    "en-NZ",
+    {
+      style:"currency",
+      currency:"NZD",
+      maximumFractionDigits:2
+    }
+  ).format(
+    Number(value) || 0
+  );
+
 }
 
-function moneyShort(value) {
-
-  value =
-    Number(value) || 0;
-
-  if (value >= 1000000) {
-
-    return "$" +
-      (value / 1000000).toFixed(1) +
-      "m";
-  }
-
-  if (value >= 1000) {
-
-    return "$" +
-      (value / 1000).toFixed(0) +
-      "k";
-  }
-
-  return "$" +
-    Math.round(value);
-}
 
 function escapeHtml(value) {
 
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
-function escapeAttr(value) {
-
-  return escapeHtml(value);
-}
-
-function roundRect(
-  ctx,
-  x,
-  y,
-  width,
-  height,
-  radius
-) {
-
-  radius =
-    Math.min(
-      radius,
-      width / 2,
-      height / 2
-    );
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    x + radius,
-    y
-  );
-
-  ctx.arcTo(
-    x + width,
-    y,
-    x + width,
-    y + height,
-    radius
-  );
-
-  ctx.arcTo(
-    x + width,
-    y + height,
-    x,
-    y + height,
-    radius
-  );
-
-  ctx.arcTo(
-    x,
-    y + height,
-    x,
-    y,
-    radius
-  );
-
-  ctx.arcTo(
-    x,
-    y,
-    x + width,
-    y,
-    radius
-  );
-
-  ctx.closePath();
 }
 
 
-/* ============================================================
+/* =========================================================
    INITIALISE
-   ============================================================ */
+========================================================= */
 
-function initialise() {
+setupIncome();
 
-  setupIncome();
+renderExpenses();
 
-  renderExpenses();
-  renderBuckets();
+renderBuckets();
 
-  renderCustomExpenses();
-  renderCustomBuckets();
+renderCustomExpenses();
 
-  renderGoals();
+renderCustomBuckets();
 
-  renderInvestmentSettings();
+renderGoals();
 
-  renderNetWorthInputs();
-  renderInvestmentInputs();
+setupInvestmentSettings();
 
-  updateTotals();
+updateTotals();
 
-  drawNetWorthChart();
-  drawInvestmentChart();
-}
+drawNetWorthChart();
 
-initialise();
+drawInvestmentChart();
 
 </script>
 
