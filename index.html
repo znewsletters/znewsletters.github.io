@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f48fb1">
+<title>Groovy Budget</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@400;500;600&display=swap');
+
+:root {
+  --pink: #f48fb1;
+  --hot-pink: #e85d9e;
+  --orange: #ff9f43;
+  --purple: #9b72cf;
+  --dark-purple: #54346b;
+  --cream: #fff8ef;
+  --white: #ffffff;
+  --text: #3f2949;
+  --green: #68b984;
+  --border: #ead7e7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, #ffd6e7 0 8%, transparent 9%),
+    radial-gradient(circle at 90% 20%, #ffd2a8 0 7%, transparent 8%),
+    linear-gradient(135deg, #fff5fa, #fff7ed);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  padding: 28px 20px 15px;
+  text-align: center;
+}
+
+.logo {
+  font-family: Fredoka, sans-serif;
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--dark-purple);
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: #896c91;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 0 15px 40px;
+}
+
+.card {
+  background: rgba(255,255,255,.9);
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 8px 25px rgba(100,50,100,.08);
+}
+
+.card h2 {
+  font-family: Fredoka, sans-serif;
+  margin: 0 0 15px;
+  color: var(--dark-purple);
+  font-size: 23px;
+}
+
+.chart-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0 15px;
+}
+
+canvas {
+  max-width: 290px;
+  max-height: 290px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.summary-box {
+  border-radius: 18px;
+  padding: 14px;
+  background: #fff3f8;
+  text-align: center;
+}
+
+.summary-box:nth-child(2) {
+  background: #fff2df;
+}
+
+.summary-box:nth-child(3) {
+  background: #f3ebfb;
+}
+
+.summary-box:nth-child(4) {
+  background: #eaf7ef;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #866c8c;
+}
+
+.summary-value {
+  font-family: Fredoka, sans-serif;
+  font-size: 21px;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed #eadce8;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row label {
+  flex: 1;
+}
+
+input {
+  width: 120px;
+  padding: 10px 11px;
+  border-radius: 12px;
+  border: 2px solid #ead7e7;
+  background: #fffafd;
+  font-size: 16px;
+  color: var(--text);
+  text-align: right;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--pink);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 15px;
+  background: linear-gradient(90deg, #ffe3ef, #fff0dc);
+  font-family: Fredoka, sans-serif;
+  font-size: 19px;
+}
+
+.zero {
+  margin-top: 12px;
+  text-align: center;
+  padding: 13px;
+  border-radius: 15px;
+  font-weight: 600;
+}
+
+.zero.good {
+  background: #e6f6ec;
+  color: #36774e;
+}
+
+.zero.bad {
+  background: #ffe4e4;
+  color: #a83c3c;
+}
+
+.goal {
+  background: #fff8fc;
+  border: 1px solid #ecdbea;
+  border-radius: 17px;
+  padding: 14px;
+  margin: 10px 0;
+}
+
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.goal-name {
+  font-weight: 600;
+}
+
+.goal-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.goal-inputs input {
+  width: 100%;
+}
+
+.progress {
+  height: 12px;
+  background: #eee1ec;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--orange), var(--purple));
+  border-radius: 20px;
+}
+
+button {
+  border: none;
+  border-radius: 15px;
+  padding: 12px 17px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--purple);
+  color: white;
+  margin-top: 8px;
+}
+
+button.secondary {
+  background: var(--orange);
+}
+
+button.delete {
+  background: #f0dce9;
+  color: #704866;
+  padding: 8px 12px;
+}
+
+.footer {
+  text-align: center;
+  color: #967d98;
+  font-size: 12px;
+  margin-top: 25px;
+}
+
+@media(max-width:480px) {
+  .logo {
+    font-size: 30px;
+  }
+
+  .row {
+    align-items: center;
+  }
+
+  input {
+    width: 105px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🌸 Groovy Budget</div>
+  <div class="subtitle">Your fortnightly money map ✨</div>
+</header>
+
+<div class="container">
+
+  <section class="card">
+    <h2>💫 Your Budget</h2>
+
+    <div class="chart-wrap">
+      <canvas id="budgetChart" width="290" height="290"></canvas>
+    </div>
+
+    <div class="summary">
+      <div class="summary-box">
+        <div class="summary-label">Total Income</div>
+        <div class="summary-value" id="summaryIncome">$0</div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">Daily Expenses</div>
+        <div class="summary-value" id="summaryExpenses">$0</div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">Buckets</div>
+        <div class="summary-value" id="summaryBuckets">$0</div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">Unallocated</div>
+        <div class="summary-value" id="summaryLeft">$0</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>💰 Income</h2>
+
+    <div class="row">
+      <label>Salary</label>
+      <input type="number" id="salary" placeholder="0" step="0.01">
+    </div>
+
+    <div class="row">
+      <label>Rental income</label>
+      <input type="number" id="rental" placeholder="0" step="0.01">
+    </div>
+
+    <div class="row">
+      <label>Other income</label>
+      <input type="number" id="otherIncome" placeholder="0" step="0.01">
+    </div>
+
+    <div class="total">
+      <span>Total income</span>
+      <span id="incomeTotal">$0.00</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🧾 Daily Expenses</h2>
+    <div id="expenses"></div>
+
+    <div class="total">
+      <span>Total expenses</span>
+      <span id="expenseTotal">$0.00</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🪣 Buckets</h2>
+
+    <div class="row">
+      <label>🛟 Life Raft</label>
+      <input type="number" class="bucket" data-name="Life Raft" placeholder="0" step="0.01">
+    </div>
+
+    <div class="row">
+      <label>📈 Investments</label>
+      <input type="number" class="bucket" data-name="Investments" placeholder="0" step="0.01">
+    </div>
+
+    <div class="row">
+      <label>💅 Treat Yourself</label>
+      <input type="number" class="bucket" data-name="Treat Yourself" placeholder="0" step="0.01">
+    </div>
+
+    <div class="row">
+      <label>✈️ Holidays</label>
+      <input type="number" class="bucket" data-name="Holidays" placeholder="0" step="0.01">
+    </div>
+
+    <div class="total">
+      <span>Total buckets</span>
+      <span id="bucketTotal">$0.00</span>
+    </div>
+
+    <div id="zeroStatus" class="zero good">
+      ✨ Your budget is perfectly balanced!
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🎯 Financial Goals</h2>
+
+    <div id="goals"></div>
+
+    <button onclick="addGoal()">＋ Add a goal</button>
+  </section>
+
+  <div class="footer">
+    Your budget data is saved on this device 💗
+  </div>
+
+</div>
+
+<script>
+
+const expenseNames = [
+  "Mortgage",
+  "Rates",
+  "Power",
+  "Phone bill",
+  "Contents insurance",
+  "Car insurance",
+  "Health insurance",
+  "Spotify",
+  "Gas",
+  "Food",
+  "Pets",
+  "Car",
+  "Health & beauty",
+  "Gifts",
+  "House maintenance"
+];
+
+const expensesContainer = document.getElementById("expenses");
+
+expenseNames.forEach((name, i) => {
+  const row = document.createElement("div");
+  row.className = "row";
+
+  row.innerHTML = `
+    <label>${name}</label>
+    <input type="number"
+           class="expense"
+           data-index="${i}"
+           placeholder="0"
+           step="0.01">
+  `;
+
+  expensesContainer.appendChild(row);
+});
+
+const allInputs = document.querySelectorAll("input");
+
+allInputs.forEach(input => {
+  input.addEventListener("input", () => {
+    saveData();
+    calculate();
+  });
+});
+
+function money(value) {
+  return "$" + Number(value || 0).toLocaleString("en-NZ", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function getValue(id) {
+  return Number(document.getElementById(id)?.value || 0);
+}
+
+function calculate() {
+
+  const income =
+    getValue("salary") +
+    getValue("rental") +
+    getValue("otherIncome");
+
+  let expenses = 0;
+
+  document.querySelectorAll(".expense").forEach(input => {
+    expenses += Number(input.value || 0);
+  });
+
+  let buckets = 0;
+
+  document.querySelectorAll(".bucket").forEach(input => {
+    buckets += Number(input.value || 0);
+  });
+
+  const remaining = income - expenses - buckets;
+
+  document.getElementById("incomeTotal").textContent = money(income);
+  document.getElementById("expenseTotal").textContent = money(expenses);
+  document.getElementById("bucketTotal").textContent = money(buckets);
+
+  document.getElementById("summaryIncome").textContent = money(income);
+  document.getElementById("summaryExpenses").textContent = money(expenses);
+  document.getElementById("summaryBuckets").textContent = money(buckets);
+  document.getElementById("summaryLeft").textContent = money(remaining);
+
+  const status = document.getElementById("zeroStatus");
+
+  if (Math.abs(remaining) < 0.01) {
+    status.className = "zero good";
+    status.textContent = "✨ Your budget is perfectly balanced!";
+  } else if (remaining > 0) {
+    status.className = "zero good";
+    status.textContent =
+      "💸 You still have " + money(remaining) + " to allocate.";
+  } else {
+    status.className = "zero bad";
+    status.textContent =
+      "⚠️ You're over budget by " + money(Math.abs(remaining)) + ".";
+  }
+
+  drawChart(income, expenses);
+}
+
+function drawChart(income, expenses) {
+
+  const canvas = document.getElementById("budgetChart");
+  const ctx = canvas.getContext("2d");
+
+  const bucketInputs = document.querySelectorAll(".bucket");
+
+  let lifeRaft = 0;
+  let investments = 0;
+  let treat = 0;
+  let holidays = 0;
+
+  bucketInputs.forEach(input => {
+    const value = Number(input.value || 0);
+    const name = input.dataset.name;
+
+    if (name === "Life Raft") lifeRaft = value;
+    if (name === "Investments") investments = value;
+    if (name === "Treat Yourself") treat = value;
+    if (name === "Holidays") holidays = value;
+  });
+
+  const values = [
+    expenses,
+    lifeRaft,
+    investments,
+    treat,
+    holidays
+  ];
+
+  const labels = [
+    "Daily Expenses",
+    "Life Raft",
+    "Investments",
+    "Treat Yourself",
+    "Holidays"
+  ];
+
+  const colors = [
+    "#f48fb1",
+    "#ff9f43",
+    "#9b72cf",
+    "#e85d9e",
+    "#68b984"
+  ];
+
+  const total = values.reduce((a,b) => a+b, 0);
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const cx = 145;
+  const cy = 145;
+  const radius = 105;
+
+  if (total <= 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI*2);
+    ctx.fillStyle = "#eee1ec";
+    ctx.fill();
+
+    ctx.fillStyle = "#54346b";
+    ctx.font = "600 17px Fredoka";
+    ctx.textAlign = "center";
+    ctx.fillText("Your budget", cx, cy-4);
+    ctx.font = "14px DM Sans";
+    ctx.fillText("starts here ✨", cx, cy+20);
+    return;
+  }
+
+  let start = -Math.PI/2;
+
+  values.forEach((value, i) => {
+
+    if (value <= 0) return;
+
+    const slice = (value / total) * Math.PI * 2;
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,radius,start,start+slice);
+    ctx.closePath();
+
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+
+    start += slice;
+  });
+
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(cx,cy,55,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle = "#54346b";
+  ctx.font = "600 16px Fredoka";
+  ctx.textAlign = "center";
+  ctx.fillText("Total",cx,cy-3);
+  ctx.font = "600 17px Fredoka";
+  ctx.fillText(money(total),cx,cy+20);
+
+  // Legend
+  let y = 12;
+
+  labels.forEach((label,i) => {
+
+    if (values[i] <= 0) return;
+
+    ctx.fillStyle = colors[i];
+    ctx.fillRect(8,y-9,10,10);
+
+    ctx.fillStyle = "#54346b";
+    ctx.font = "11px DM Sans";
+    ctx.textAlign = "left";
+
+    const percentage = Math.round((values[i]/total)*100);
+
+    ctx.fillText(
+      label + " " + percentage + "%",
+      23,
+      y
+    );
+
+    y += 17;
+  });
+}
+
+function saveData() {
+
+  const data = {};
+
+  document.querySelectorAll("input").forEach((input, index) => {
+    data[index] = input.value;
+  });
+
+  localStorage.setItem("groovyBudgetData", JSON.stringify(data));
+}
+
+function loadData() {
+
+  const saved = localStorage.getItem("groovyBudgetData");
+
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+
+  document.querySelectorAll("input").forEach((input,index) => {
+
+    if (data[index] !== undefined) {
+      input.value = data[index];
+    }
+
+  });
+}
+
+function addGoal(name="", target="", saved="") {
+
+  const goals = document.getElementById("goals");
+
+  const goal = document.createElement("div");
+  goal.className = "goal";
+
+  goal.innerHTML = `
+    <div class="goal-top">
+      <input class="goalName"
+             placeholder="Goal name"
+             value="${name}"
+             style="width:100%; text-align:left;">
+      <button class="delete" onclick="this.closest('.goal').remove(); saveGoals();">
+        ✕
+      </button>
+    </div>
+
+    <div class="goal-inputs">
+      <input class="goalTarget"
+             type="number"
+             placeholder="Target $"
+             value="${target}"
+             step="0.01">
+
+      <input class="goalSaved"
+             type="number"
+             placeholder="Saved $"
+             value="${saved}"
+             step="0.01">
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar"></div>
+    </div>
+  `;
+
+  goals.appendChild(goal);
+
+  goal.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", () => {
+      updateGoals();
+      saveGoals();
+    });
+  });
+
+  updateGoals();
+}
+
+function updateGoals() {
+
+  document.querySelectorAll(".goal").forEach(goal => {
+
+    const target =
+      Number(goal.querySelector(".goalTarget").value || 0);
+
+    const saved =
+      Number(goal.querySelector(".goalSaved").value || 0);
+
+    let percentage = 0;
+
+    if (target > 0) {
+      percentage = Math.min((saved / target) * 100, 100);
+    }
+
+    goal.querySelector(".progress-bar").style.width =
+      percentage + "%";
+  });
+}
+
+function saveGoals() {
+
+  const goals = [];
+
+  document.querySelectorAll(".goal").forEach(goal => {
+
+    goals.push({
+      name: goal.querySelector(".goalName").value,
+      target: goal.querySelector(".goalTarget").value,
+      saved: goal.querySelector(".goalSaved").value
+    });
+
+  });
+
+  localStorage.setItem("groovyBudgetGoals", JSON.stringify(goals));
+}
+
+function loadGoals() {
+
+  const saved = localStorage.getItem("groovyBudgetGoals");
+
+  if (!saved) {
+    addGoal("Emergency fund", "", "");
+    return;
+  }
+
+  JSON.parse(saved).forEach(goal => {
+    addGoal(goal.name, goal.target, goal.saved);
+  });
+}
+
+loadData();
+loadGoals();
+calculate();
+
+</script>
+
+</body>
+</html>
