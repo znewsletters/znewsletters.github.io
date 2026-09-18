@@ -409,33 +409,7 @@ canvas {
     <div class="card">
       <h2>💵 Income</h2>
 
-      <div class="grid">
-
-        <div class="field">
-          <label>Salary</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="salary" min="0" step="0.01">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Rental income</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="rental" min="0" step="0.01">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Other income</label>
-          <div class="money">
-            <span>$</span>
-            <input type="number" id="otherIncome" min="0" step="0.01">
-          </div>
-        </div>
-
-      </div>
+      <div id="incomeInputs"></div>
 
       <div class="total">
         <span>Total income</span>
@@ -531,6 +505,22 @@ canvas {
   <!-- ================= CUSTOMIZE ================= -->
 
   <div id="customize" class="section">
+
+    <!-- ================= CUSTOMIZE INCOME ================= -->
+
+    <div class="card">
+      <h2>💵 Customize Income</h2>
+
+      <div class="help">
+        Add, rename or remove your income categories. Your changes are saved only on your device.
+      </div>
+
+      <div id="customIncomeList"></div>
+
+      <button class="primary" onclick="addIncomeCategory()">
+        ＋ Add income category
+      </button>
+    </div>
 
     <div class="card">
       <h2>🧾 Customize Expenses</h2>
@@ -708,6 +698,12 @@ const defaultBuckets = [
   "Holidays"
 ];
 
+const defaultIncome = [
+  "Salary",
+  "Rental income",
+  "Other income"
+];
+
 let expenses = JSON.parse(localStorage.getItem("zaraExpenses"));
 
 if (!expenses) {
@@ -726,11 +722,58 @@ if (!buckets) {
   }));
 }
 
-let income = JSON.parse(localStorage.getItem("zaraIncome")) || {
-  salary: 0,
-  rental: 0,
-  other: 0
-};
+/*
+  Income migration:
+  Older versions stored income as:
+  {
+    salary: 0,
+    rental: 0,
+    other: 0
+  }
+
+  The new version stores income in the same
+  category format as expenses and buckets.
+*/
+
+let savedIncome =
+  JSON.parse(localStorage.getItem("zaraIncome"));
+
+let income;
+
+if (Array.isArray(savedIncome)) {
+
+  income = savedIncome;
+
+} else {
+
+  income = [
+    {
+      name: "Salary",
+      amount:
+        savedIncome &&
+        savedIncome.salary
+          ? Number(savedIncome.salary)
+          : 0
+    },
+    {
+      name: "Rental income",
+      amount:
+        savedIncome &&
+        savedIncome.rental
+          ? Number(savedIncome.rental)
+          : 0
+    },
+    {
+      name: "Other income",
+      amount:
+        savedIncome &&
+        savedIncome.other
+          ? Number(savedIncome.other)
+          : 0
+    }
+  ];
+
+}
 
 let goals = JSON.parse(localStorage.getItem("zaraGoals")) || [];
 
@@ -861,48 +904,67 @@ function showSection(id, button) {
    INCOME
    ============================================================ */
 
-function setupIncome() {
+/*
+  Main Budget screen:
+  Income is now display-only.
+  Amounts are edited from Customize Income.
+*/
 
-  document.getElementById("salary").value =
-    income.salary || "";
+function renderIncome() {
 
-  document.getElementById("rental").value =
-    income.rental || "";
+  const container =
+    document.getElementById("incomeInputs");
 
-  document.getElementById("otherIncome").value =
-    income.other || "";
+  container.innerHTML = "";
 
-  document
-    .getElementById("salary")
-    .addEventListener("input", updateIncome);
+  income.forEach(incomeItem => {
 
-  document
-    .getElementById("rental")
-    .addEventListener("input", updateIncome);
+    const div =
+      document.createElement("div");
 
-  document
-    .getElementById("otherIncome")
-    .addEventListener("input", updateIncome);
-}
+    div.className = "field";
 
-function updateIncome() {
+    div.innerHTML = `
+      <label>${escapeHtml(incomeItem.name)}</label>
 
-  income.salary =
-    Number(document.getElementById("salary").value) || 0;
+      <div
+        class="money"
+        style="
+          padding:11px 12px 11px 27px;
+          border:2px solid var(--border);
+          border-radius:12px;
+          background:#fffdfd;
+          font-size:15px;
+          min-height:44px;
+        "
+      >
+        <span>$</span>
 
-  income.rental =
-    Number(document.getElementById("rental").value) || 0;
+        <div>
+          ${Number(incomeItem.amount || 0).toLocaleString(
+            "en-NZ",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          )}
+        </div>
+      </div>
+    `;
 
-  income.other =
-    Number(document.getElementById("otherIncome").value) || 0;
-
-  saveEverything();
-  updateTotals();
+    container.appendChild(div);
+  });
 }
 
 /* ============================================================
    EXPENSES
    ============================================================ */
+
+/*
+  Main Budget screen:
+  Expense amounts are now display-only.
+  Amounts are edited from Customize Expenses.
+*/
 
 function renderExpenses() {
 
@@ -911,25 +973,38 @@ function renderExpenses() {
 
   container.innerHTML = "";
 
-  expenses.forEach((expense, index) => {
+  expenses.forEach(expense => {
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
 
     div.className = "field";
 
     div.innerHTML = `
       <label>${escapeHtml(expense.name)}</label>
 
-      <div class="money">
+      <div
+        class="money"
+        style="
+          padding:11px 12px 11px 27px;
+          border:2px solid var(--border);
+          border-radius:12px;
+          background:#fffdfd;
+          font-size:15px;
+          min-height:44px;
+        "
+      >
         <span>$</span>
 
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          value="${expense.amount || ""}"
-          oninput="updateExpense(${index}, this.value)"
-        >
+        <div>
+          ${Number(expense.amount || 0).toLocaleString(
+            "en-NZ",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          )}
+        </div>
       </div>
     `;
 
@@ -937,18 +1012,15 @@ function renderExpenses() {
   });
 }
 
-function updateExpense(index, value) {
-
-  expenses[index].amount =
-    Number(value) || 0;
-
-  saveEverything();
-  updateTotals();
-}
-
 /* ============================================================
    BUCKETS
    ============================================================ */
+
+/*
+  Main Budget screen:
+  Bucket amounts are now display-only.
+  Amounts are edited from Customize Buckets.
+*/
 
 function renderBuckets() {
 
@@ -957,39 +1029,43 @@ function renderBuckets() {
 
   container.innerHTML = "";
 
-  buckets.forEach((bucket, index) => {
+  buckets.forEach(bucket => {
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
 
     div.className = "field";
 
     div.innerHTML = `
       <label>${escapeHtml(bucket.name)}</label>
 
-      <div class="money">
+      <div
+        class="money"
+        style="
+          padding:11px 12px 11px 27px;
+          border:2px solid var(--border);
+          border-radius:12px;
+          background:#fffdfd;
+          font-size:15px;
+          min-height:44px;
+        "
+      >
         <span>$</span>
 
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          value="${bucket.amount || ""}"
-          oninput="updateBucket(${index}, this.value)"
-        >
+        <div>
+          ${Number(bucket.amount || 0).toLocaleString(
+            "en-NZ",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          )}
+        </div>
       </div>
     `;
 
     container.appendChild(div);
   });
-}
-
-function updateBucket(index, value) {
-
-  buckets[index].amount =
-    Number(value) || 0;
-
-  saveEverything();
-  updateTotals();
 }
 
 /* ============================================================
@@ -999,9 +1075,11 @@ function updateBucket(index, value) {
 function updateTotals() {
 
   const totalIncome =
-    income.salary +
-    income.rental +
-    income.other;
+    income.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
 
   const totalExpenses =
     expenses.reduce(
@@ -1257,6 +1335,124 @@ function drawBudgetChart() {
 
     legend.appendChild(row);
   });
+}
+
+/* ============================================================
+   CUSTOMIZE INCOME
+   ============================================================ */
+
+function renderCustomIncome() {
+
+  const container =
+    document.getElementById("customIncomeList");
+
+  container.innerHTML = "";
+
+  if (income.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No income categories yet.</div>";
+
+    return;
+  }
+
+  income.forEach((incomeItem, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "category-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(incomeItem.name)}"
+        onchange="renameIncome(${index}, this.value)"
+        placeholder="Income name"
+      >
+
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        value="${incomeItem.amount || ""}"
+        oninput="updateCustomIncomeAmount(${index}, this.value)"
+        placeholder="Amount"
+      >
+
+      <button
+        class="delete"
+        onclick="deleteIncome(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+function addIncomeCategory() {
+
+  income.push({
+    name: "New income",
+    amount: 0
+  });
+
+  saveEverything();
+
+  renderIncome();
+  renderCustomIncome();
+
+  updateTotals();
+}
+
+function renameIncome(index, name) {
+
+  name = name.trim();
+
+  if (!name) {
+    name = "Income";
+  }
+
+  income[index].name = name;
+
+  saveEverything();
+
+  renderIncome();
+  renderCustomIncome();
+
+  updateTotals();
+}
+
+function updateCustomIncomeAmount(index, value) {
+
+  income[index].amount =
+    Number(value) || 0;
+
+  saveEverything();
+
+  renderIncome();
+  updateTotals();
+}
+
+function deleteIncome(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      income[index].name +
+      "? Its budget amount will also be removed."
+    )
+  ) {
+
+    income.splice(index, 1);
+
+    saveEverything();
+
+    renderIncome();
+    renderCustomIncome();
+
+    updateTotals();
+  }
 }
 
 /* ============================================================
@@ -3229,9 +3425,12 @@ function initialise() {
 
   setupIncome();
 
+  renderIncome();
+
   renderExpenses();
   renderBuckets();
 
+  renderCustomIncome();
   renderCustomExpenses();
   renderCustomBuckets();
 
