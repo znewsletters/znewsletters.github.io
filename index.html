@@ -404,6 +404,40 @@ canvas {
   white-space: nowrap;
 }
 
+/* ============================================================
+   ASSETS
+   ============================================================ */
+
+.asset-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.asset-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.asset-history-title {
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.asset-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 10px;
@@ -428,6 +462,10 @@ canvas {
   .investment-row input {
     font-size: 13px;
     padding: 9px 6px;
+  }
+
+  .asset-row {
+    grid-template-columns: 1fr 90px auto;
   }
 
   .nav button {
@@ -532,8 +570,8 @@ canvas {
     <div class="card">
       <h2>💎 Net Worth by Year</h2>
 
-      <div class="help">
-        Enter your net worth at the end of each year and watch your progress over time.
+      <div id="netWorthSummary" class="help">
+        Add at least two years of net worth to see how you've progressed.
       </div>
 
       <div class="chart-wrap">
@@ -543,6 +581,23 @@ canvas {
       <div id="netWorthInputs"></div>
 
       <button class="primary" onclick="addNetWorthYear()">＋ Add year</button>
+    </div>
+
+    <div class="card">
+      <h2>🏡 Assets</h2>
+
+      <div class="help">
+        Keep a record of the things you own and what they're worth. Your asset values are kept by year so you can look back and see how they've changed over time.
+      </div>
+
+      <div id="assetsList"></div>
+
+      <div class="total">
+        <span>Total assets</span>
+        <span id="totalAssets">$0.00</span>
+      </div>
+
+      <button class="primary" onclick="addAsset()">＋ Add asset</button>
     </div>
 
     <div class="card">
@@ -845,6 +900,13 @@ let investmentHistory =
   JSON.parse(localStorage.getItem("zaraInvestmentHistory")) || [];
 
 /* ============================================================
+   ASSETS
+   ============================================================ */
+
+let assets =
+  JSON.parse(localStorage.getItem("zaraAssets")) || [];
+
+/* ============================================================
    CUSTOM INVESTMENT GOAL SETTINGS
    ============================================================ */
 
@@ -914,6 +976,11 @@ function saveEverything() {
   localStorage.setItem(
     "zaraInvestmentHistory",
     JSON.stringify(investmentHistory)
+  );
+
+  localStorage.setItem(
+    "zaraAssets",
+    JSON.stringify(assets)
   );
 
   localStorage.setItem(
@@ -1873,6 +1940,81 @@ function deleteGoal(index) {
 }
 
 /* ============================================================
+   NET WORTH SUMMARY
+   ============================================================ */
+
+function renderNetWorthSummary() {
+
+  const summary =
+    document.getElementById("netWorthSummary");
+
+  if (!summary) return;
+
+  const data =
+    [...netWorthHistory]
+      .sort(
+        (a,b) =>
+          Number(a.year) -
+          Number(b.year)
+      );
+
+  if (data.length < 2) {
+
+    summary.textContent =
+      "Add at least two years of net worth to see how you've progressed.";
+
+    return;
+  }
+
+  const previous =
+    Number(
+      data[data.length - 2].value
+    ) || 0;
+
+  const current =
+    Number(
+      data[data.length - 1].value
+    ) || 0;
+
+  if (previous === 0) {
+
+    summary.textContent =
+      "Your latest net worth is " +
+      money(current) +
+      ".";
+
+    return;
+  }
+
+  const percentage =
+    ((current - previous) / previous) *
+    100;
+
+  const rounded =
+    Math.abs(percentage).toFixed(1);
+
+  if (percentage > 0) {
+
+    summary.textContent =
+      "🌸 Your net worth has increased by " +
+      rounded +
+      "% since last year.";
+
+  } else if (percentage < 0) {
+
+    summary.textContent =
+      "Your net worth has decreased by " +
+      rounded +
+      "% since last year.";
+
+  } else {
+
+    summary.textContent =
+      "Your net worth hasn't changed since last year.";
+  }
+}
+
+/* ============================================================
    NET WORTH HISTORY
    ============================================================ */
 
@@ -1929,6 +2071,8 @@ function renderNetWorthInputs() {
 
     container.appendChild(row);
   });
+
+  renderNetWorthSummary();
 }
 
 function addNetWorthYear() {
@@ -1975,6 +2119,8 @@ function updateNetWorthValue(index, value) {
     Number(value) || 0;
 
   saveEverything();
+
+  renderNetWorthSummary();
   drawNetWorthChart();
 }
 
@@ -2191,6 +2337,202 @@ function drawNetWorthChart() {
       height - padding.bottom + 24
     );
   });
+}
+
+/* ============================================================
+   ASSETS
+   ============================================================ */
+
+function renderAssets() {
+
+  const container =
+    document.getElementById("assetsList");
+
+  container.innerHTML = "";
+
+  if (assets.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No assets yet. Add your first one below ✨</div>";
+
+    document.getElementById("totalAssets").textContent =
+      money(0);
+
+    return;
+  }
+
+  assets.forEach((asset, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "asset-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(asset.name)}"
+        onchange="renameAsset(${index}, this.value)"
+        placeholder="Asset name"
+      >
+
+      <div class="money">
+        <span>$</span>
+        <input
+          type="number"
+          min="0"
+          step="100"
+          value="${asset.value || ""}"
+          oninput="updateAssetValue(${index}, this.value)"
+          placeholder="Value"
+        >
+      </div>
+
+      <button
+        class="delete"
+        onclick="deleteAsset(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+
+    const history =
+      Array.isArray(asset.history)
+        ? [...asset.history].sort(
+            (a,b) =>
+              Number(a.year) -
+              Number(b.year)
+          )
+        : [];
+
+    if (history.length > 0) {
+
+      const historyDiv =
+        document.createElement("div");
+
+      historyDiv.className =
+        "asset-history";
+
+      let historyHtml =
+        "<div class='asset-history-title'>Yearly values</div>";
+
+      history.forEach(item => {
+
+        historyHtml += `
+          <div class="asset-history-row">
+            <span>${escapeHtml(item.year)}</span>
+            <span>${money(item.value)}</span>
+          </div>
+        `;
+      });
+
+      historyDiv.innerHTML =
+        historyHtml;
+
+      container.appendChild(historyDiv);
+    }
+  });
+
+  const total =
+    assets.reduce(
+      (sum, asset) =>
+        sum + Number(asset.value || 0),
+      0
+    );
+
+  document.getElementById("totalAssets").textContent =
+    money(total);
+}
+
+function recordAssetHistory(asset) {
+
+  if (!Array.isArray(asset.history)) {
+    asset.history = [];
+  }
+
+  const year =
+    new Date().getFullYear();
+
+  const existing =
+    asset.history.find(
+      item =>
+        Number(item.year) === year
+    );
+
+  if (existing) {
+
+    existing.value =
+      Number(asset.value) || 0;
+
+  } else {
+
+    asset.history.push({
+      year: year,
+      value: Number(asset.value) || 0
+    });
+  }
+}
+
+function addAsset() {
+
+  assets.push({
+    name: "New asset",
+    value: 0,
+    history: []
+  });
+
+  saveEverything();
+
+  renderAssets();
+}
+
+function renameAsset(index, name) {
+
+  name =
+    name.trim();
+
+  if (!name) {
+    name = "Asset";
+  }
+
+  assets[index].name =
+    name;
+
+  saveEverything();
+
+  renderAssets();
+}
+
+function updateAssetValue(index, value) {
+
+  assets[index].value =
+    Number(value) || 0;
+
+  recordAssetHistory(
+    assets[index]
+  );
+
+  saveEverything();
+
+  renderAssets();
+}
+
+function deleteAsset(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      assets[index].name +
+      "?"
+    )
+  ) {
+
+    assets.splice(index, 1);
+
+    saveEverything();
+
+    renderAssets();
+  }
 }
 
 /* ============================================================
@@ -3296,7 +3638,8 @@ function restoreData(input) {
           keys.includes("zaraIncome") ||
           keys.includes("zaraGoals") ||
           keys.includes("zaraNetWorthHistory") ||
-          keys.includes("zaraInvestmentHistory");
+          keys.includes("zaraInvestmentHistory") ||
+          keys.includes("zaraAssets");
 
         if (!looksLikeBudgetBackup) {
 
@@ -3445,6 +3788,8 @@ function initialise() {
 
   renderNetWorthInputs();
   renderInvestmentInputs();
+
+  renderAssets();
 
   updateTotals();
 
