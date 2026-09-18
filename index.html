@@ -405,7 +405,7 @@ canvas {
 }
 
 /* ============================================================
-   ASSETS
+   ASSETS + DEBTS
    ============================================================ */
 
 .asset-row {
@@ -438,6 +438,41 @@ canvas {
   padding: 2px 0;
 }
 
+.debt-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.debt-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.debt-history-title {
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.debt-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.net-worth-summary {
+  text-align: center;
+  font-weight: 700;
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 10px;
@@ -465,6 +500,10 @@ canvas {
   }
 
   .asset-row {
+    grid-template-columns: 1fr 90px auto;
+  }
+
+  .debt-row {
     grid-template-columns: 1fr 90px auto;
   }
 
@@ -570,17 +609,13 @@ canvas {
     <div class="card">
       <h2>💎 Net Worth by Year</h2>
 
-      <div id="netWorthSummary" class="help">
-        Add at least two years of net worth to see how you've progressed.
+      <div id="netWorthSummary" class="help net-worth-summary">
+        Add your assets and debts to start tracking your net worth.
       </div>
 
       <div class="chart-wrap">
         <canvas id="netWorthChart" width="700" height="420"></canvas>
       </div>
-
-      <div id="netWorthInputs"></div>
-
-      <button class="primary" onclick="addNetWorthYear()">＋ Add year</button>
     </div>
 
     <div class="card">
@@ -598,6 +633,23 @@ canvas {
       </div>
 
       <button class="primary" onclick="addAsset()">＋ Add asset</button>
+    </div>
+
+    <div class="card">
+      <h2>💳 Debts</h2>
+
+      <div class="help">
+        Keep a record of what you owe and your current balances. Your debt values are kept by year so you can look back and see how they've changed over time.
+      </div>
+
+      <div id="debtsList"></div>
+
+      <div class="total">
+        <span>Total debts</span>
+        <span id="totalDebts">$0.00</span>
+      </div>
+
+      <button class="primary" onclick="addDebt()">＋ Add debt</button>
     </div>
 
     <div class="card">
@@ -893,6 +945,15 @@ if (Array.isArray(savedIncome)) {
 
 let goals = JSON.parse(localStorage.getItem("zaraGoals")) || [];
 
+/*
+  Net worth is now calculated automatically from
+  asset history and debt history.
+
+  This older key is retained so existing backup files
+  can still be restored safely, but the app no longer
+  uses manually entered net worth values.
+*/
+
 let netWorthHistory =
   JSON.parse(localStorage.getItem("zaraNetWorthHistory")) || [];
 
@@ -905,6 +966,53 @@ let investmentHistory =
 
 let assets =
   JSON.parse(localStorage.getItem("zaraAssets")) || [];
+
+if (!Array.isArray(assets)) {
+  assets = [];
+}
+
+assets = assets.map(asset => ({
+  name: asset && asset.name
+    ? asset.name
+    : "Asset",
+
+  value:
+    asset && asset.value !== undefined
+      ? Number(asset.value) || 0
+      : 0,
+
+  history:
+    asset && Array.isArray(asset.history)
+      ? asset.history
+      : []
+}));
+
+/* ============================================================
+   DEBTS
+   ============================================================ */
+
+let debts =
+  JSON.parse(localStorage.getItem("zaraDebts")) || [];
+
+if (!Array.isArray(debts)) {
+  debts = [];
+}
+
+debts = debts.map(debt => ({
+  name: debt && debt.name
+    ? debt.name
+    : "Debt",
+
+  value:
+    debt && debt.value !== undefined
+      ? Number(debt.value) || 0
+      : 0,
+
+  history:
+    debt && Array.isArray(debt.history)
+      ? debt.history
+      : []
+}));
 
 /* ============================================================
    CUSTOM INVESTMENT GOAL SETTINGS
@@ -984,6 +1092,11 @@ function saveEverything() {
   );
 
   localStorage.setItem(
+    "zaraDebts",
+    JSON.stringify(debts)
+  );
+
+  localStorage.setItem(
     "zaraInvestmentStartYear",
     investmentStartYear
   );
@@ -1025,6 +1138,7 @@ function showSection(id, button) {
   if (id === "progress") {
     drawNetWorthChart();
     drawInvestmentChart();
+    updateNetWorthSummary();
   }
 }
 
@@ -1940,10 +2054,184 @@ function deleteGoal(index) {
 }
 
 /* ============================================================
+   ASSET + DEBT HISTORY
+   ============================================================ */
+
+function recordHistory(item) {
+
+  if (!Array.isArray(item.history)) {
+    item.history = [];
+  }
+
+  const year =
+    new Date().getFullYear();
+
+  const existing =
+    item.history.find(
+      historyItem =>
+        Number(historyItem.year) === year
+    );
+
+  if (existing) {
+
+    existing.value =
+      Number(item.value) || 0;
+
+  } else {
+
+    item.history.push({
+      year: year,
+      value: Number(item.value) || 0
+    });
+  }
+
+  item.history.sort(
+    (a,b) =>
+      Number(a.year) -
+      Number(b.year)
+  );
+}
+
+/*
+  Make sure every current asset and debt has a
+  value recorded for the current year.
+*/
+
+function recordCurrentYearValues() {
+
+  assets.forEach(asset => {
+    recordHistory(asset);
+  });
+
+  debts.forEach(debt => {
+    recordHistory(debt);
+  });
+}
+
+/*
+  Build the Net Worth history automatically.
+
+  For every year that appears in an asset or debt
+  history:
+
+    Net worth = Total assets - Total debts
+*/
+
+function rebuildNetWorthHistory() {
+
+  const years = new Set();
+
+  assets.forEach(asset => {
+
+    if (Array.isArray(asset.history)) {
+
+      asset.history.forEach(item => {
+
+        if (
+          item &&
+          item.year !== undefined
+        ) {
+
+          years.add(
+            Number(item.year)
+          );
+        }
+      });
+    }
+  });
+
+  debts.forEach(debt => {
+
+    if (Array.isArray(debt.history)) {
+
+      debt.history.forEach(item => {
+
+        if (
+          item &&
+          item.year !== undefined
+        ) {
+
+          years.add(
+            Number(item.year)
+          );
+        }
+      });
+    }
+  });
+
+  const currentYear =
+    new Date().getFullYear();
+
+  years.add(currentYear);
+
+  const sortedYears =
+    [...years]
+      .filter(year => Number.isFinite(year))
+      .sort((a,b) => a - b);
+
+  netWorthHistory =
+    sortedYears.map(year => {
+
+      const totalAssets =
+        assets.reduce(
+          (sum, asset) => {
+
+            const record =
+              Array.isArray(asset.history)
+                ? asset.history.find(
+                    item =>
+                      Number(item.year) === year
+                  )
+                : null;
+
+            return sum +
+              (
+                record
+                  ? Number(record.value) || 0
+                  : 0
+              );
+          },
+          0
+        );
+
+      const totalDebts =
+        debts.reduce(
+          (sum, debt) => {
+
+            const record =
+              Array.isArray(debt.history)
+                ? debt.history.find(
+                    item =>
+                      Number(item.year) === year
+                  )
+                : null;
+
+            return sum +
+              (
+                record
+                  ? Number(record.value) || 0
+                  : 0
+              );
+          },
+          0
+        );
+
+      return {
+        year: year,
+        value:
+          totalAssets -
+          totalDebts
+      };
+    });
+
+  saveEverything();
+}
+
+/* ============================================================
    NET WORTH SUMMARY
    ============================================================ */
 
-function renderNetWorthSummary() {
+function updateNetWorthSummary() {
 
   const summary =
     document.getElementById("netWorthSummary");
@@ -1958,10 +2246,20 @@ function renderNetWorthSummary() {
           Number(b.year)
       );
 
-  if (data.length < 2) {
+  if (data.length === 0) {
 
     summary.textContent =
-      "Add at least two years of net worth to see how you've progressed.";
+      "Add your assets and debts to start tracking your net worth.";
+
+    return;
+  }
+
+  if (data.length === 1) {
+
+    summary.textContent =
+      "Your current net worth is " +
+      money(data[0].value) +
+      ". Your year-on-year change will appear here once you have another year's record.";
 
     return;
   }
@@ -1976,10 +2274,20 @@ function renderNetWorthSummary() {
       data[data.length - 1].value
     ) || 0;
 
+  const previousYear =
+    Number(
+      data[data.length - 2].year
+    );
+
+  const currentYear =
+    Number(
+      data[data.length - 1].year
+    );
+
   if (previous === 0) {
 
     summary.textContent =
-      "Your latest net worth is " +
+      "Your net worth is " +
       money(current) +
       ".";
 
@@ -1987,151 +2295,43 @@ function renderNetWorthSummary() {
   }
 
   const percentage =
-    ((current - previous) / previous) *
+    ((current - previous) /
+      Math.abs(previous)) *
     100;
 
   const rounded =
     Math.abs(percentage).toFixed(1);
+
+  const timeText =
+    currentYear === previousYear + 1
+      ? "since last year"
+      : "since " + previousYear;
 
   if (percentage > 0) {
 
     summary.textContent =
       "🌸 Your net worth has increased by " +
       rounded +
-      "% since last year.";
+      "% " +
+      timeText +
+      ".";
 
   } else if (percentage < 0) {
 
     summary.textContent =
       "Your net worth has decreased by " +
       rounded +
-      "% since last year.";
+      "% " +
+      timeText +
+      ".";
 
   } else {
 
     summary.textContent =
-      "Your net worth hasn't changed since last year.";
+      "Your net worth hasn't changed " +
+      timeText +
+      ".";
   }
-}
-
-/* ============================================================
-   NET WORTH HISTORY
-   ============================================================ */
-
-function renderNetWorthInputs() {
-
-  const container =
-    document.getElementById("netWorthInputs");
-
-  container.innerHTML = "";
-
-  netWorthHistory.sort(
-    (a,b) =>
-      Number(a.year) -
-      Number(b.year)
-  );
-
-  netWorthHistory.forEach((item, index) => {
-
-    const row =
-      document.createElement("div");
-
-    row.className = "year-row";
-
-    row.innerHTML = `
-
-      <input
-        type="number"
-        value="${item.year}"
-        onchange="updateNetWorthYear(${index}, this.value)"
-        placeholder="Year"
-      >
-
-      <div class="money">
-
-        <span>$</span>
-
-        <input
-          type="number"
-          min="0"
-          step="100"
-          value="${item.value || ""}"
-          oninput="updateNetWorthValue(${index}, this.value)"
-          placeholder="Net worth"
-        >
-
-      </div>
-
-      <button
-        class="delete"
-        onclick="deleteNetWorthYear(${index})"
-      >✕</button>
-
-    `;
-
-    container.appendChild(row);
-  });
-
-  renderNetWorthSummary();
-}
-
-function addNetWorthYear() {
-
-  const year =
-    new Date().getFullYear();
-
-  let newYear = year;
-
-  if (
-    netWorthHistory.some(
-      x => Number(x.year) === newYear
-    )
-  ) {
-    newYear++;
-  }
-
-  netWorthHistory.push({
-    year: newYear,
-    value: 0
-  });
-
-  saveEverything();
-
-  renderNetWorthInputs();
-  drawNetWorthChart();
-}
-
-function updateNetWorthYear(index, value) {
-
-  netWorthHistory[index].year =
-    Number(value) ||
-    new Date().getFullYear();
-
-  saveEverything();
-
-  renderNetWorthInputs();
-  drawNetWorthChart();
-}
-
-function updateNetWorthValue(index, value) {
-
-  netWorthHistory[index].value =
-    Number(value) || 0;
-
-  saveEverything();
-
-  renderNetWorthSummary();
-  drawNetWorthChart();
-}
-
-function deleteNetWorthYear(index) {
-
-  netWorthHistory.splice(index, 1);
-
-  saveEverything();
-
-  renderNetWorthInputs();
-  drawNetWorthChart();
 }
 
 /* ============================================================
@@ -2193,7 +2393,7 @@ function drawNetWorthChart() {
     ctx.font = "600 17px DM Sans";
 
     ctx.fillText(
-      "Add your yearly net worth",
+      "Add your assets and debts",
       width / 2,
       height / 2
     );
@@ -2201,13 +2401,39 @@ function drawNetWorthChart() {
     return;
   }
 
+  /*
+    Support negative net worth values as well as
+    positive values while keeping the existing
+    visual style of the chart.
+  */
+
+  const values =
+    data.map(
+      x => Number(x.value) || 0
+    );
+
   const maxValue =
     Math.max(
-      ...data.map(
-        x => Number(x.value) || 0
-      ),
+      ...values,
       1
     );
+
+  const minValue =
+    Math.min(
+      ...values,
+      0
+    );
+
+  const range =
+    maxValue -
+    minValue ||
+    1;
+
+  const zeroY =
+    padding.top +
+    graphHeight -
+    ((0 - minValue) / range) *
+    graphHeight;
 
   /* Axes */
 
@@ -2237,10 +2463,15 @@ function drawNetWorthChart() {
 
   for (let i = 0; i <= 4; i++) {
 
+    const value =
+      minValue +
+      (range * i / 4);
+
     const y =
       padding.top +
       graphHeight -
-      (graphHeight * i / 4);
+      ((value - minValue) / range) *
+      graphHeight;
 
     ctx.strokeStyle = "#f1e8f2";
     ctx.lineWidth = 1;
@@ -2264,12 +2495,37 @@ function drawNetWorthChart() {
     ctx.textAlign = "right";
 
     ctx.fillText(
-      moneyShort(
-        maxValue * i / 4
-      ),
+      moneyShort(value),
       padding.left - 8,
       y + 4
     );
+  }
+
+  /*
+    Draw zero line when net worth crosses below zero.
+  */
+
+  if (
+    minValue < 0 &&
+    maxValue > 0
+  ) {
+
+    ctx.strokeStyle = "#eadbea";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      padding.left,
+      zeroY
+    );
+
+    ctx.lineTo(
+      width - padding.right,
+      zeroY
+    );
+
+    ctx.stroke();
   }
 
   const barSpace =
@@ -2286,8 +2542,10 @@ function drawNetWorthChart() {
     const value =
       Number(item.value) || 0;
 
-    const barHeight =
-      (value / maxValue) *
+    const yValue =
+      padding.top +
+      graphHeight -
+      ((value - minValue) / range) *
       graphHeight;
 
     const x =
@@ -2296,9 +2554,16 @@ function drawNetWorthChart() {
       (barSpace - barWidth) / 2;
 
     const y =
-      height -
-      padding.bottom -
-      barHeight;
+      Math.min(
+        yValue,
+        zeroY
+      );
+
+    const barHeight =
+      Math.abs(
+        yValue -
+        zeroY
+      );
 
     ctx.fillStyle =
       index % 2 === 0
@@ -2312,7 +2577,7 @@ function drawNetWorthChart() {
       x,
       y,
       barWidth,
-      barHeight,
+      Math.max(barHeight, 2),
       10
     );
 
@@ -2325,7 +2590,12 @@ function drawNetWorthChart() {
     ctx.fillText(
       moneyShort(value),
       x + barWidth / 2,
-      Math.max(y - 8, 15)
+      value >= 0
+        ? Math.max(y - 8, 15)
+        : Math.min(
+            y + barHeight + 16,
+            height - padding.bottom + 5
+          )
     );
 
     ctx.fillStyle = "#806b8d";
@@ -2383,7 +2653,7 @@ function renderAssets() {
           min="0"
           step="100"
           value="${asset.value || ""}"
-          oninput="updateAssetValue(${index}, this.value)"
+          onchange="updateAssetValue(${index}, this.value)"
           placeholder="Value"
         >
       </div>
@@ -2444,35 +2714,6 @@ function renderAssets() {
     money(total);
 }
 
-function recordAssetHistory(asset) {
-
-  if (!Array.isArray(asset.history)) {
-    asset.history = [];
-  }
-
-  const year =
-    new Date().getFullYear();
-
-  const existing =
-    asset.history.find(
-      item =>
-        Number(item.year) === year
-    );
-
-  if (existing) {
-
-    existing.value =
-      Number(asset.value) || 0;
-
-  } else {
-
-    asset.history.push({
-      year: year,
-      value: Number(asset.value) || 0
-    });
-  }
-}
-
 function addAsset() {
 
   assets.push({
@@ -2481,9 +2722,15 @@ function addAsset() {
     history: []
   });
 
-  saveEverything();
+  recordHistory(
+    assets[assets.length - 1]
+  );
+
+  rebuildNetWorthHistory();
 
   renderAssets();
+  updateNetWorthSummary();
+  drawNetWorthChart();
 }
 
 function renameAsset(index, name) {
@@ -2508,13 +2755,17 @@ function updateAssetValue(index, value) {
   assets[index].value =
     Number(value) || 0;
 
-  recordAssetHistory(
+  recordHistory(
     assets[index]
   );
+
+  rebuildNetWorthHistory();
 
   saveEverything();
 
   renderAssets();
+  updateNetWorthSummary();
+  drawNetWorthChart();
 }
 
 function deleteAsset(index) {
@@ -2529,9 +2780,194 @@ function deleteAsset(index) {
 
     assets.splice(index, 1);
 
+    rebuildNetWorthHistory();
+
     saveEverything();
 
     renderAssets();
+    updateNetWorthSummary();
+    drawNetWorthChart();
+  }
+}
+
+/* ============================================================
+   DEBTS
+   ============================================================ */
+
+function renderDebts() {
+
+  const container =
+    document.getElementById("debtsList");
+
+  container.innerHTML = "";
+
+  if (debts.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No debts yet. Add your first one below.</div>";
+
+    document.getElementById("totalDebts").textContent =
+      money(0);
+
+    return;
+  }
+
+  debts.forEach((debt, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "debt-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(debt.name)}"
+        onchange="renameDebt(${index}, this.value)"
+        placeholder="Debt name"
+      >
+
+      <div class="money">
+        <span>$</span>
+        <input
+          type="number"
+          min="0"
+          step="100"
+          value="${debt.value || ""}"
+          onchange="updateDebtValue(${index}, this.value)"
+          placeholder="Balance"
+        >
+      </div>
+
+      <button
+        class="delete"
+        onclick="deleteDebt(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+
+    const history =
+      Array.isArray(debt.history)
+        ? [...debt.history].sort(
+            (a,b) =>
+              Number(a.year) -
+              Number(b.year)
+          )
+        : [];
+
+    if (history.length > 0) {
+
+      const historyDiv =
+        document.createElement("div");
+
+      historyDiv.className =
+        "debt-history";
+
+      let historyHtml =
+        "<div class='debt-history-title'>Yearly balances</div>";
+
+      history.forEach(item => {
+
+        historyHtml += `
+          <div class="debt-history-row">
+            <span>${escapeHtml(item.year)}</span>
+            <span>${money(item.value)}</span>
+          </div>
+        `;
+      });
+
+      historyDiv.innerHTML =
+        historyHtml;
+
+      container.appendChild(historyDiv);
+    }
+  });
+
+  const total =
+    debts.reduce(
+      (sum, debt) =>
+        sum + Number(debt.value || 0),
+      0
+    );
+
+  document.getElementById("totalDebts").textContent =
+    money(total);
+}
+
+function addDebt() {
+
+  debts.push({
+    name: "New debt",
+    value: 0,
+    history: []
+  });
+
+  recordHistory(
+    debts[debts.length - 1]
+  );
+
+  rebuildNetWorthHistory();
+
+  renderDebts();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function renameDebt(index, name) {
+
+  name =
+    name.trim();
+
+  if (!name) {
+    name = "Debt";
+  }
+
+  debts[index].name =
+    name;
+
+  saveEverything();
+
+  renderDebts();
+}
+
+function updateDebtValue(index, value) {
+
+  debts[index].value =
+    Number(value) || 0;
+
+  recordHistory(
+    debts[index]
+  );
+
+  rebuildNetWorthHistory();
+
+  saveEverything();
+
+  renderDebts();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function deleteDebt(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      debts[index].name +
+      "?"
+    )
+  ) {
+
+    debts.splice(index, 1);
+
+    rebuildNetWorthHistory();
+
+    saveEverything();
+
+    renderDebts();
+    updateNetWorthSummary();
+    drawNetWorthChart();
   }
 }
 
@@ -3274,22 +3710,28 @@ function moneyShort(value) {
   value =
     Number(value) || 0;
 
-  if (value >= 1000000) {
+  if (Math.abs(value) >= 1000000) {
 
-    return "$" +
-      (value / 1000000).toFixed(1) +
+    return (
+      value < 0 ? "-$" : "$"
+    ) +
+      (Math.abs(value) / 1000000).toFixed(1) +
       "m";
   }
 
-  if (value >= 1000) {
+  if (Math.abs(value) >= 1000) {
 
-    return "$" +
-      (value / 1000).toFixed(0) +
+    return (
+      value < 0 ? "-$" : "$"
+    ) +
+      (Math.abs(value) / 1000).toFixed(0) +
       "k";
   }
 
-  return "$" +
-    Math.round(value);
+  return (
+    value < 0 ? "-$" : "$"
+  ) +
+    Math.round(Math.abs(value));
 }
 
 function escapeHtml(value) {
@@ -3639,7 +4081,8 @@ function restoreData(input) {
           keys.includes("zaraGoals") ||
           keys.includes("zaraNetWorthHistory") ||
           keys.includes("zaraInvestmentHistory") ||
-          keys.includes("zaraAssets");
+          keys.includes("zaraAssets") ||
+          keys.includes("zaraDebts");
 
         if (!looksLikeBudgetBackup) {
 
@@ -3773,6 +4216,15 @@ function restoreData(input) {
 
 function initialise() {
 
+  /*
+    Record the current year's asset and debt values
+    before building the automatic net worth history.
+  */
+
+  recordCurrentYearValues();
+
+  rebuildNetWorthHistory();
+
   renderIncome();
 
   renderExpenses();
@@ -3786,12 +4238,14 @@ function initialise() {
 
   renderInvestmentSettings();
 
-  renderNetWorthInputs();
   renderInvestmentInputs();
 
   renderAssets();
+  renderDebts();
 
   updateTotals();
+
+  updateNetWorthSummary();
 
   drawNetWorthChart();
   drawInvestmentChart();
