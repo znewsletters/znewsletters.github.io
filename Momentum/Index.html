@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum — V1</title>
+
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --card: #ffffff;
+      --text: #252525;
+      --muted: #77736d;
+      --line: #e8e3da;
+      --accent: #6f7f62;
+      --accent-dark: #526046;
+      --soft: #edf1e9;
+      --shadow: 0 8px 30px rgba(45, 42, 35, .07);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    /* -----------------------------
+       HEADER
+    ----------------------------- */
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: white;
+      font-size: 23px;
+      box-shadow: var(--shadow);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 3px;
+      font-size: 25px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle,
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* -----------------------------
+       BUTTONS
+    ----------------------------- */
+
+    .icon-btn,
+    .secondary-btn,
+    .primary-btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .icon-btn,
+    .secondary-btn {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      color: white;
+      font-weight: 650;
+    }
+
+    .primary-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    /* -----------------------------
+       LAYOUT
+    ----------------------------- */
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.45fr .9fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(232, 227, 218, .9);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .energy-card {
+      grid-column: 1 / -1;
+
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    /* -----------------------------
+       ENERGY
+    ----------------------------- */
+
+    .energy-options {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .energy {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      text-align: left;
+      min-width: 105px;
+    }
+
+    .energy strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .energy span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .energy.active {
+      border-color: var(--accent);
+      background: var(--soft);
+      outline: 2px solid rgba(111, 127, 98, .13);
+    }
+
+    /* -----------------------------
+       MOMENTUM
+    ----------------------------- */
+
+    .progress-wrap {
+      background: #f1eee8;
+      border-radius: 99px;
+      height: 12px;
+      overflow: hidden;
+      margin: 13px 0 8px;
+    }
+
+    .progress {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width .3s ease;
+    }
+
+    .momentum-number {
+      font-size: 34px;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    /* -----------------------------
+       ACTIONS
+    ----------------------------- */
+
+    .action-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .action {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 12px;
+
+      background: #fff;
+    }
+
+    .action.done {
+      background: #f5f7f2;
+      opacity: .72;
+    }
+
+    .action.done .action-title {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .action-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--soft);
+      font-size: 20px;
+    }
+
+    .points {
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .complete-btn {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      border-radius: 11px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .done .complete-btn {
+      background: #d9ddd4;
+      color: #5f6659;
+      cursor: default;
+    }
+
+    /* -----------------------------
+       QUESTS
+    ----------------------------- */
+
+    .quest-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .small-link {
+      background: none;
+      border: 0;
+      color: var(--accent-dark);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 13px;
+    }
+
+    /* -----------------------------
+       REWARDS
+    ----------------------------- */
+
+    .reward-card {
+      margin-top: 18px;
+    }
+
+    .reward {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 14px;
+      margin-top: 10px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .reward.locked {
+      opacity: .55;
+    }
+
+    .reward-cost {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .reward button {
+      white-space: nowrap;
+      border: 0;
+      background: var(--soft);
+      color: var(--accent-dark);
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .reward button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    /* -----------------------------
+       STATS
+    ----------------------------- */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .stat {
+      padding: 13px;
+      border-radius: 14px;
+      background: #f8f6f2;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+
+    /* -----------------------------
+       NOTE
+    ----------------------------- */
+
+    .checkin {
+      margin-top: 18px;
+      background: #f8f6f2;
+      border-radius: 16px;
+      padding: 15px;
+    }
+
+    .checkin-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .checkin input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 10px;
+      background: white;
+    }
+
+    /* -----------------------------
+       TOAST
+    ----------------------------- */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+
+      transform: translate(-50%, 20px);
+
+      opacity: 0;
+      pointer-events: none;
+
+      background: #252525;
+      color: white;
+
+      padding: 12px 16px;
+      border-radius: 14px;
+
+      box-shadow: var(--shadow);
+
+      transition: .25s ease;
+
+      z-index: 10;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* -----------------------------
+       MODAL
+    ----------------------------- */
+
+    .modal-backdrop {
+      display: none;
+
+      position: fixed;
+      inset: 0;
+
+      background: rgba(20, 20, 20, .35);
+
+      z-index: 20;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+      place-items: center;
+    }
+
+    .modal {
+      background: white;
+
+      width: min(520px, 100%);
+
+      border-radius: 22px;
+      padding: 22px;
+
+      box-shadow: 0 20px 70px rgba(0, 0, 0, .18);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input,
+    select {
+      width: 100%;
+      margin-top: 6px;
+
+      border: 1px solid var(--line);
+      border-radius: 11px;
+
+      padding: 10px;
+
+      background: white;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 12px 0;
+      font-size: 14px;
+    }
+
+    /* -----------------------------
+       MOBILE
+    ----------------------------- */
+
+    @media (max-width: 780px) {
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .energy-card {
+        grid-template-columns: 1fr;
+      }
+
+      .app {
+        padding: 20px 14px 50px;
+      }
+
+      .header-actions .secondary-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- HEADER -->
+
+    <header>
+
+      <div class="brand">
+
+        <div class="logo">
+          ↗
+        </div>
+
+        <div>
+          <h1>Momentum</h1>
+
+          <div class="subtitle">
+            Small actions. A life that feels more under control.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button
+          class="secondary-btn"
+          onclick="openRewards()">
+          🎁 Rewards
+        </button>
+
+        <button
+          class="icon-btn"
+          onclick="resetDemo()"
+          title="Reset demo">
+          ↺
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- MAIN GRID -->
+
+    <section class="grid">
+
+
+      <!-- ENERGY + MOMENTUM -->
+
+      <div class="card energy-card">
+
+        <div>
+
+          <div class="muted">
+            How are you today?
+          </div>
+
+          <h2 id="energyHeading">
+            Choose your energy
+          </h2>
+
+          <div class="energy-options">
+
+            <button
+              class="energy"
+              data-energy="low"
+              onclick="setEnergy('low')">
+
+              <strong>
+                🌧 Low
+              </strong>
+
+              <span>
+                Keep it gentle
+              </span>
+
+            </button>
+
+
+            <button
+              class="energy"
+              data-energy="medium"
+              onclick="setEnergy('medium')">
+
+              <strong>
+                🌤 Okay
+              </strong>
+
+              <span>
+                A normal day
+              </span>
+
+            </button>
+
+
+            <button
+              class="energy"
+              data-energy="good"
+              onclick="setEnergy('good')">
+
+              <strong>
+                ☀️ Good
+              </strong>
+
+              <span>
+                More capacity
+              </span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div class="muted">
+            Your Momentum
+          </div>
+
+          <div class="momentum-number">
+            <span id="points">0</span> pts
+          </div>
+
+          <div class="progress-wrap">
+
+            <div
+              class="progress"
+              id="progress">
+            </div>
+
+          </div>
+
+          <div
+            class="muted"
+            id="rewardProgress">
+
+            0 / 100 to your next reward
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUGGESTIONS -->
+
+      <section class="card">
+
+        <div class="quest-tools">
+
+          <div>
+
+            <div class="muted">
+              Right now
+            </div>
+
+            <h2>
+              Three gentle suggestions
+            </h2>
+
+          </div>
+
+          <button
+            class="small-link"
+            onclick="refreshSuggestions()">
+
+            Refresh
+
+          </button>
+
+        </div>
+
+
+        <div
+          class="action-list"
+          id="actionList">
+        </div>
+
+
+        <!-- CAPTURE SOMETHING -->
+
+        <div class="checkin">
+
+          <strong>
+            💭 One thing on your mind?
+          </strong>
+
+          <div class="muted">
+            Capture it without turning it into a giant to-do list.
+          </div>
+
+
+          <div class="checkin-row">
+
+            <input
+              id="noteInput"
+              placeholder="e.g. Put away clean laundry"
+            />
+
+            <button
+              class="primary-btn"
+              onclick="saveNote()">
+
+              Save
+
+            </button>
+
+          </div>
+
+
+          <div
+            id="savedNote"
+            class="empty">
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- SIDEBAR -->
+
+      <aside>
+
+
+        <!-- WEEKLY WINS -->
+
+        <section class="card">
+
+          <div class="muted">
+            This week
+          </div>
+
+          <h2>
+            Your wins
+          </h2>
+
+
+          <div class="stats">
+
+            <div class="stat">
+
+              <strong id="completedCount">
+                0
+              </strong>
+
+              <span class="muted">
+                actions completed
+              </span>
+
+            </div>
+
+
+            <div class="stat">
+
+              <strong id="rewardCount">
+                0
+              </strong>
+
+              <span class="muted">
+                rewards claimed
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <p
+            class="muted"
+            style="margin-top:14px; margin-bottom:0;">
+
+            No streaks.
+            No punishment for missing a day.
+            Momentum simply continues.
+
+          </p>
+
+        </section>
+
+
+        <!-- REWARD BANK -->
+
+        <section
+          class="card reward-card"
+          id="rewardCard">
+
+          <div class="muted">
+            Reward bank
+          </div>
+
+          <h2>
+            Things worth working towards
+          </h2>
+
+          <div id="rewardList">
+          </div>
+
+
+          <button
+            class="secondary-btn"
+            style="margin-top:12px; width:100%;"
+            onclick="openRewards()">
+
+            + Add a reward
+
+          </button>
+
+        </section>
+
+      </aside>
+
+    </section>
+
+  </main>
+
+
+  <!-- TOAST -->
+
+  <div
+    class="toast"
+    id="toast">
+  </div>
+
+
+  <!-- REWARD MODAL -->
+
+  <div
+    class="modal-backdrop"
+    id="rewardModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <div>
+
+          <div class="muted">
+            Reward bank
+          </div>
+
+          <h2 style="margin-bottom:0;">
+            Add something you actually want
+          </h2>
+
+        </div>
+
+        <button
+          class="icon-btn"
+          onclick="closeRewards()">
+
+          ✕
+
+        </button>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <label>
+
+          Reward
+
+          <input
+            id="rewardName"
+            placeholder="e.g. New book"
+          />
+
+        </label>
+
+
+        <label>
+
+          Cost
+
+          <input
+            id="rewardCost"
+            type="number"
+            min="10"
+            step="10"
+            value="100"
+          />
+
+        </label>
+
+
+        <label>
+
+          Type
+
+          <select id="rewardType">
+
+            <option>
+              Little treat
+            </option>
+
+            <option>
+              Relaxation
+            </option>
+
+            <option>
+              Experience
+            </option>
+
+            <option>
+              Something to buy
+            </option>
+
+          </select>
+
+        </label>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          class="secondary-btn"
+          onclick="closeRewards()">
+
+          Cancel
+
+        </button>
+
+        <button
+          class="primary-btn"
+          onclick="addReward()">
+
+          Add reward
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    /* --------------------------------
+       AVAILABLE ACTIONS
+    -------------------------------- */
+
+    const defaultActions = [
+
+      {
+        id: 1,
+        title: "10-minute home reset",
+        icon: "🏠",
+        points: 15,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 2,
+        title: "Go for a 30-minute walk",
+        icon: "🚶",
+        points: 20,
+        tags: ["medium", "good"]
+      },
+
+      {
+        id: 3,
+        title: "Read for 10 minutes",
+        icon: "📖",
+        points: 10,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 4,
+        title: "5-minute meditation",
+        icon: "🧘",
+        points: 10,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 5,
+        title: "Put your phone away for 30 minutes",
+        icon: "📵",
+        points: 15,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 6,
+        title: "Do one small annoying task",
+        icon: "✨",
+        points: 15,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 7,
+        title: "Have an intentional rest break",
+        icon: "☕",
+        points: 10,
+        tags: ["low", "medium", "good"]
+      },
+
+      {
+        id: 8,
+        title: "Do something nice with your partner",
+        icon: "💛",
+        points: 15,
+        tags: ["medium", "good"]
+      },
+
+      {
+        id: 9,
+        title: "Get outside for 10 minutes",
+        icon: "🌿",
+        points: 10,
+        tags: ["low", "medium", "good"]
+      }
+
+    ];
+
+
+    /* --------------------------------
+       DEFAULT REWARDS
+    -------------------------------- */
+
+    const defaultRewards = [
+
+      {
+        id: 101,
+        name: "Coffee / favourite drink",
+        cost: 100,
+        type: "Little treat"
+      },
+
+      {
+        id: 102,
+        name: "Guilt-free movie night",
+        cost: 200,
+        type: "Relaxation"
+      },
+
+      {
+        id: 103,
+        name: "New book",
+        cost: 350,
+        type: "Something to buy"
+      }
+
+    ];
+
+
+    /* --------------------------------
+       LOAD SAVED STATE
+    -------------------------------- */
+
+    let state =
+      JSON.parse(
+        localStorage.getItem("momentumV1")
+      ) || {
+
+        points: 0,
+
+        energy: null,
+
+        completed: [],
+
+        rewardsClaimed: 0,
+
+        customRewards: [],
+
+        note: ""
+
+      };
+
+
+    let visibleActions = [];
+
+
+    /* --------------------------------
+       SAVE
+    -------------------------------- */
+
+    function save() {
+
+      localStorage.setItem(
+        "momentumV1",
+        JSON.stringify(state)
+      );
+
+    }
+
+
+    /* --------------------------------
+       ENERGY
+    -------------------------------- */
+
+    function setEnergy(level) {
+
+      state.energy = level;
+
+      save();
+
+      render();
+
+
+      if (level === "low") {
+
+        toast(
+          "Gentle mode on. Small things count today. 🌿"
+        );
+
+      }
+
+      else if (level === "medium") {
+
+        toast(
+          "Okay-day mode. Let's keep it realistic. 🌤"
+        );
+
+      }
+
+      else {
+
+        toast(
+          "Good-energy mode. You have a little more room today. ☀️"
+        );
+
+      }
+
+    }
+
+
+    /* --------------------------------
+       CHOOSE SUGGESTIONS
+    -------------------------------- */
+
+    function chooseActions() {
+
+      const energy =
+        state.energy || "medium";
+
+
+      let pool =
+        defaultActions.filter(
+          action =>
+            action.tags.includes(energy)
+        );
+
+
+      const shuffled =
+        [...pool].sort(
+          () => Math.random() - 0.5
+        );
+
+
+      visibleActions =
+        shuffled.slice(0, 3);
+
+    }
+
+
+    /* --------------------------------
+       REFRESH
+    -------------------------------- */
+
+    function refreshSuggestions() {
+
+      chooseActions();
+
+      renderActions();
+
+      toast(
+        "Fresh suggestions — pick what feels doable."
+      );
+
+    }
+
+
+    /* --------------------------------
+       COMPLETE ACTION
+    -------------------------------- */
+
+    function completeAction(id) {
+
+      if (
+        state.completed.includes(id)
+      ) {
+        return;
+      }
+
+
+      const action =
+        defaultActions.find(
+          x => x.id === id
+        );
+
+
+      const points =
+        action?.points || 10;
+
+
+      state.completed.push(id);
+
+      state.points += points;
+
+
+      save();
+
+      render();
+
+
+      toast(
+        `+${points} Momentum ✨ ${action?.title || "Nice work"}`
+      );
+
+    }
+
+
+    /* --------------------------------
+       RENDER ACTIONS
+    -------------------------------- */
+
+    function renderActions() {
+
+      const list =
+        document.getElementById(
+          "actionList"
+        );
+
+
+      if (!visibleActions.length) {
+
+        chooseActions();
+
+      }
+
+
+      list.innerHTML =
+        visibleActions
+          .map(action => {
+
+            const done =
+              state.completed.includes(
+                action.id
+              );
+
+
+            return `
+
+              <div
+                class="action ${done ? "done" : ""}"
+              >
+
+                <div class="action-icon">
+                  ${action.icon}
+                </div>
+
+
+                <div>
+
+                  <div class="action-title">
+
+                    <strong>
+                      ${action.title}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="points">
+                    +${action.points} Momentum
+                  </div>
+
+                </div>
+
+
+                <button
+                  class="complete-btn"
+                  ${done ? "disabled" : ""}
+                  onclick="completeAction(${action.id})"
+                >
+
+                  ${
+                    done
+                      ? "Done ✓"
+                      : "Do it"
+                  }
+
+                </button>
+
+              </div>
+
+            `;
+
+          })
+          .join("");
+
+    }
+
+
+    /* --------------------------------
+       RENDER REWARDS
+    -------------------------------- */
+
+    function renderRewards() {
+
+      const rewards =
+        [
+          ...defaultRewards,
+          ...state.customRewards
+        ];
+
+
+      const list =
+        document.getElementById(
+          "rewardList"
+        );
+
+
+      list.innerHTML =
+        rewards
+          .slice(0, 4)
+          .map(reward => {
+
+            const canClaim =
+              state.points >= reward.cost;
+
+
+            return `
+
+              <div
+                class="reward ${canClaim ? "" : "locked"}"
+              >
+
+                <div>
+
+                  <strong>
+                    ${reward.name}
+                  </strong>
+
+                  <div class="reward-cost">
+
+                    ${reward.cost} pts
+                    ·
+                    ${reward.type}
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  ${canClaim ? "" : "disabled"}
+                  onclick="claimReward(${reward.id})"
+                >
+
+                  ${
+                    canClaim
+                      ? "Claim"
+                      : "Locked"
+                  }
+
+                </button>
+
+              </div>
+
+            `;
+
+          })
+          .join("");
+
+    }
+
+
+    /* --------------------------------
+       CLAIM REWARD
+    -------------------------------- */
+
+    function claimReward(id) {
+
+      const rewards =
+        [
+          ...defaultRewards,
+          ...state.customRewards
+        ];
+
+
+      const reward =
+        rewards.find(
+          r => r.id === id
+        );
+
+
+      if (
+        !reward ||
+        state.points < reward.cost
+      ) {
+        return;
+      }
+
+
+      state.points -= reward.cost;
+
+      state.rewardsClaimed++;
+
+
+      save();
+
+      render();
+
+
+      toast(
+        `Reward unlocked: ${reward.name} 🎁 Enjoy it.`
+      );
+
+    }
+
+
+    /* --------------------------------
+       OPEN REWARDS
+    -------------------------------- */
+
+    function openRewards() {
+
+      document
+        .getElementById("rewardModal")
+        .classList.add("show");
+
+    }
+
+
+    /* --------------------------------
+       CLOSE REWARDS
+    -------------------------------- */
+
+    function closeRewards() {
+
+      document
+        .getElementById("rewardModal")
+        .classList.remove("show");
+
+    }
+
+
+    /* --------------------------------
+       ADD CUSTOM REWARD
+    -------------------------------- */
+
+    function addReward() {
+
+      const name =
+        document
+          .getElementById("rewardName")
+          .value
+          .trim();
+
+
+      const cost =
+        Number(
+          document
+            .getElementById("rewardCost")
+            .value
+        );
+
+
+      const type =
+        document
+          .getElementById("rewardType")
+          .value;
+
+
+      if (
+        !name ||
+        !cost ||
+        cost < 10
+      ) {
+
+        toast(
+          "Give your reward a name and a points cost."
+        );
+
+        return;
+
+      }
+
+
+      state.customRewards.push({
+
+        id: Date.now(),
+
+        name,
+
+        cost,
+
+        type
+
+      });
+
+
+      document
+        .getElementById("rewardName")
+        .value = "";
+
+
+      document
+        .getElementById("rewardCost")
+        .value = 100;
+
+
+      save();
+
+      closeRewards();
+
+      render();
+
+
+      toast(
+        "Reward added to your bank 🎁"
+      );
+
+    }
+
+
+    /* --------------------------------
+       SAVE NOTE
+    -------------------------------- */
+
+    function saveNote() {
+
+      const input =
+        document.getElementById(
+          "noteInput"
+        );
+
+
+      const value =
+        input.value.trim();
+
+
+      if (!value) {
+        return;
+      }
+
+
+      state.note = value;
+
+
+      save();
+
+
+      input.value = "";
+
+
+      renderNote();
+
+
+      toast(
+        "Captured. You don't have to do it right now."
+      );
+
+    }
+
+
+    /* --------------------------------
+       RENDER NOTE
+    -------------------------------- */
+
+    function renderNote() {
+
+      const el =
+        document.getElementById(
+          "savedNote"
+        );
+
+
+      el.innerHTML =
+        state.note
+
+          ? `
+              📝
+              <strong>On your mind:</strong>
+              ${escapeHtml(state.note)}
+            `
+
+          : "";
+
+    }
+
+
+    /* --------------------------------
+       ESCAPE HTML
+    -------------------------------- */
+
+    function escapeHtml(value) {
+
+      return value.replace(
+        /[&<>"']/g,
+        char => ({
+
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+
+        }[char])
+      );
+
+    }
+
+
+    /* --------------------------------
+       MAIN RENDER
+    -------------------------------- */
+
+    function render() {
+
+
+      /* Energy buttons */
+
+      document
+        .querySelectorAll(".energy")
+        .forEach(btn => {
+
+          btn.classList.toggle(
+            "active",
+            btn.dataset.energy ===
+              state.energy
+          );
+
+        });
+
+
+      /* Energy heading */
+
+      document
+        .getElementById("energyHeading")
+        .textContent =
+
+        state.energy === "low"
+
+          ? "Gentle mode"
+
+          : state.energy === "medium"
+
+          ? "Steady mode"
+
+          : state.energy === "good"
+
+          ? "Good-energy mode"
+
+          : "Choose your energy";
+
+
+      /* Points */
+
+      document
+        .getElementById("points")
+        .textContent =
+        state.points;
+
+
+      /* Reward progress */
+
+      const remainder =
+        state.points % 100;
+
+
+      const percentage =
+        remainder;
+
+
+      document
+        .getElementById("progress")
+        .style.width =
+        percentage + "%";
+
+
+      document
+        .getElementById("rewardProgress")
+        .textContent =
+
+        `${remainder} / 100 toward your next 100-point milestone`;
+
+
+      /* Stats */
+
+      document
+        .getElementById("completedCount")
+        .textContent =
+        state.completed.length;
+
+
+      document
+        .getElementById("rewardCount")
+        .textContent =
+        state.rewardsClaimed;
+
+
+      /* Other sections */
+
+      renderActions();
+
+      renderRewards();
+
+      renderNote();
+
+    }
+
+
+    /* --------------------------------
+       RESET
+    -------------------------------- */
+
+    function resetDemo() {
+
+      if (
+        !confirm(
+          "Reset the V1 demo and start again?"
+        )
+      ) {
+        return;
+      }
+
+
+      localStorage.removeItem(
+        "momentumV1"
+      );
+
+
+      state = {
+
+        points: 0,
+
+        energy: null,
+
+        completed: [],
+
+        rewardsClaimed: 0,
+
+        customRewards: [],
+
+        note: ""
+
+      };
+
+
+      visibleActions = [];
+
+
+      render();
+
+
+      toast(
+        "Fresh start. No judgement. 🌱"
+      );
+
+    }
+
+
+    /* --------------------------------
+       TOAST
+    -------------------------------- */
+
+    function toast(message) {
+
+      const el =
+        document.getElementById(
+          "toast"
+        );
+
+
+      el.textContent =
+        message;
+
+
+      el.classList.add(
+        "show"
+      );
+
+
+      clearTimeout(
+        window.toastTimer
+      );
+
+
+      window.toastTimer =
+        setTimeout(
+          () =>
+            el.classList.remove(
+              "show"
+            ),
+          2600
+        );
+
+    }
+
+
+    /* --------------------------------
+       CLOSE MODAL WHEN CLICKING OUTSIDE
+    -------------------------------- */
+
+    document
+      .getElementById("rewardModal")
+      .addEventListener(
+        "click",
+        (event) => {
+
+          if (
+            event.target.id ===
+            "rewardModal"
+          ) {
+
+            closeRewards();
+
+          }
+
+        }
+      );
+
+
+    /* --------------------------------
+       START APP
+    -------------------------------- */
+
+    render();
+
+  </script>
+
+</body>
+</html>
