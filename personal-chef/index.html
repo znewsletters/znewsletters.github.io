@@ -638,9 +638,11 @@ select:focus{
 @media(max-width:520px){
   h1{font-size:35px}
   .app{padding-left:10px;padding-right:10px}
+
   .ingredient-row{
     grid-template-columns:minmax(0,1fr) 61px 69px 34px;
   }
+
   .ingredient-row input{
     font-size:11px;
   }
@@ -660,15 +662,25 @@ select:focus{
 
 <header class="hero">
   <div class="kicker">A little kitchen, entirely yours</div>
+
   <h1>Zara's<br>Personal Chef</h1>
-  <p>Your private recipe book, weekly menu and shopping companion — all in one delicious little place.</p>
+
+  <p>
+    Your private recipe book, weekly menu and shopping companion —
+    all in one delicious little place.
+  </p>
+
   <div class="hero-icon">🍷</div>
 </header>
 
+
+<!-- ==================== NAVIGATION ==================== -->
+
 <nav class="nav">
-  <button class="active" data-screen="meals">
-    <span class="nav-icon">🍝</span>
-    My Meals
+
+  <button class="active" data-screen="shopping">
+    <span class="nav-icon">🛒</span>
+    Shopping
   </button>
 
   <button data-screen="week">
@@ -676,30 +688,34 @@ select:focus{
     This Week
   </button>
 
-  <button data-screen="shopping">
-    <span class="nav-icon">🛒</span>
-    Shopping
+  <button data-screen="meals">
+    <span class="nav-icon">🍝</span>
+    My Meals
   </button>
+
 </nav>
+
 
 <main>
 
-<!-- ==================== MEALS ==================== -->
+<!-- ==================== SHOPPING ==================== -->
 
-<section id="meals" class="screen active">
+<section id="shopping" class="screen active">
 
   <div class="section-head">
+
     <div>
-      <h2>La mia cucina</h2>
-      <p>Your meals on rotation</p>
+      <h2>Shopping List</h2>
+      <p>Your ingredients for the week</p>
     </div>
 
-    <button class="btn btn-primary" id="addMealButton">
-      + Add meal
+    <button class="btn btn-secondary" id="clearChecksButton">
+      Reset
     </button>
+
   </div>
 
-  <div id="mealList"></div>
+  <div id="shoppingList"></div>
 
 </section>
 
@@ -709,15 +725,18 @@ select:focus{
 <section id="week" class="screen">
 
   <div class="section-head">
+
     <div>
-      <h2>This week's menu</h2>
+      <h2>This Week's Menu</h2>
       <p>Choose what you're cooking</p>
     </div>
+
   </div>
 
   <div class="notice">
     Select every meal you want to make this week.
-    Your shopping list will automatically combine ingredients from all selected meals.
+    Your shopping list will automatically combine ingredients
+    from all selected meals.
   </div>
 
   <div id="weekList"></div>
@@ -725,22 +744,24 @@ select:focus{
 </section>
 
 
-<!-- ==================== SHOPPING ==================== -->
+<!-- ==================== MEALS ==================== -->
 
-<section id="shopping" class="screen">
+<section id="meals" class="screen">
 
   <div class="section-head">
+
     <div>
-      <h2>La lista della spesa</h2>
-      <p>Your shopping list</p>
+      <h2>My Meals</h2>
+      <p>Your meals on rotation</p>
     </div>
 
-    <button class="btn btn-secondary" id="clearChecksButton">
-      Reset
+    <button class="btn btn-primary" id="addMealButton">
+      + Add Meal
     </button>
+
   </div>
 
-  <div id="shoppingList"></div>
+  <div id="mealList"></div>
 
 </section>
 
@@ -757,14 +778,20 @@ select:focus{
     <div class="sheet-header">
 
       <div>
-        <h2 class="form-title" id="modalTitle">Add a meal</h2>
+
+        <h2 class="form-title" id="modalTitle">
+          Add a Meal
+        </h2>
 
         <div class="form-subtitle">
           Tell your personal chef what goes into it.
         </div>
+
       </div>
 
-      <button class="close-btn" id="closeModal">×</button>
+      <button class="close-btn" id="closeModal">
+        ×
+      </button>
 
     </div>
 
@@ -773,15 +800,16 @@ select:focus{
 
       <input type="hidden" id="editMealId">
 
+
       <label class="form-label" for="mealName">
-        Meal name
+        Meal Name
       </label>
 
       <input
         id="mealName"
         required
         autocomplete="off"
-        placeholder="e.g. Creamy chicken pasta"
+        placeholder="e.g. Creamy Chicken Pasta"
       >
 
 
@@ -790,6 +818,7 @@ select:focus{
       </label>
 
       <select id="mealCategory">
+
         <option>Dinner</option>
         <option>Lunch</option>
         <option>Breakfast</option>
@@ -799,6 +828,7 @@ select:focus{
         <option>Snack</option>
         <option>Dessert</option>
         <option>Other</option>
+
       </select>
 
 
@@ -814,7 +844,7 @@ select:focus{
         class="btn btn-secondary full"
         id="addIngredientButton"
       >
-        ＋ Add ingredient
+        + Add Ingredient
       </button>
 
 
@@ -832,7 +862,7 @@ select:focus{
           type="submit"
           class="btn btn-primary"
         >
-          Save meal
+          Save Meal
         </button>
 
       </div>
@@ -865,11 +895,13 @@ let state = loadState();
 --------------------------------------------------------- */
 
 function emptyState(){
+
   return {
     meals: [],
     selectedMeals: [],
     checkedItems: []
   };
+
 }
 
 
@@ -886,9 +918,22 @@ function loadState(){
     const parsed = JSON.parse(saved);
 
     return {
-      meals: Array.isArray(parsed.meals) ? parsed.meals : [],
-      selectedMeals: Array.isArray(parsed.selectedMeals) ? parsed.selectedMeals : [],
-      checkedItems: Array.isArray(parsed.checkedItems) ? parsed.checkedItems : []
+
+      meals:
+        Array.isArray(parsed.meals)
+        ? parsed.meals
+        : [],
+
+      selectedMeals:
+        Array.isArray(parsed.selectedMeals)
+        ? parsed.selectedMeals
+        : [],
+
+      checkedItems:
+        Array.isArray(parsed.checkedItems)
+        ? parsed.checkedItems
+        : []
+
     };
 
   }catch(error){
@@ -901,10 +946,12 @@ function loadState(){
 
 
 function saveState(){
+
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(state)
   );
+
 }
 
 
@@ -926,11 +973,13 @@ function escapeHTML(value){
     .replace(/[&<>"']/g,function(character){
 
       return {
+
         "&":"&amp;",
         "<":"&lt;",
         ">":"&gt;",
         '"':"&quot;",
         "'":"&#039;"
+
       }[character];
 
     });
@@ -944,7 +993,8 @@ function escapeHTML(value){
 
 function showToast(message){
 
-  const toast = document.getElementById("toast");
+  const toast =
+    document.getElementById("toast");
 
   toast.textContent = message;
 
@@ -953,7 +1003,9 @@ function showToast(message){
   clearTimeout(showToast.timer);
 
   showToast.timer = setTimeout(function(){
+
     toast.classList.remove("show");
+
   },2200);
 
 }
@@ -1030,11 +1082,12 @@ function renderMeals(){
   if(state.meals.length === 0){
 
     container.innerHTML = `
+
       <div class="empty">
 
         <div class="empty-icon">👩‍🍳</div>
 
-        <h3>Your recipe book is waiting.</h3>
+        <h3>Your Recipe Book Is Waiting</h3>
 
         <p>
           Add the meals you love to cook.
@@ -1046,10 +1099,11 @@ function renderMeals(){
           class="btn btn-primary"
           onclick="openMealModal()"
         >
-          Add your first meal
+          Add Your First Meal
         </button>
 
       </div>
+
     `;
 
     return;
@@ -1057,78 +1111,92 @@ function renderMeals(){
   }
 
 
-  container.innerHTML = state.meals.map(function(meal){
+  container.innerHTML =
+    state.meals.map(function(meal){
 
-    const ingredients = meal.ingredients || [];
-
-    const preview = ingredients
-      .slice(0,4)
-      .map(function(ingredient){
-
-        return [
-          ingredient.qty,
-          ingredient.unit,
-          ingredient.name
-        ]
-        .filter(Boolean)
-        .map(escapeHTML)
-        .join(" ");
-
-      })
-      .join(" · ");
+      const ingredients =
+        meal.ingredients || [];
 
 
-    return `
-      <article class="card meal-card">
+      const preview =
+        ingredients
+          .slice(0,4)
+          .map(function(ingredient){
 
-        <div class="card-actions">
+            return [
 
-          <button
-            class="icon-btn"
-            title="Edit meal"
-            onclick="editMeal('${meal.id}')"
-          >
-            ✎
-          </button>
+              ingredient.qty,
+              ingredient.unit,
+              ingredient.name
 
-          <button
-            class="icon-btn"
-            title="Delete meal"
-            onclick="deleteMeal('${meal.id}')"
-          >
-            ×
-          </button>
+            ]
+            .filter(Boolean)
+            .map(escapeHTML)
+            .join(" ");
 
-        </div>
+          })
+          .join(" · ");
 
 
-        <h3>${escapeHTML(meal.name)}</h3>
+      return `
 
-        <div class="meal-meta">
-          ${escapeHTML(meal.category)}
-          ·
-          ${ingredients.length}
-          ingredient${ingredients.length === 1 ? "" : "s"}
-        </div>
+        <article class="card meal-card">
+
+          <div class="card-actions">
+
+            <button
+              class="icon-btn"
+              title="Edit Meal"
+              onclick="editMeal('${meal.id}')"
+            >
+              ✎
+            </button>
 
 
-        ${
-          preview
-          ?
-          `
-          <div class="ingredient-preview">
-            ${preview}
-            ${ingredients.length > 4 ? " · …" : ""}
+            <button
+              class="icon-btn"
+              title="Delete Meal"
+              onclick="deleteMeal('${meal.id}')"
+            >
+              ×
+            </button>
+
           </div>
-          `
-          :
-          ""
-        }
 
-      </article>
-    `;
 
-  }).join("");
+          <h3>
+            ${escapeHTML(meal.name)}
+          </h3>
+
+
+          <div class="meal-meta">
+
+            ${escapeHTML(meal.category)}
+            ·
+            ${ingredients.length}
+            ingredient${ingredients.length === 1 ? "" : "s"}
+
+          </div>
+
+
+          ${
+            preview
+            ?
+            `
+              <div class="ingredient-preview">
+                ${preview}
+                ${ingredients.length > 4 ? " · …" : ""}
+              </div>
+            `
+            :
+            ""
+          }
+
+        </article>
+
+      `;
+
+    }).join("");
 
 }
 
@@ -1164,13 +1232,15 @@ function openMealModal(id = null){
 
 
   document.getElementById("modalTitle").textContent =
-    id ? "Edit meal" : "Add a meal";
+    id ? "Edit Meal" : "Add a Meal";
 
 
   const meal =
     id
     ? state.meals.find(function(item){
+
         return item.id === id;
+
       })
     : null;
 
@@ -1190,7 +1260,11 @@ function openMealModal(id = null){
   rows.innerHTML = "";
 
 
-  if(meal && meal.ingredients && meal.ingredients.length){
+  if(
+    meal &&
+    meal.ingredients &&
+    meal.ingredients.length
+  ){
 
     meal.ingredients.forEach(function(ingredient){
 
@@ -1245,7 +1319,9 @@ document
   .addEventListener("click",function(event){
 
     if(event.target.id === "mealModal"){
+
       closeMealModal();
+
     }
 
   });
@@ -1274,11 +1350,13 @@ function addIngredientRow(ingredient = {}){
       required
     >
 
+
     <input
       class="ingredient-quantity"
       placeholder="Qty"
       value="${escapeHTML(ingredient.qty || "")}"
     >
+
 
     <input
       class="ingredient-unit"
@@ -1286,10 +1364,11 @@ function addIngredientRow(ingredient = {}){
       value="${escapeHTML(ingredient.unit || "")}"
     >
 
+
     <button
       type="button"
       class="remove-ingredient"
-      aria-label="Remove ingredient"
+      aria-label="Remove Ingredient"
     >
       ×
     </button>
@@ -1311,7 +1390,9 @@ function addIngredientRow(ingredient = {}){
 
       }else{
 
-        row.querySelector(".ingredient-name").value = "";
+        row
+          .querySelector(".ingredient-name")
+          .value = "";
 
       }
 
@@ -1331,8 +1412,10 @@ document
 
     addIngredientRow();
 
+
     const rows =
       document.querySelectorAll(".ingredient-row");
+
 
     rows[rows.length - 1]
       .querySelector(".ingredient-name")
@@ -1368,33 +1451,37 @@ document
 
             name:
               row
-              .querySelector(".ingredient-name")
-              .value
-              .trim(),
+                .querySelector(".ingredient-name")
+                .value
+                .trim(),
 
             qty:
               row
-              .querySelector(".ingredient-quantity")
-              .value
-              .trim(),
+                .querySelector(".ingredient-quantity")
+                .value
+                .trim(),
 
             unit:
               row
-              .querySelector(".ingredient-unit")
-              .value
-              .trim()
+                .querySelector(".ingredient-unit")
+                .value
+                .trim()
 
           };
 
         })
         .filter(function(item){
+
           return item.name;
+
         });
 
 
     if(!ingredients.length){
 
-      showToast("Add at least one ingredient.");
+      showToast(
+        "Add at least one ingredient."
+      );
 
       return;
 
@@ -1434,13 +1521,19 @@ document
 
         });
 
-      showToast("Meal updated ✨");
+
+      showToast(
+        "Meal updated ✨"
+      );
 
     }else{
 
       state.meals.push(meal);
 
-      showToast("Meal added to your kitchen ✨");
+
+      showToast(
+        "Meal added to your kitchen ✨"
+      );
 
     }
 
@@ -1469,7 +1562,9 @@ function deleteMeal(id){
 
   const meal =
     state.meals.find(function(item){
+
       return item.id === id;
+
     });
 
 
@@ -1491,13 +1586,17 @@ function deleteMeal(id){
 
   state.meals =
     state.meals.filter(function(item){
+
       return item.id !== id;
+
     });
 
 
   state.selectedMeals =
     state.selectedMeals.filter(function(itemId){
+
       return itemId !== id;
+
     });
 
 
@@ -1505,7 +1604,9 @@ function deleteMeal(id){
 
   renderMeals();
 
-  showToast("Meal removed.");
+  showToast(
+    "Meal removed."
+  );
 
 }
 
@@ -1523,11 +1624,12 @@ function renderWeek(){
   if(state.meals.length === 0){
 
     container.innerHTML = `
+
       <div class="empty">
 
         <div class="empty-icon">🍽️</div>
 
-        <h3>No meals yet.</h3>
+        <h3>No Meals Yet</h3>
 
         <p>
           Add some favourites to your recipe book first,
@@ -1538,10 +1640,11 @@ function renderWeek(){
           class="btn btn-primary"
           onclick="openMealModal()"
         >
-          Add a meal
+          Add a Meal
         </button>
 
       </div>
+
     `;
 
     return;
@@ -1574,7 +1677,7 @@ function renderWeek(){
         class="btn btn-secondary"
         onclick="showScreen('shopping')"
       >
-        Shopping list →
+        Shopping List →
       </button>
 
     </div>
@@ -1631,7 +1734,9 @@ function toggleMeal(id){
 
     state.selectedMeals =
       state.selectedMeals.filter(function(item){
+
         return item !== id;
+
       });
 
   }else{
@@ -1664,7 +1769,9 @@ function getCombinedIngredients(){
 
     const meal =
       state.meals.find(function(item){
+
         return item.id === mealId;
+
       });
 
 
@@ -1746,14 +1853,15 @@ function renderShopping(){
   if(state.selectedMeals.length === 0){
 
     container.innerHTML = `
+
       <div class="empty">
 
         <div class="empty-icon">🛒</div>
 
-        <h3>Your trolley is empty.</h3>
+        <h3>Your Shopping List Is Empty</h3>
 
         <p>
-          Head to “This Week” and choose the meals
+          Head to "This Week" and choose the meals
           you want to make. Your combined shopping list
           will appear here.
         </p>
@@ -1762,10 +1870,11 @@ function renderShopping(){
           class="btn btn-primary"
           onclick="showScreen('week')"
         >
-          Plan my week
+          Plan My Week
         </button>
 
       </div>
+
     `;
 
     return;
@@ -1799,10 +1908,15 @@ function renderShopping(){
 
         const meal =
           state.meals.find(function(item){
+
             return item.id === id;
+
           });
 
-        return meal ? meal.name : null;
+
+        return meal
+          ? meal.name
+          : null;
 
       })
       .filter(Boolean);
@@ -1828,8 +1942,10 @@ function renderShopping(){
 
 
         <div class="progress-text">
+
           ${selectedNames.length}
           meal${selectedNames.length === 1 ? "" : "s"}
+
         </div>
 
       </div>
@@ -1855,7 +1971,7 @@ function renderShopping(){
     <div>
 
       <h3 class="shopping-group-title">
-        Your ingredients
+        Your Ingredients
       </h3>
 
 
@@ -1871,7 +1987,9 @@ function renderShopping(){
 
         return `
 
-          <label class="shop-item ${checked ? "checked" : ""}">
+          <label
+            class="shop-item ${checked ? "checked" : ""}"
+          >
 
             <input
               type="checkbox"
@@ -1886,7 +2004,9 @@ function renderShopping(){
 
 
             <span class="shop-quantity">
-              ${escapeHTML(item.quantities.join(" + "))}
+              ${escapeHTML(
+                item.quantities.join(" + ")
+              )}
             </span>
 
           </label>
@@ -1904,7 +2024,9 @@ function renderShopping(){
 
     setTimeout(function(){
 
-      showToast("Shopping complete! 👩‍🍳✨");
+      showToast(
+        "Shopping complete! 👩‍🍳✨"
+      );
 
     },50);
 
@@ -1923,7 +2045,9 @@ function toggleShoppingItem(key){
 
     state.checkedItems =
       state.checkedItems.filter(function(item){
+
         return item !== key;
+
       });
 
   }else{
@@ -1950,7 +2074,9 @@ document
 
     renderShopping();
 
-    showToast("Shopping list reset.");
+    showToast(
+      "Shopping list reset."
+    );
 
   });
 
@@ -1959,7 +2085,7 @@ document
    START APP
 --------------------------------------------------------- */
 
-renderMeals();
+renderShopping();
 
 </script>
 
