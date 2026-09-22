@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Momentum — V1</title>
+  <title>Momentum — V2</title>
 
   <style>
     :root {
@@ -15,6 +15,7 @@
       --accent: #6f7f62;
       --accent-dark: #526046;
       --soft: #edf1e9;
+      --soft-warm: #f8f6f2;
       --shadow: 0 8px 30px rgba(45, 42, 35, .07);
       --radius: 20px;
     }
@@ -41,6 +42,14 @@
     input,
     select {
       font: inherit;
+    }
+
+    button {
+      transition: .18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
     }
 
     .app {
@@ -110,6 +119,8 @@
     .header-actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     /* -----------------------------
@@ -119,11 +130,9 @@
     .icon-btn,
     .secondary-btn,
     .primary-btn {
-      border: 0;
       border-radius: 12px;
       padding: 10px 14px;
       cursor: pointer;
-      transition: .18s ease;
     }
 
     .icon-btn,
@@ -134,6 +143,7 @@
     }
 
     .primary-btn {
+      border: 0;
       background: var(--accent);
       color: white;
       font-weight: 650;
@@ -141,10 +151,6 @@
 
     .primary-btn:hover {
       background: var(--accent-dark);
-    }
-
-    button:hover {
-      transform: translateY(-1px);
     }
 
     /* -----------------------------
@@ -167,11 +173,81 @@
 
     .energy-card {
       grid-column: 1 / -1;
-
       display: grid;
       grid-template-columns: 1.1fr 1fr;
       gap: 24px;
       align-items: center;
+    }
+
+    /* -----------------------------
+       TODAY / WEEK RHYTHM
+    ----------------------------- */
+
+    .today-card {
+      margin-bottom: 18px;
+      background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f8f7f2 100%
+      );
+    }
+
+    .today-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .day-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--soft);
+      color: var(--accent-dark);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .today-title {
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .today-message {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 680px;
+      margin-bottom: 0;
+    }
+
+    .schedule-preview {
+      margin-top: 17px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .schedule-mini {
+      padding: 11px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .schedule-mini strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .schedule-mini span {
+      color: var(--muted);
+      font-size: 12px;
     }
 
     /* -----------------------------
@@ -234,6 +310,18 @@
       font-size: 34px;
       font-weight: 750;
       letter-spacing: -1px;
+    }
+
+    .next-reward {
+      margin-top: 14px;
+      padding: 12px;
+      background: var(--soft-warm);
+      border-radius: 13px;
+    }
+
+    .next-reward strong {
+      display: block;
+      margin-bottom: 3px;
     }
 
     /* -----------------------------
@@ -305,7 +393,7 @@
     }
 
     /* -----------------------------
-       QUESTS
+       QUEST TOOLS
     ----------------------------- */
 
     .quest-tools {
@@ -349,10 +437,26 @@
       opacity: .55;
     }
 
-    .reward-cost {
+    .reward-info {
+      min-width: 0;
+    }
+
+    .reward-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .reward-meta {
       font-size: 12px;
       color: var(--muted);
-      margin-top: 3px;
+      margin-top: 4px;
+    }
+
+    .reward-favourite {
+      color: #8a7440;
+      font-size: 13px;
     }
 
     .reward button {
@@ -368,6 +472,50 @@
     .reward button:disabled {
       opacity: .45;
       cursor: not-allowed;
+    }
+
+    .reward-actions {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .tiny-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .tiny-btn:hover {
+      background: var(--soft-warm);
+    }
+
+    .reward-filter {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 3px 0 5px;
+      margin-top: 10px;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .filter-btn.active {
+      background: var(--soft);
+      color: var(--accent-dark);
+      border-color: var(--accent);
     }
 
     /* -----------------------------
@@ -419,6 +567,51 @@
     }
 
     /* -----------------------------
+       WEEK SETTINGS
+    ----------------------------- */
+
+    .week-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .week-day {
+      display: grid;
+      grid-template-columns: 95px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--soft-warm);
+    }
+
+    .week-day.today {
+      border-color: var(--accent);
+      background: var(--soft);
+    }
+
+    .week-day-name {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .week-day select {
+      margin-top: 0;
+    }
+
+    .schedule-note {
+      margin-top: 14px;
+      padding: 13px;
+      background: var(--soft);
+      border-radius: 14px;
+      color: var(--accent-dark);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* -----------------------------
        TOAST
     ----------------------------- */
 
@@ -442,8 +635,9 @@
 
       transition: .25s ease;
 
-      z-index: 10;
+      z-index: 100;
       text-align: center;
+      max-width: calc(100vw - 30px);
     }
 
     .toast.show {
@@ -463,8 +657,9 @@
 
       background: rgba(20, 20, 20, .35);
 
-      z-index: 20;
+      z-index: 50;
       padding: 20px;
+      overflow-y: auto;
     }
 
     .modal-backdrop.show {
@@ -475,7 +670,7 @@
     .modal {
       background: white;
 
-      width: min(520px, 100%);
+      width: min(600px, 100%);
 
       border-radius: 22px;
       padding: 22px;
@@ -486,7 +681,8 @@
     .modal-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
+      gap: 15px;
     }
 
     .form-grid {
@@ -511,6 +707,19 @@
       padding: 10px;
 
       background: white;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .checkbox-row input {
+      width: auto;
+      margin: 0;
     }
 
     .modal-actions {
@@ -546,6 +755,31 @@
 
       .header-actions .secondary-btn {
         display: none;
+      }
+
+      .schedule-preview {
+        grid-template-columns: 1fr;
+      }
+
+      .today-top {
+        flex-direction: column;
+      }
+
+      .week-day {
+        grid-template-columns: 1fr;
+      }
+
+      .action {
+        grid-template-columns: 42px 1fr;
+      }
+
+      .action .complete-btn {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .checkin-row {
+        flex-direction: column;
       }
     }
   </style>
@@ -584,6 +818,12 @@
         </button>
 
         <button
+          class="secondary-btn"
+          onclick="openWeekSettings()">
+          🗓 My Week
+        </button>
+
+        <button
           class="icon-btn"
           onclick="resetDemo()"
           title="Reset demo">
@@ -593,6 +833,51 @@
       </div>
 
     </header>
+
+
+    <!-- TODAY -->
+
+    <section class="card today-card">
+
+      <div class="today-top">
+
+        <div>
+
+          <div
+            class="day-badge"
+            id="dayBadge">
+            🗓 Today
+          </div>
+
+          <h2
+            class="today-title"
+            id="todayTitle">
+            Your day
+          </h2>
+
+          <p
+            class="today-message"
+            id="todayMessage">
+            Let's make today a little easier.
+          </p>
+
+        </div>
+
+        <button
+          class="secondary-btn"
+          onclick="openWeekSettings()">
+          Edit week
+        </button>
+
+      </div>
+
+
+      <div
+        class="schedule-preview"
+        id="schedulePreview">
+      </div>
+
+    </section>
 
 
     <!-- MAIN GRID -->
@@ -690,9 +975,13 @@
           <div
             class="muted"
             id="rewardProgress">
+            Building momentum...
+          </div>
 
-            0 / 100 to your next reward
 
+          <div
+            class="next-reward"
+            id="nextReward">
           </div>
 
         </div>
@@ -851,6 +1140,20 @@
             Things worth working towards
           </h2>
 
+          <div
+            class="muted"
+            style="line-height:1.5;">
+            Rewards don't have to cost money.
+            Choose things that genuinely feel good to you.
+          </div>
+
+
+          <div
+            class="reward-filter"
+            id="rewardFilter">
+          </div>
+
+
           <div id="rewardList">
           </div>
 
@@ -860,7 +1163,7 @@
             style="margin-top:12px; width:100%;"
             onclick="openRewards()">
 
-            + Add a reward
+            + Manage rewards
 
           </button>
 
@@ -901,6 +1204,12 @@
             Add something you actually want
           </h2>
 
+          <p
+            class="muted"
+            style="margin-top:7px; margin-bottom:0;">
+            Free rewards are absolutely encouraged.
+          </p>
+
         </div>
 
         <button
@@ -922,7 +1231,7 @@
 
           <input
             id="rewardName"
-            placeholder="e.g. New book"
+            placeholder="e.g. Slow morning with a book"
           />
 
         </label>
@@ -930,7 +1239,7 @@
 
         <label>
 
-          Cost
+          Momentum cost
 
           <input
             id="rewardCost"
@@ -950,11 +1259,15 @@
           <select id="rewardType">
 
             <option>
-              Little treat
+              Free / no-spend
             </option>
 
             <option>
               Relaxation
+            </option>
+
+            <option>
+              Connection
             </option>
 
             <option>
@@ -966,6 +1279,64 @@
             </option>
 
           </select>
+
+        </label>
+
+
+        <label>
+
+          Size
+
+          <select id="rewardSize">
+
+            <option value="tiny">
+              Tiny
+            </option>
+
+            <option value="medium" selected>
+              Medium
+            </option>
+
+            <option value="big">
+              Big
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label>
+
+          Availability
+
+          <select id="rewardAvailability">
+
+            <option value="anytime">
+              Anytime
+            </option>
+
+            <option value="weekends">
+              Weekends
+            </option>
+
+            <option value="weekdays">
+              Weekdays
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label class="checkbox-row">
+
+          <input
+            type="checkbox"
+            id="rewardFavourite"
+          />
+
+          Make this a favourite reward
 
         </label>
 
@@ -997,6 +1368,82 @@
   </div>
 
 
+  <!-- WEEK SETTINGS MODAL -->
+
+  <div
+    class="modal-backdrop"
+    id="weekModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <div>
+
+          <div class="muted">
+            My Week
+          </div>
+
+          <h2 style="margin-bottom:0;">
+            Make the app fit your actual life
+          </h2>
+
+          <p
+            class="muted"
+            style="margin-top:7px; margin-bottom:0;">
+            Your day type changes what Momentum suggests.
+          </p>
+
+        </div>
+
+        <button
+          class="icon-btn"
+          onclick="closeWeekSettings()">
+
+          ✕
+
+        </button>
+
+      </div>
+
+
+      <div
+        class="week-list"
+        id="weekList">
+      </div>
+
+
+      <div class="schedule-note">
+        💡 Energy still overrides the schedule. A WFH day doesn't mean
+        you have to exercise or clean if you're running on empty.
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          class="secondary-btn"
+          onclick="closeWeekSettings()">
+
+          Close
+
+        </button>
+
+        <button
+          class="primary-btn"
+          onclick="saveWeekSettings()">
+
+          Save week
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
   <!-- JAVASCRIPT -->
 
   <script>
@@ -1012,7 +1459,8 @@
         title: "10-minute home reset",
         icon: "🏠",
         points: 15,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["wfh", "flexible"]
       },
 
       {
@@ -1020,7 +1468,8 @@
         title: "Go for a 30-minute walk",
         icon: "🚶",
         points: 20,
-        tags: ["medium", "good"]
+        tags: ["medium", "good"],
+        types: ["wfh", "flexible"]
       },
 
       {
@@ -1028,7 +1477,8 @@
         title: "Read for 10 minutes",
         icon: "📖",
         points: 10,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["all"]
       },
 
       {
@@ -1036,7 +1486,8 @@
         title: "5-minute meditation",
         icon: "🧘",
         points: 10,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["all"]
       },
 
       {
@@ -1044,7 +1495,8 @@
         title: "Put your phone away for 30 minutes",
         icon: "📵",
         points: 15,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["all"]
       },
 
       {
@@ -1052,7 +1504,8 @@
         title: "Do one small annoying task",
         icon: "✨",
         points: 15,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["wfh", "flexible"]
       },
 
       {
@@ -1060,7 +1513,8 @@
         title: "Have an intentional rest break",
         icon: "☕",
         points: 10,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["all"]
       },
 
       {
@@ -1068,7 +1522,8 @@
         title: "Do something nice with your partner",
         icon: "💛",
         points: 15,
-        tags: ["medium", "good"]
+        tags: ["medium", "good"],
+        types: ["partner"]
       },
 
       {
@@ -1076,37 +1531,170 @@
         title: "Get outside for 10 minutes",
         icon: "🌿",
         points: 10,
-        tags: ["low", "medium", "good"]
+        tags: ["low", "medium", "good"],
+        types: ["all"]
+      },
+
+      {
+        id: 10,
+        title: "Have a proper wind-down evening",
+        icon: "🌙",
+        points: 15,
+        tags: ["low", "medium", "good"],
+        types: ["recovery", "long_commute", "partner"]
+      },
+
+      {
+        id: 11,
+        title: "Make tomorrow easier in one tiny way",
+        icon: "🌱",
+        points: 10,
+        tags: ["low", "medium", "good"],
+        types: ["all"]
+      },
+
+      {
+        id: 12,
+        title: "Do absolutely nothing productive for 20 minutes",
+        icon: "🛋️",
+        points: 10,
+        tags: ["low", "medium"],
+        types: ["recovery", "long_commute", "partner"]
+      },
+
+      {
+        id: 13,
+        title: "Do something purely enjoyable",
+        icon: "✨",
+        points: 10,
+        tags: ["low", "medium", "good"],
+        types: ["all"]
       }
 
     ];
 
 
     /* --------------------------------
+       DAY TYPES
+    -------------------------------- */
+
+    const dayTypes = {
+
+      wfh: {
+        label: "WFH day",
+        icon: "🏡",
+        message:
+          "A home-base day. A walk and a small home reset are available, but you don't need to do both.",
+        energyBias: "medium"
+      },
+
+      office_partner: {
+        label: "Office + partner",
+        icon: "💛",
+        message:
+          "A fuller day. Work and connection are enough. Keep expectations deliberately low.",
+        energyBias: "low"
+      },
+
+      long_commute: {
+        label: "Long commute",
+        icon: "🚗",
+        message:
+          "This is a transition day. Recovery comes first tonight. No deep cleaning or gym required.",
+        energyBias: "low"
+      },
+
+      recovery: {
+        label: "Recovery day",
+        icon: "🌙",
+        message:
+          "A deliberately gentle day. Rest, reset and doing less are valid uses of your time.",
+        energyBias: "low"
+      },
+
+      flexible: {
+        label: "Flexible day",
+        icon: "🌿",
+        message:
+          "Open space today. Pick a couple of things that make life feel better rather than trying to do everything.",
+        energyBias: "medium"
+      }
+
+    };
+
+
+    /* --------------------------------
+       DEFAULT WEEK
+    -------------------------------- */
+
+    const defaultWeek = {
+
+      0: {
+        type: "flexible"
+      },
+
+      1: {
+        type: "wfh"
+      },
+
+      2: {
+        type: "office_partner"
+      },
+
+      3: {
+        type: "office_partner"
+      },
+
+      4: {
+        type: "long_commute"
+      },
+
+      5: {
+        type: "wfh"
+      },
+
+      6: {
+        type: "flexible"
+      }
+
+    };
+
+
+    /* --------------------------------
        DEFAULT REWARDS
+       Mostly free / low-spend by design.
     -------------------------------- */
 
     const defaultRewards = [
 
       {
         id: 101,
-        name: "Coffee / favourite drink",
+        name: "Slow morning with a book",
         cost: 100,
-        type: "Little treat"
+        type: "Free / no-spend",
+        size: "tiny",
+        availability: "weekends",
+        favourite: true
       },
 
       {
         id: 102,
-        name: "Guilt-free movie night",
-        cost: 200,
-        type: "Relaxation"
+        name: "Guilt-free movie night at home",
+        cost: 150,
+        type: "Relaxation",
+        size: "medium",
+        availability: "anytime",
+        favourite: true
       },
 
       {
         id: 103,
-        name: "New book",
-        cost: 350,
-        type: "Something to buy"
+        name: "Date night at home",
+        cost: 200,
+        type: "Connection",
+        size: "medium",
+        availability: "anytime",
+        favourite: false
       }
 
     ];
@@ -1114,29 +1702,52 @@
 
     /* --------------------------------
        LOAD SAVED STATE
+
+       Also migrates the original V1 data.
     -------------------------------- */
+
+    const oldState =
+      JSON.parse(
+        localStorage.getItem("momentumV1")
+      );
+
 
     let state =
       JSON.parse(
-        localStorage.getItem("momentumV1")
-      ) || {
+        localStorage.getItem("momentumV2")
+      );
 
-        points: 0,
 
-        energy: null,
+    if (!state) {
 
-        completed: [],
+      state = {
 
-        rewardsClaimed: 0,
+        points: oldState?.points || 0,
 
-        customRewards: [],
+        energy: oldState?.energy || null,
 
-        note: ""
+        completed: oldState?.completed || [],
+
+        rewardsClaimed:
+          oldState?.rewardsClaimed || 0,
+
+        customRewards:
+          oldState?.customRewards || [],
+
+        note:
+          oldState?.note || "",
+
+        week:
+          oldState?.week || structuredClone(defaultWeek)
 
       };
 
+    }
+
 
     let visibleActions = [];
+
+    let rewardFilter = "all";
 
 
     /* --------------------------------
@@ -1146,9 +1757,128 @@
     function save() {
 
       localStorage.setItem(
-        "momentumV1",
+        "momentumV2",
         JSON.stringify(state)
       );
+
+    }
+
+
+    /* --------------------------------
+       TODAY
+    -------------------------------- */
+
+    function getTodayType() {
+
+      const day =
+        new Date().getDay();
+
+      return state.week[day]?.type ||
+        defaultWeek[day].type;
+
+    }
+
+
+    function getTodayConfig() {
+
+      return dayTypes[
+        getTodayType()
+      ];
+
+    }
+
+
+    function renderToday() {
+
+      const now =
+        new Date();
+
+      const day =
+        now.getDay();
+
+      const config =
+        getTodayConfig();
+
+      const dayName =
+        now.toLocaleDateString(
+          undefined,
+          { weekday: "long" }
+        );
+
+
+      document
+        .getElementById("dayBadge")
+        .textContent =
+        `${config.icon} ${dayName} · ${config.label}`;
+
+
+      document
+        .getElementById("todayTitle")
+        .textContent =
+        day === 4 &&
+        config.type === "long_commute"
+
+          ? "Recovery night"
+
+          : `${dayName}, at your pace`;
+
+
+      document
+        .getElementById("todayMessage")
+        .textContent =
+        config.message;
+
+
+      const preview =
+        document.getElementById(
+          "schedulePreview"
+        );
+
+
+      const days = [1, 2, 3, 4, 5, 6, 0];
+
+      const labels = [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ];
+
+
+      preview.innerHTML =
+        days
+          .slice(0, 3)
+          .map((dayNumber, index) => {
+
+            const type =
+              state.week[dayNumber]?.type ||
+              defaultWeek[dayNumber].type;
+
+            const typeInfo =
+              dayTypes[type];
+
+            return `
+
+              <div class="schedule-mini">
+
+                <strong>
+                  ${labels[index]}
+                </strong>
+
+                <span>
+                  ${typeInfo.icon}
+                  ${typeInfo.label}
+                </span>
+
+              </div>
+
+            `;
+
+          })
+          .join("");
 
     }
 
@@ -1162,6 +1892,8 @@
       state.energy = level;
 
       save();
+
+      chooseActions();
 
       render();
 
@@ -1199,15 +1931,58 @@
 
     function chooseActions() {
 
+      const config =
+        getTodayConfig();
+
       const energy =
-        state.energy || "medium";
+        state.energy ||
+        config.energyBias ||
+        "medium";
 
 
       let pool =
         defaultActions.filter(
-          action =>
-            action.tags.includes(energy)
+          action => {
+
+            const energyMatch =
+              action.tags.includes(
+                energy
+              );
+
+
+            const typeMatch =
+              action.types.includes("all") ||
+              action.types.includes(
+                getTodayType()
+              );
+
+
+            return (
+              energyMatch &&
+              typeMatch
+            );
+
+          }
         );
+
+
+      /*
+        If the day is particularly constrained,
+        fall back to gentle universal actions.
+      */
+
+      if (pool.length < 3) {
+
+        pool =
+          defaultActions.filter(
+            action =>
+              action.tags.includes(
+                energy
+              ) &&
+              action.types.includes("all")
+          );
+
+      }
 
 
       const shuffled =
@@ -1362,17 +2137,127 @@
 
 
     /* --------------------------------
+       REWARD HELPERS
+    -------------------------------- */
+
+    function allRewards() {
+
+      return [
+        ...defaultRewards,
+        ...state.customRewards
+      ];
+
+    }
+
+
+    function rewardSizeLabel(size) {
+
+      return {
+
+        tiny: "Tiny",
+
+        medium: "Medium",
+
+        big: "Big"
+
+      }[size] || "Reward";
+
+    }
+
+
+    function availabilityLabel(
+      availability
+    ) {
+
+      return {
+
+        anytime: "Anytime",
+
+        weekends: "Weekends",
+
+        weekdays: "Weekdays"
+
+      }[availability] || "Anytime";
+
+    }
+
+
+    function rewardIsAvailable(reward) {
+
+      const day =
+        new Date().getDay();
+
+
+      if (
+        reward.availability ===
+        "weekends"
+      ) {
+
+        return (
+          day === 0 ||
+          day === 6
+        );
+
+      }
+
+
+      if (
+        reward.availability ===
+        "weekdays"
+      ) {
+
+        return (
+          day >= 1 &&
+          day <= 5
+        );
+
+      }
+
+
+      return true;
+
+    }
+
+
+    function getFilteredRewards() {
+
+      const rewards =
+        allRewards();
+
+
+      if (rewardFilter === "favourites") {
+
+        return rewards.filter(
+          reward => reward.favourite
+        );
+
+      }
+
+
+      if (
+        rewardFilter ===
+        "free"
+      ) {
+
+        return rewards.filter(
+          reward =>
+            reward.type ===
+            "Free / no-spend"
+        );
+
+      }
+
+
+      return rewards;
+
+    }
+
+
+    /* --------------------------------
        RENDER REWARDS
     -------------------------------- */
 
     function renderRewards() {
-
-      const rewards =
-        [
-          ...defaultRewards,
-          ...state.customRewards
-        ];
-
 
       const list =
         document.getElementById(
@@ -1380,50 +2265,206 @@
         );
 
 
+      const filter =
+        document.getElementById(
+          "rewardFilter"
+        );
+
+
+      const filters = [
+
+        ["all", "All"],
+
+        ["free", "No-spend"],
+
+        ["favourites", "★ Favourites"]
+
+      ];
+
+
+      filter.innerHTML =
+        filters
+          .map(([id, label]) => `
+
+            <button
+              class="filter-btn ${
+                rewardFilter === id
+                  ? "active"
+                  : ""
+              }"
+              onclick="setRewardFilter('${id}')"
+            >
+              ${label}
+            </button>
+
+          `)
+          .join("");
+
+
+      const rewards =
+        getFilteredRewards();
+
+
+      /*
+        Show favourites first, then lower-cost
+        rewards, so the bank feels useful rather
+        than like a giant catalogue.
+      */
+
+      rewards.sort(
+        (a, b) => {
+
+          if (
+            a.favourite !==
+            b.favourite
+          ) {
+
+            return a.favourite
+              ? -1
+              : 1;
+
+          }
+
+          return a.cost - b.cost;
+
+        }
+      );
+
+
+      if (!rewards.length) {
+
+        list.innerHTML = `
+          <div class="empty">
+            No rewards in this category yet.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
       list.innerHTML =
         rewards
-          .slice(0, 4)
+          .slice(0, 5)
           .map(reward => {
 
             const canClaim =
               state.points >= reward.cost;
 
+            const available =
+              rewardIsAvailable(reward);
+
+            const claimable =
+              canClaim &&
+              available;
+
+
+            const availabilityText =
+              available
+                ? availabilityLabel(
+                    reward.availability
+                  )
+                : `Available ${
+                    reward.availability ===
+                    "weekends"
+                      ? "on weekends"
+                      : "on weekdays"
+                  }`;
+
 
             return `
 
               <div
-                class="reward ${canClaim ? "" : "locked"}"
+                class="reward ${
+                  claimable ? "" : "locked"
+                }"
               >
 
-                <div>
+                <div class="reward-info">
 
-                  <strong>
-                    ${reward.name}
-                  </strong>
+                  <div class="reward-name-row">
 
-                  <div class="reward-cost">
+                    <strong>
+                      ${escapeHtml(reward.name)}
+                    </strong>
+
+                    ${
+                      reward.favourite
+                        ? `<span class="reward-favourite">★</span>`
+                        : ""
+                    }
+
+                  </div>
+
+
+                  <div class="reward-meta">
 
                     ${reward.cost} pts
                     ·
-                    ${reward.type}
+                    ${escapeHtml(reward.type)}
+                    ·
+                    ${rewardSizeLabel(reward.size)}
+                    ·
+                    ${availabilityText}
 
                   </div>
 
                 </div>
 
 
-                <button
-                  ${canClaim ? "" : "disabled"}
-                  onclick="claimReward(${reward.id})"
-                >
+                <div class="reward-actions">
+
+                  <button
+                    ${
+                      claimable
+                        ? ""
+                        : "disabled"
+                    }
+                    onclick="claimReward(${reward.id})"
+                  >
+
+                    ${
+                      claimable
+                        ? "Claim"
+                        : canClaim
+                          ? "Not today"
+                          : "Locked"
+                    }
+
+                  </button>
+
 
                   ${
-                    canClaim
-                      ? "Claim"
-                      : "Locked"
+                    state.customRewards.some(
+                      r => r.id === reward.id
+                    )
+
+                      ? `
+
+                        <button
+                          class="tiny-btn"
+                          title="Edit reward"
+                          onclick="editReward(${reward.id})"
+                        >
+                          ✎
+                        </button>
+
+                        <button
+                          class="tiny-btn"
+                          title="Delete reward"
+                          onclick="deleteReward(${reward.id})"
+                        >
+                          ×
+                        </button>
+
+                      `
+
+                      : ""
+
                   }
 
-                </button>
+                </div>
 
               </div>
 
@@ -1436,33 +2477,140 @@
 
 
     /* --------------------------------
+       FILTER REWARDS
+    -------------------------------- */
+
+    function setRewardFilter(filter) {
+
+      rewardFilter =
+        filter;
+
+      renderRewards();
+
+    }
+
+
+    /* --------------------------------
+       NEXT REWARD
+    -------------------------------- */
+
+    function renderNextReward() {
+
+      const el =
+        document.getElementById(
+          "nextReward"
+        );
+
+
+      const affordable =
+        allRewards()
+          .filter(
+            reward =>
+              reward.cost >
+              state.points
+          )
+          .sort(
+            (a, b) =>
+              a.cost - b.cost
+          );
+
+
+      const favourite =
+        allRewards()
+          .filter(
+            reward =>
+              reward.favourite &&
+              reward.cost >
+                state.points
+          )
+          .sort(
+            (a, b) =>
+              a.cost - b.cost
+          )[0];
+
+
+      const next =
+        favourite ||
+        affordable[0];
+
+
+      if (!next) {
+
+        el.innerHTML = `
+          <strong>✨ You've reached every reward!</strong>
+          <span class="muted">
+            Add another reward whenever something genuinely appeals to you.
+          </span>
+        `;
+
+        return;
+
+      }
+
+
+      const remaining =
+        next.cost -
+        state.points;
+
+
+      el.innerHTML = `
+
+        <strong>
+          ${next.favourite ? "★ " : ""}
+          ${escapeHtml(next.name)}
+        </strong>
+
+        <span class="muted">
+          ${remaining} more Momentum to reach it.
+        </span>
+
+      `;
+
+    }
+
+
+    /* --------------------------------
        CLAIM REWARD
     -------------------------------- */
 
     function claimReward(id) {
 
-      const rewards =
-        [
-          ...defaultRewards,
-          ...state.customRewards
-        ];
-
-
       const reward =
-        rewards.find(
+        allRewards().find(
           r => r.id === id
         );
 
 
-      if (
-        !reward ||
-        state.points < reward.cost
-      ) {
+      if (!reward) {
         return;
       }
 
 
-      state.points -= reward.cost;
+      if (
+        state.points <
+        reward.cost
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        !rewardIsAvailable(reward)
+      ) {
+
+        toast(
+          `${reward.name} isn't available today. 🌿`
+        );
+
+        return;
+
+      }
+
+
+      state.points -=
+        reward.cost;
 
       state.rewardsClaimed++;
 
@@ -1473,7 +2621,7 @@
 
 
       toast(
-        `Reward unlocked: ${reward.name} 🎁 Enjoy it.`
+        `Enjoy it: ${reward.name} ✨`
       );
 
     }
@@ -1532,6 +2680,28 @@
           .value;
 
 
+      const size =
+        document
+          .getElementById("rewardSize")
+          .value;
+
+
+      const availability =
+        document
+          .getElementById(
+            "rewardAvailability"
+          )
+          .value;
+
+
+      const favourite =
+        document
+          .getElementById(
+            "rewardFavourite"
+          )
+          .checked;
+
+
       if (
         !name ||
         !cost ||
@@ -1555,10 +2725,38 @@
 
         cost,
 
-        type
+        type,
+
+        size,
+
+        availability,
+
+        favourite
 
       });
 
+
+      clearRewardForm();
+
+      save();
+
+      closeRewards();
+
+      render();
+
+
+      toast(
+        "Reward added to your bank 🎁"
+      );
+
+    }
+
+
+    /* --------------------------------
+       CLEAR REWARD FORM
+    -------------------------------- */
+
+    function clearRewardForm() {
 
       document
         .getElementById("rewardName")
@@ -1570,15 +2768,166 @@
         .value = 100;
 
 
-      save();
+      document
+        .getElementById("rewardType")
+        .value =
+        "Free / no-spend";
 
-      closeRewards();
+
+      document
+        .getElementById("rewardSize")
+        .value =
+        "medium";
+
+
+      document
+        .getElementById(
+          "rewardAvailability"
+        )
+        .value =
+        "anytime";
+
+
+      document
+        .getElementById(
+          "rewardFavourite"
+        )
+        .checked =
+        false;
+
+    }
+
+
+    /* --------------------------------
+       EDIT REWARD
+    -------------------------------- */
+
+    function editReward(id) {
+
+      const reward =
+        state.customRewards.find(
+          r => r.id === id
+        );
+
+
+      if (!reward) {
+        return;
+      }
+
+
+      const name =
+        prompt(
+          "Reward name:",
+          reward.name
+        );
+
+
+      if (name === null) {
+        return;
+      }
+
+
+      const cost =
+        Number(
+          prompt(
+            "Momentum cost:",
+            reward.cost
+          )
+        );
+
+
+      if (
+        !cost ||
+        cost < 10
+      ) {
+
+        toast(
+          "The cost needs to be at least 10."
+        );
+
+        return;
+
+      }
+
+
+      const type =
+        prompt(
+          "Type:",
+          reward.type
+        );
+
+
+      if (type === null) {
+        return;
+      }
+
+
+      reward.name =
+        name.trim();
+
+
+      reward.cost =
+        cost;
+
+
+      reward.type =
+        type.trim() ||
+        reward.type;
+
+
+      save();
 
       render();
 
 
       toast(
-        "Reward added to your bank 🎁"
+        "Reward updated."
+      );
+
+    }
+
+
+    /* --------------------------------
+       DELETE REWARD
+    -------------------------------- */
+
+    function deleteReward(id) {
+
+      const reward =
+        state.customRewards.find(
+          r => r.id === id
+        );
+
+
+      if (!reward) {
+        return;
+      }
+
+
+      if (
+        !confirm(
+          `Remove "${reward.name}" from your reward bank?`
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      state.customRewards =
+        state.customRewards.filter(
+          r => r.id !== id
+        );
+
+
+      save();
+
+      render();
+
+
+      toast(
+        "Reward removed."
       );
 
     }
@@ -1605,7 +2954,8 @@
       }
 
 
-      state.note = value;
+      state.note =
+        value;
 
 
       save();
@@ -1651,12 +3001,175 @@
 
 
     /* --------------------------------
+       WEEK SETTINGS
+    -------------------------------- */
+
+    function openWeekSettings() {
+
+      renderWeekSettings();
+
+      document
+        .getElementById("weekModal")
+        .classList.add("show");
+
+    }
+
+
+    function closeWeekSettings() {
+
+      document
+        .getElementById("weekModal")
+        .classList.remove("show");
+
+    }
+
+
+    function renderWeekSettings() {
+
+      const list =
+        document.getElementById(
+          "weekList"
+        );
+
+
+      const names = [
+
+        ["1", "Monday"],
+
+        ["2", "Tuesday"],
+
+        ["3", "Wednesday"],
+
+        ["4", "Thursday"],
+
+        ["5", "Friday"],
+
+        ["6", "Saturday"],
+
+        ["0", "Sunday"]
+
+      ];
+
+
+      const today =
+        new Date().getDay();
+
+
+      list.innerHTML =
+        names
+          .map(([day, name]) => {
+
+            const selected =
+              state.week[day]?.type ||
+              defaultWeek[day].type;
+
+
+            return `
+
+              <div
+                class="week-day ${
+                  Number(day) === today
+                    ? "today"
+                    : ""
+                }"
+              >
+
+                <div class="week-day-name">
+                  ${name}
+                </div>
+
+
+                <select
+                  id="week-${day}"
+                >
+
+                  ${
+                    Object.entries(
+                      dayTypes
+                    )
+                      .map(
+                        ([value, info]) => `
+
+                          <option
+                            value="${value}"
+                            ${
+                              selected === value
+                                ? "selected"
+                                : ""
+                            }
+                          >
+                            ${info.icon}
+                            ${info.label}
+                          </option>
+
+                        `
+                      )
+                      .join("")
+                  }
+
+                </select>
+
+              </div>
+
+            `;
+
+          })
+          .join("");
+
+    }
+
+
+    function saveWeekSettings() {
+
+      const days =
+        [0, 1, 2, 3, 4, 5, 6];
+
+
+      days.forEach(day => {
+
+        const select =
+          document.getElementById(
+            `week-${day}`
+          );
+
+
+        if (select) {
+
+          state.week[day] = {
+
+            type:
+              select.value
+
+          };
+
+        }
+
+      });
+
+
+      save();
+
+      closeWeekSettings();
+
+      visibleActions = [];
+
+      render();
+
+
+      toast(
+        "Your week has been updated. 🗓️"
+      );
+
+    }
+
+
+    /* --------------------------------
        ESCAPE HTML
     -------------------------------- */
 
     function escapeHtml(value) {
 
-      return value.replace(
+      return String(value).replace(
         /[&<>"']/g,
         char => ({
 
@@ -1677,6 +3190,10 @@
     -------------------------------- */
 
     function render() {
+
+      /* Today */
+
+      renderToday();
 
 
       /* Energy buttons */
@@ -1723,27 +3240,80 @@
         state.points;
 
 
-      /* Reward progress */
+      /* Progress */
 
-      const remainder =
-        state.points % 100;
-
-
-      const percentage =
-        remainder;
+      const rewards =
+        allRewards();
 
 
-      document
-        .getElementById("progress")
-        .style.width =
-        percentage + "%";
+      const nextReward =
+        rewards
+          .filter(
+            reward =>
+              reward.cost >
+              state.points
+          )
+          .sort(
+            (a, b) =>
+              a.cost - b.cost
+          )[0];
 
 
-      document
-        .getElementById("rewardProgress")
-        .textContent =
+      if (nextReward) {
 
-        `${remainder} / 100 toward your next 100-point milestone`;
+        const distance =
+          nextReward.cost -
+          state.points;
+
+
+        const percentage =
+          Math.min(
+            100,
+            Math.max(
+              0,
+              (
+                state.points /
+                nextReward.cost
+              ) *
+              100
+            )
+          );
+
+
+        document
+          .getElementById("progress")
+          .style.width =
+          percentage + "%";
+
+
+        document
+          .getElementById(
+            "rewardProgress"
+          )
+          .textContent =
+          `${distance} pts until ${nextReward.name}`;
+
+      }
+
+      else {
+
+        document
+          .getElementById("progress")
+          .style.width =
+          "100%";
+
+
+        document
+          .getElementById(
+            "rewardProgress"
+          )
+          .textContent =
+          "You've reached every current reward.";
+
+      }
+
+
+      renderNextReward();
 
 
       /* Stats */
@@ -1779,12 +3349,16 @@
 
       if (
         !confirm(
-          "Reset the V1 demo and start again?"
+          "Reset Momentum and start again? This clears your saved progress, rewards and week settings."
         )
       ) {
         return;
       }
 
+
+      localStorage.removeItem(
+        "momentumV2"
+      );
 
       localStorage.removeItem(
         "momentumV1"
@@ -1803,7 +3377,12 @@
 
         customRewards: [],
 
-        note: ""
+        note: "",
+
+        week:
+          structuredClone(
+            defaultWeek
+          )
 
       };
 
@@ -1860,14 +3439,14 @@
 
 
     /* --------------------------------
-       CLOSE MODAL WHEN CLICKING OUTSIDE
+       CLOSE MODALS WHEN CLICKING OUTSIDE
     -------------------------------- */
 
     document
       .getElementById("rewardModal")
       .addEventListener(
         "click",
-        (event) => {
+        event => {
 
           if (
             event.target.id ===
@@ -1875,6 +3454,25 @@
           ) {
 
             closeRewards();
+
+          }
+
+        }
+      );
+
+
+    document
+      .getElementById("weekModal")
+      .addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target.id ===
+            "weekModal"
+          ) {
+
+            closeWeekSettings();
 
           }
 
