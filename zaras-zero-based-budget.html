@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff6f91">
+<title>Zara's Zero Based Budget</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap');
+
+:root {
+  --pink: #ff6f91;
+  --hot-pink: #ff477e;
+  --orange: #ff9f43;
+  --yellow: #ffd166;
+  --purple: #9b5de5;
+  --deep-purple: #6c3fc5;
+  --cream: #fff8f0;
+  --white: #ffffff;
+  --dark: #39234d;
+  --muted: #806b8d;
+  --green: #50b86c;
+  --red: #ed5a6a;
+  --border: #eadbea;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #fff3f7 0%, #fff8ef 50%, #f6efff 100%);
+  color: var(--dark);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.container { max-width: 900px; margin: auto; padding: 18px; }
+
+.header {
+  background: linear-gradient(135deg, var(--pink), var(--orange));
+  color: white;
+  padding: 22px;
+  border-radius: 24px;
+  box-shadow: 0 8px 25px rgba(155, 93, 229, .15);
+  margin-bottom: 14px;
+}
+
+.logo { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; }
+.subtitle { margin-top: 4px; opacity: .9; font-size: 14px; }
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-bottom: 15px;
+}
+
+.nav button {
+  border: 0;
+  background: white;
+  color: var(--dark);
+  padding: 11px 5px;
+  border-radius: 14px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(80, 50, 90, .08);
+}
+
+.nav button.active { background: var(--purple); color: white; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.card {
+  background: rgba(255,255,255,.92);
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 20px rgba(80, 50, 90, .06);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-family: 'Fredoka', sans-serif;
+  color: var(--deep-purple);
+  font-size: 21px;
+}
+
+.card h3 { font-family: 'Fredoka', sans-serif; margin-bottom: 8px; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.field { margin-bottom: 11px; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans';
+  font-size: 15px;
+  color: var(--dark);
+  background: #fffdfd;
+}
+
+input:focus { outline: none; border-color: var(--pink); }
+
+.money { position: relative; }
+.money span { position: absolute; left: 12px; top: 11px; color: var(--muted); }
+.money input { padding-left: 27px; }
+
+.total {
+  background: linear-gradient(135deg, #fff0f5, #fff6e8);
+  border-radius: 15px;
+  padding: 13px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.balance {
+  padding: 16px;
+  border-radius: 17px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.balance.good { background: #e9f8ed; color: #24763b; }
+.balance.left { background: #fff4d8; color: #9a6900; }
+.balance.over { background: #ffe7eb; color: #a82e3e; }
+
+button.primary {
+  border: 0;
+  background: linear-gradient(135deg, var(--pink), var(--hot-pink));
+  color: white;
+  padding: 11px 17px;
+  border-radius: 13px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+button.secondary {
+  border: 0;
+  background: var(--purple);
+  color: white;
+  padding: 9px 13px;
+  border-radius: 11px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.delete {
+  border: 0;
+  background: #ffe5e9;
+  color: var(--red);
+  padding: 8px 11px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  margin: 5px auto 15px;
+}
+
+canvas { width: 100%; height: auto; display: block; }
+
+.legend { display: grid; gap: 7px; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+.goal {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.goal-title { display: flex; justify-content: space-between; font-weight: 700; }
+
+.progress {
+  height: 11px;
+  background: #eee5ef;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 9px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--orange));
+  border-radius: 20px;
+}
+
+.small { font-size: 12px; color: var(--muted); }
+
+.category-row {
+  display: grid;
+  grid-template-columns: 1fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bucket-row {
+  display: grid;
+  grid-template-columns: 1fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.empty { color: var(--muted); font-size: 14px; padding: 10px 0; }
+
+.year-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.investment-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.help {
+  background: #f8efff;
+  border-radius: 14px;
+  padding: 11px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+#budget .card { padding: 14px; }
+#budget .field { margin-bottom: 7px; }
+#budget .money { padding: 8px 12px 8px 27px !important; min-height: 38px !important; }
+#budget .money span { top: 8px; }
+#budget .chart-wrap { max-width: 400px; margin: 2px auto 10px; }
+#budget .legend { gap: 5px; margin-top: 5px; }
+
+.budget-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.budget-row:last-child { border-bottom: 0; }
+.budget-row-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+.budget-row-amount { font-size: 14px; font-weight: 700; color: var(--dark); white-space: nowrap; }
+
+.asset-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.asset-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.asset-history-title { font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.asset-history-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+
+.debt-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.debt-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.debt-history-title { font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.debt-history-row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+
+.net-worth-summary { text-align: center; font-weight: 700; }
+
+#btcAmount { font-variant-numeric: tabular-nums; }
+#bitcoinAssetValue { text-align: right; }
+
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  .logo { font-size: 24px; }
+  .grid { grid-template-columns: 1fr; }
+  .category-row { grid-template-columns: 1fr 90px auto; }
+  .investment-row { grid-template-columns: 65px 1fr 1fr auto; }
+  .investment-row input { font-size: 13px; padding: 9px 6px; }
+  .asset-row { grid-template-columns: 1fr 90px auto; }
+  .debt-row { grid-template-columns: 1fr 90px auto; }
+  .nav button { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="logo">🌸 Zara's Zero Based Budget</div>
+    <div class="subtitle"><center>✨ Give every dollar a job ✨</center></div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('budget', this)">💰 Budget</button>
+    <button class="nav-btn" onclick="showSection('goals', this)">🎯 Goals</button>
+    <button class="nav-btn" onclick="showSection('progress', this)">📈 Progress</button>
+    <button class="nav-btn" onclick="showSection('customize', this)">✨ Customize</button>
+  </div>
+
+  <!-- ================= BUDGET ================= -->
+  <div id="budget" class="section active">
+    <div class="card">
+      <h2>🌈 Your Budget</h2>
+      <div class="chart-wrap">
+        <canvas id="budgetChart" width="470" height="470"></canvas>
+      </div>
+      <div id="budgetLegend" class="legend"></div>
+    </div>
+
+    <div class="card">
+      <h2>💵 Income</h2>
+      <div id="incomeInputs"></div>
+      <div class="total">
+        <span>Total income</span>
+        <span id="totalIncome">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Daily Expenses</h2>
+      <div id="expenseInputs"></div>
+      <div class="total">
+        <span>Total expenses</span>
+        <span id="totalExpenses">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🪣 Buckets</h2>
+      <div id="bucketInputs"></div>
+      <div class="total">
+        <span>Total buckets</span>
+        <span id="totalBuckets">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚖️ Zero-Based Check</h2>
+      <div id="balanceMessage" class="balance good">Your budget is balanced!</div>
+    </div>
+  </div>
+
+  <!-- ================= GOALS ================= -->
+  <div id="goals" class="section">
+    <div class="card">
+      <h2>🎯 Financial Goals</h2>
+      <div class="help">Track savings goals, holidays, big purchases — whatever you're working toward.</div>
+      <div id="goalsList"></div>
+      <button class="primary" onclick="addGoal()">＋ Add financial goal</button>
+    </div>
+  </div>
+
+  <!-- ================= PROGRESS ================= -->
+  <div id="progress" class="section">
+    <div class="card">
+      <h2>💎 Net Worth by Year</h2>
+      <div id="netWorthSummary" class="help net-worth-summary">
+        Add your assets and debts to start tracking your net worth.
+      </div>
+      <div class="chart-wrap">
+        <canvas id="netWorthChart" width="700" height="420"></canvas>
+      </div>
+    </div>
+
+    <div class="card" id="bitcoinCard">
+      <h2>₿ Bitcoin</h2>
+      <div class="help">
+        Enter how much Bitcoin you own. The current market price in NZD is looked up automatically, then that value is added to your assets and your net worth.
+      </div>
+      <div class="field">
+        <label for="btcAmount">Bitcoin you own</label>
+        <input
+          type="number"
+          id="btcAmount"
+          min="0"
+          step="any"
+          inputmode="decimal"
+          placeholder="0.00"
+          oninput="updateBitcoinAmount(this.value)"
+        >
+      </div>
+      <div class="total">
+        <span>Value in NZD</span>
+        <span id="btcValue">$0.00</span>
+      </div>
+      <div class="small" id="btcPriceLine" style="margin-top:8px;">
+        Waiting for the live NZD price
+      </div>
+      <div class="small" id="btcUpdated" style="margin-top:4px;"></div>
+      <button
+        class="secondary"
+        type="button"
+        onclick="refreshBitcoinPrice(true)"
+        style="margin-top:10px;"
+      >
+        ↻ Update price
+      </button>
+      <div id="btcStatus" class="small" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🏡 Assets</h2>
+      <div class="help">
+        Keep a record of the things you own and what they're worth. Your asset values are kept by year so you can look back and see how they've changed over time. Bitcoin from the card above is included here at the live NZD price.
+      </div>
+      <div id="assetsList"></div>
+      <div class="total">
+        <span>Total assets</span>
+        <span id="totalAssets">$0.00</span>
+      </div>
+      <button class="primary" onclick="addAsset()">＋ Add asset</button>
+    </div>
+
+    <div class="card">
+      <h2>💳 Debts</h2>
+      <div class="help">
+        Keep a record of what you owe and your current balances. Your debt values are kept by year so you can look back and see how they've changed over time.
+      </div>
+      <div id="debtsList"></div>
+      <div class="total">
+        <span>Total debts</span>
+        <span id="totalDebts">$0.00</span>
+      </div>
+      <button class="primary" onclick="addDebt()">＋ Add debt</button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Investments vs Goal</h2>
+      <div class="help">
+        Add your actual investment total and your target for each year. The graph shows both lines so you can see how you're tracking.
+      </div>
+      <div class="chart-wrap">
+        <canvas id="investmentChart" width="700" height="420"></canvas>
+      </div>
+      <div id="investmentInputs"></div>
+      <button class="primary" onclick="addInvestmentYear()">＋ Add year</button>
+    </div>
+  </div>
+
+  <!-- ================= CUSTOMIZE ================= -->
+  <div id="customize" class="section">
+    <div class="card">
+      <h2>💵 Customize Income</h2>
+      <div class="help">Add, rename or remove your income categories. Your changes are saved only on your device.</div>
+      <div id="customIncomeList"></div>
+      <button class="primary" onclick="addIncomeCategory()">＋ Add income category</button>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Customize Expenses</h2>
+      <div class="help">Everyone can make this budget their own. Add, rename or remove expense categories. Your changes are saved only on your device.</div>
+      <div id="customExpenseList"></div>
+      <button class="primary" onclick="addExpenseCategory()">＋ Add expense category</button>
+    </div>
+
+    <div class="card">
+      <h2>🪣 Customize Buckets</h2>
+      <div class="help">Create your own buckets — savings, investments, holidays, fun money, emergency funds, or anything else.</div>
+      <div id="customBucketList"></div>
+      <button class="primary" onclick="addBucketCategory()">＋ Add bucket category</button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Customize Investment Goal</h2>
+      <div class="help">
+        Set your own starting investment amount, starting year, goal amount and goal year. The goal line in the Progress section will automatically spread evenly between the two points.
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Starting year</label>
+          <input type="number" id="investmentStartYear" min="1900" max="2200" step="1">
+        </div>
+        <div class="field">
+          <label>Starting investment amount</label>
+          <div class="money">
+            <span>$</span>
+            <input type="number" id="investmentStartAmount" min="0" step="100">
+          </div>
+        </div>
+        <div class="field">
+          <label>Goal year</label>
+          <input type="number" id="investmentEndYear" min="1900" max="2200" step="1">
+        </div>
+        <div class="field">
+          <label>Goal amount</label>
+          <div class="money">
+            <span>$</span>
+            <input type="number" id="investmentFinalGoal" min="0" step="100">
+          </div>
+        </div>
+      </div>
+      <button class="primary" onclick="saveInvestmentSettings()">💾 Save investment settings</button>
+      <div id="investmentSettingsMessage" class="small" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>☁️ Backup & Restore</h2>
+      <div class="help">
+        Keep a safe copy of all your budgeting data. Back up your budget and save the file to OneDrive. You can use the same file to restore your budget later.
+      </div>
+      <button class="primary" onclick="backupData()">☁️ Back Up My Data</button>
+      <div id="backupMessage" class="small" style="margin-top:10px;"></div>
+      <div style="margin-top:18px;">
+        <div class="small" style="margin-bottom:8px;">Restore a previous backup from OneDrive or Files.</div>
+        <input type="file" id="restoreFile" accept=".json,application/json" onchange="restoreData(this)">
+      </div>
+      <div id="restoreMessage" class="small" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DEFAULT DATA
+   ============================================================ */
+
+const defaultExpenses = [
+  "Mortgage", "Rates", "Power", "Phone bill", "Contents insurance",
+  "Car insurance", "Health insurance", "Spotify", "Gas", "Food",
+  "Pets", "Car", "Health & beauty", "Gifts", "House maintenance"
+];
+
+const defaultBuckets = ["Life Raft", "Investments", "Treat Yourself", "Holidays"];
+const defaultIncome = ["Salary", "Rental income", "Other income"];
+
+let expenses = JSON.parse(localStorage.getItem("zaraExpenses"));
+if (!expenses) {
+  expenses = defaultExpenses.map(name => ({ name: name, amount: 0 }));
+}
+
+let buckets = JSON.parse(localStorage.getItem("zaraBuckets"));
+if (!buckets) {
+  buckets = defaultBuckets.map(name => ({ name: name, amount: 0 }));
+}
+
+let savedIncome = JSON.parse(localStorage.getItem("zaraIncome"));
+let income;
+
+if (Array.isArray(savedIncome)) {
+  income = savedIncome;
+} else {
+  income = [
+    { name: "Salary", amount: savedIncome && savedIncome.salary ? Number(savedIncome.salary) : 0 },
+    { name: "Rental income", amount: savedIncome && savedIncome.rental ? Number(savedIncome.rental) : 0 },
+    { name: "Other income", amount: savedIncome && savedIncome.other ? Number(savedIncome.other) : 0 }
+  ];
+}
+
+let goals = JSON.parse(localStorage.getItem("zaraGoals")) || [];
+let netWorthHistory = JSON.parse(localStorage.getItem("zaraNetWorthHistory")) || [];
+let investmentHistory = JSON.parse(localStorage.getItem("zaraInvestmentHistory")) || [];
+
+let assets = JSON.parse(localStorage.getItem("zaraAssets")) || [];
+if (!Array.isArray(assets)) assets = [];
+assets = assets.map(asset => {
+  const normalized = {
+    name: asset && asset.name ? asset.name : "Asset",
+    value: asset && asset.value !== undefined ? Number(asset.value) || 0 : 0,
+    history: asset && Array.isArray(asset.history) ? asset.history : []
+  };
+  if (asset && asset.source === "bitcoin") {
+    normalized.source = "bitcoin";
+    normalized.btcAmount = Number(asset.btcAmount) || 0;
+  }
+  return normalized;
+});
+
+let debts = JSON.parse(localStorage.getItem("zaraDebts")) || [];
+if (!Array.isArray(debts)) debts = [];
+debts = debts.map(debt => ({
+  name: debt && debt.name ? debt.name : "Debt",
+  value: debt && debt.value !== undefined ? Number(debt.value) || 0 : 0,
+  history: debt && Array.isArray(debt.history) ? debt.history : []
+}));
+
+const savedInvestmentStartYear = localStorage.getItem("zaraInvestmentStartYear");
+const savedInvestmentStartAmount = localStorage.getItem("zaraInvestmentStartAmount");
+const savedInvestmentEndYear = localStorage.getItem("zaraInvestmentEndYear");
+const savedInvestmentFinalGoal = localStorage.getItem("zaraInvestmentFinalGoal");
+
+let investmentStartYear = savedInvestmentStartYear !== null ? Number(savedInvestmentStartYear) : 2025;
+let investmentStartAmount = savedInvestmentStartAmount !== null ? Number(savedInvestmentStartAmount) : 85000;
+let investmentEndYear = savedInvestmentEndYear !== null ? Number(savedInvestmentEndYear) : 2042;
+let investmentFinalGoal = savedInvestmentFinalGoal !== null ? Number(savedInvestmentFinalGoal) : 1000000;
+
+/* ============================================================
+   BITCOIN — live NZD value, included in assets + net worth
+   ============================================================ */
+
+function loadBitcoin() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("zaraBitcoin") || "null");
+    if (!saved || typeof saved !== "object") {
+      return { amount: 0, priceNzd: 0, updatedAt: null };
+    }
+    const amount = Number(saved.amount);
+    const priceNzd = Number(saved.priceNzd);
+    return {
+      amount: Number.isFinite(amount) && amount > 0 ? amount : 0,
+      priceNzd: Number.isFinite(priceNzd) && priceNzd > 0 ? priceNzd : 0,
+      updatedAt: typeof saved.updatedAt === "string" ? saved.updatedAt : null
+    };
+  } catch (error) {
+    return { amount: 0, priceNzd: 0, updatedAt: null };
+  }
+}
+
+let bitcoin = loadBitcoin();
+let bitcoinRequest = null;
+
+function bitcoinValue() {
+  return (Number(bitcoin.amount) || 0) * (Number(bitcoin.priceNzd) || 0);
+}
+
+function btcAmountLabel(amount) {
+  return (Number(amount) || 0).toLocaleString("en-NZ", { maximumFractionDigits: 8 });
+}
+
+function formatBitcoinUpdated(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString("en-NZ", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
+function bitcoinPriceIsFresh() {
+  if (!bitcoin.priceNzd || !bitcoin.updatedAt) return false;
+  const then = new Date(bitcoin.updatedAt).getTime();
+  if (!Number.isFinite(then)) return false;
+  return Date.now() - then < 2 * 60 * 1000;
+}
+
+function syncBitcoinAsset() {
+  const amount = Number(bitcoin.amount) || 0;
+  const indexes = [];
+  assets.forEach((asset, index) => {
+    if (asset && asset.source === "bitcoin") indexes.push(index);
+  });
+
+  if (amount <= 0) {
+    for (let i = indexes.length - 1; i >= 0; i--) {
+      assets.splice(indexes[i], 1);
+    }
+    return;
+  }
+
+  let asset;
+  if (indexes.length === 0) {
+    asset = { name: "Bitcoin", value: 0, history: [], source: "bitcoin" };
+    assets.push(asset);
+  } else {
+    asset = assets[indexes[0]];
+    for (let i = indexes.length - 1; i >= 1; i--) {
+      assets.splice(indexes[i], 1);
+    }
+  }
+
+  asset.name = "Bitcoin";
+  asset.source = "bitcoin";
+  asset.btcAmount = amount;
+  asset.value = amount * (Number(bitcoin.priceNzd) || 0);
+  recordHistory(asset);
+}
+
+function bitcoinAssetRowHtml(asset) {
+  return `
+      <div>
+        <div style="font-weight:700;">Bitcoin</div>
+        <div class="small">${escapeHtml(btcAmountLabel(asset.btcAmount))} BTC · live price</div>
+      </div>
+      <div id="bitcoinAssetValue" class="budget-row-amount">
+        ${money(asset.value)}
+      </div>
+      <button
+        class="delete"
+        type="button"
+        onclick="clearBitcoinHolding()"
+        aria-label="Remove Bitcoin"
+      >✕</button>
+  `;
+}
+
+function renderBitcoin() {
+  const amountInput = document.getElementById("btcAmount");
+  if (!amountInput) return;
+
+  if (document.activeElement !== amountInput) {
+    amountInput.value = bitcoin.amount ? String(bitcoin.amount) : "";
+  }
+
+  const valueEl = document.getElementById("btcValue");
+  if (valueEl) valueEl.textContent = money(bitcoinValue());
+
+  const priceEl = document.getElementById("btcPriceLine");
+  if (priceEl) {
+    priceEl.textContent = bitcoin.priceNzd
+      ? "1 BTC = " + money(bitcoin.priceNzd) + " NZD"
+      : "Waiting for the live NZD price";
+  }
+
+  const updatedEl = document.getElementById("btcUpdated");
+  if (updatedEl) {
+    updatedEl.textContent = bitcoin.updatedAt
+      ? "Updated " + formatBitcoinUpdated(bitcoin.updatedAt)
+      : "";
+  }
+}
+
+function updateBitcoinAmount(value) {
+  const amount = Number(value);
+  bitcoin.amount = Number.isFinite(amount) && amount > 0 ? amount : 0;
+  syncBitcoinAsset();
+  rebuildNetWorthHistory();
+  renderAssets();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+  renderBitcoin();
+}
+
+function clearBitcoinHolding() {
+  if (!confirm("Remove Bitcoin from your assets?")) return;
+  bitcoin.amount = 0;
+  syncBitcoinAsset();
+  rebuildNetWorthHistory();
+  renderAssets();
+  renderBitcoin();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function applyLiveBitcoinPrice(price) {
+  bitcoin.priceNzd = price;
+  bitcoin.updatedAt = new Date().toISOString();
+
+  const list = document.getElementById("assetsList");
+  const active = document.activeElement;
+  const editingAssets = !!(active && list && list.contains(active));
+
+  syncBitcoinAsset();
+  rebuildNetWorthHistory();
+
+  if (!editingAssets) {
+    renderAssets();
+  } else {
+    const valueEl = document.getElementById("bitcoinAssetValue");
+    if (valueEl) valueEl.textContent = money(bitcoinValue());
+    const totalEl = document.getElementById("totalAssets");
+    if (totalEl) {
+      const total = assets.reduce((sum, asset) => sum + Number(asset.value || 0), 0);
+      totalEl.textContent = money(total);
+    }
+  }
+
+  updateNetWorthSummary();
+  drawNetWorthChart();
+  renderBitcoin();
+}
+
+async function fetchBtcPriceNzd() {
+  try {
+    const res = await fetch("https://api.coinbase.com/v2/prices/BTC-NZD/spot", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      const price = Number(data && data.data && data.data.amount);
+      if (Number.isFinite(price) && price > 0) return price;
+    }
+  } catch (error) {}
+
+  const res = await fetch(
+    "https://api.coinpaprika.com/v1/tickers/btc-bitcoin?quotes=NZD",
+    { cache: "no-store" }
+  );
+  if (!res.ok) throw new Error("Bitcoin price is unavailable");
+  const data = await res.json();
+  const price = Number(data && data.quotes && data.quotes.NZD && data.quotes.NZD.price);
+  if (!Number.isFinite(price) || price <= 0) throw new Error("Bitcoin price is unavailable");
+  return price;
+}
+
+function refreshBitcoinPrice(force) {
+  if (!force && bitcoinPriceIsFresh()) {
+    renderBitcoin();
+    return;
+  }
+  if (bitcoinRequest) return;
+
+  const status = document.getElementById("btcStatus");
+  if (status) status.textContent = "Updating the Bitcoin price…";
+
+  bitcoinRequest = fetchBtcPriceNzd()
+    .then(price => {
+      applyLiveBitcoinPrice(price);
+      const statusEl = document.getElementById("btcStatus");
+      if (statusEl) statusEl.textContent = "";
+    })
+    .catch(() => {
+      const statusEl = document.getElementById("btcStatus");
+      if (!statusEl) return;
+      statusEl.textContent = bitcoin.priceNzd
+        ? "Couldn't refresh the live price. Your net worth is still using the last saved Bitcoin price."
+        : "Couldn't reach the Bitcoin price just now. Please try again in a moment.";
+      renderBitcoin();
+    })
+    .finally(() => {
+      bitcoinRequest = null;
+    });
+}
+
+/* ============================================================
+   SAVE
+   ============================================================ */
+
+function saveEverything() {
+  localStorage.setItem("zaraExpenses", JSON.stringify(expenses));
+  localStorage.setItem("zaraBuckets", JSON.stringify(buckets));
+  localStorage.setItem("zaraIncome", JSON.stringify(income));
+  localStorage.setItem("zaraGoals", JSON.stringify(goals));
+  localStorage.setItem("zaraNetWorthHistory", JSON.stringify(netWorthHistory));
+  localStorage.setItem("zaraInvestmentHistory", JSON.stringify(investmentHistory));
+  localStorage.setItem("zaraAssets", JSON.stringify(assets));
+  localStorage.setItem("zaraDebts", JSON.stringify(debts));
+  localStorage.setItem("zaraInvestmentStartYear", investmentStartYear);
+  localStorage.setItem("zaraInvestmentStartAmount", investmentStartAmount);
+  localStorage.setItem("zaraInvestmentEndYear", investmentEndYear);
+  localStorage.setItem("zaraInvestmentFinalGoal", investmentFinalGoal);
+  localStorage.setItem("zaraBitcoin", JSON.stringify(bitcoin));
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+function showSection(id, button) {
+  document.querySelectorAll(".section").forEach(section => {
+    section.classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+
+  if (id === "progress") {
+    renderBitcoin();
+    drawNetWorthChart();
+    drawInvestmentChart();
+    updateNetWorthSummary();
+    refreshBitcoinPrice(false);
+  }
+}
+
+/* ============================================================
+   INCOME / EXPENSES / BUCKETS
+   ============================================================ */
+
+function renderIncome() {
+  const container = document.getElementById("incomeInputs");
+  container.innerHTML = "";
+  income.forEach(incomeItem => {
+    const div = document.createElement("div");
+    div.className = "budget-row";
+    div.innerHTML = `
+      <span class="budget-row-name">${escapeHtml(incomeItem.name)}</span>
+      <span class="budget-row-amount">${money(incomeItem.amount)}</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderExpenses() {
+  const container = document.getElementById("expenseInputs");
+  container.innerHTML = "";
+  expenses.forEach(expense => {
+    const div = document.createElement("div");
+    div.className = "budget-row";
+    div.innerHTML = `
+      <span class="budget-row-name">${escapeHtml(expense.name)}</span>
+      <span class="budget-row-amount">${money(expense.amount)}</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderBuckets() {
+  const container = document.getElementById("bucketInputs");
+  container.innerHTML = "";
+  buckets.forEach(bucket => {
+    const div = document.createElement("div");
+    div.className = "budget-row";
+    div.innerHTML = `
+      <span class="budget-row-name">${escapeHtml(bucket.name)}</span>
+      <span class="budget-row-amount">${money(bucket.amount)}</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateTotals() {
+  const totalIncome = income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const totalExpenses = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const totalBuckets = buckets.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const remaining = totalIncome - totalExpenses - totalBuckets;
+
+  document.getElementById("totalIncome").textContent = money(totalIncome);
+  document.getElementById("totalExpenses").textContent = money(totalExpenses);
+  document.getElementById("totalBuckets").textContent = money(totalBuckets);
+
+  const balance = document.getElementById("balanceMessage");
+  balance.className = "balance";
+
+  if (Math.abs(remaining) < 0.01) {
+    balance.classList.add("good");
+    balance.innerHTML = "🎉 Your budget is balanced! Every dollar has a job.";
+  } else if (remaining > 0) {
+    balance.classList.add("left");
+    balance.innerHTML = "✨ You have " + money(remaining) + " left to give a job.";
+  } else {
+    balance.classList.add("over");
+    balance.innerHTML = "⚠️ You're " + money(Math.abs(remaining)) + " over budget.";
+  }
+
+  drawBudgetChart();
+}
+
+/* ============================================================
+   BUDGET PIE CHART
+   ============================================================ */
+
+const chartColors = [
+  "#ff6f91", "#ff9f43", "#9b5de5", "#50b86c", "#ffd166",
+  "#00b4d8", "#f15bb5", "#8338ec", "#fb5607", "#43aa8b"
+];
+
+function drawBudgetChart() {
+  const canvas = document.getElementById("budgetChart");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const totalExpenses = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const data = [
+    { name: "Daily expenses", value: totalExpenses },
+    ...buckets.map(bucket => ({ name: bucket.name, value: Number(bucket.amount || 0) }))
+  ].filter(item => item.value > 0);
+
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const cx = 235;
+  const cy = 235;
+  const radius = 165;
+
+  if (total <= 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fillStyle = "#eadbea";
+    ctx.fill();
+    ctx.fillStyle = "#806b8d";
+    ctx.textAlign = "center";
+    ctx.font = "600 18px DM Sans";
+    ctx.fillText("Add your budget", cx, cy);
+    document.getElementById("budgetLegend").innerHTML =
+      "<div class='small'>Your chart will appear as you add amounts.</div>";
+    return;
+  }
+
+  let angle = -Math.PI / 2;
+  data.forEach((item, index) => {
+    const slice = (item.value / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, angle, angle + slice);
+    ctx.closePath();
+    ctx.fillStyle = chartColors[index % chartColors.length];
+    ctx.fill();
+    angle += slice;
+  });
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 82, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.fillStyle = "#39234d";
+  ctx.textAlign = "center";
+  ctx.font = "700 17px Fredoka";
+  ctx.fillText("Total budget", cx, cy - 7);
+  ctx.font = "700 20px DM Sans";
+  ctx.fillText(money(total), cx, cy + 20);
+
+  const legend = document.getElementById("budgetLegend");
+  legend.innerHTML = "";
+  data.forEach((item, index) => {
+    const percentage = Math.round((item.value / total) * 100);
+    const row = document.createElement("div");
+    row.className = "legend-item";
+    row.innerHTML = `
+      <span class="dot" style="background:${chartColors[index % chartColors.length]}"></span>
+      <span>${escapeHtml(item.name)} — ${money(item.value)} (${percentage}%)</span>
+    `;
+    legend.appendChild(row);
+  });
+}
+
+/* ============================================================
+   CUSTOMIZE INCOME / EXPENSES / BUCKETS
+   ============================================================ */
+
+function renderCustomIncome() {
+  const container = document.getElementById("customIncomeList");
+  container.innerHTML = "";
+  if (income.length === 0) {
+    container.innerHTML = "<div class='empty'>No income categories yet.</div>";
+    return;
+  }
+  income.forEach((incomeItem, index) => {
+    const row = document.createElement("div");
+    row.className = "category-row";
+    row.innerHTML = `
+      <input type="text" value="${escapeAttr(incomeItem.name)}" onchange="renameIncome(${index}, this.value)" placeholder="Income name">
+      <input type="number" min="0" step="0.01" value="${incomeItem.amount || ""}" oninput="updateCustomIncomeAmount(${index}, this.value)" placeholder="Amount">
+      <button class="delete" onclick="deleteIncome(${index})">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function addIncomeCategory() {
+  income.push({ name: "New income", amount: 0 });
+  saveEverything();
+  renderIncome();
+  renderCustomIncome();
+  updateTotals();
+}
+
+function renameIncome(index, name) {
+  name = name.trim();
+  if (!name) name = "Income";
+  income[index].name = name;
+  saveEverything();
+  renderIncome();
+  renderCustomIncome();
+  updateTotals();
+}
+
+function updateCustomIncomeAmount(index, value) {
+  income[index].amount = Number(value) || 0;
+  saveEverything();
+  renderIncome();
+  updateTotals();
+}
+
+function deleteIncome(index) {
+  if (confirm("Delete " + income[index].name + "? Its budget amount will also be removed.")) {
+    income.splice(index, 1);
+    saveEverything();
+    renderIncome();
+    renderCustomIncome();
+    updateTotals();
+  }
+}
+
+function renderCustomExpenses() {
+  const container = document.getElementById("customExpenseList");
+  container.innerHTML = "";
+  if (expenses.length === 0) {
+    container.innerHTML = "<div class='empty'>No expense categories yet.</div>";
+    return;
+  }
+  expenses.forEach((expense, index) => {
+    const row = document.createElement("div");
+    row.className = "category-row";
+    row.innerHTML = `
+      <input type="text" value="${escapeAttr(expense.name)}" onchange="renameExpense(${index}, this.value)" placeholder="Category name">
+      <input type="number" min="0" step="0.01" value="${expense.amount || ""}" oninput="updateCustomExpenseAmount(${index}, this.value)" placeholder="Amount">
+      <button class="delete" onclick="deleteExpense(${index})">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function addExpenseCategory() {
+  expenses.push({ name: "New expense", amount: 0 });
+  saveEverything();
+  renderExpenses();
+  renderCustomExpenses();
+  updateTotals();
+}
+
+function renameExpense(index, name) {
+  name = name.trim();
+  if (!name) name = "Expense";
+  expenses[index].name = name;
+  saveEverything();
+  renderExpenses();
+  renderCustomExpenses();
+  updateTotals();
+}
+
+function updateCustomExpenseAmount(index, value) {
+  expenses[index].amount = Number(value) || 0;
+  saveEverything();
+  renderExpenses();
+  updateTotals();
+}
+
+function deleteExpense(index) {
+  if (confirm("Delete " + expenses[index].name + "? Its budget amount will also be removed.")) {
+    expenses.splice(index, 1);
+    saveEverything();
+    renderExpenses();
+    renderCustomExpenses();
+    updateTotals();
+  }
+}
+
+function renderCustomBuckets() {
+  const container = document.getElementById("customBucketList");
+  container.innerHTML = "";
+  if (buckets.length === 0) {
+    container.innerHTML = "<div class='empty'>No bucket categories yet.</div>";
+    return;
+  }
+  buckets.forEach((bucket, index) => {
+    const row = document.createElement("div");
+    row.className = "bucket-row";
+    row.innerHTML = `
+      <input type="text" value="${escapeAttr(bucket.name)}" onchange="renameBucket(${index}, this.value)" placeholder="Bucket name">
+      <input type="number" min="0" step="0.01" value="${bucket.amount || ""}" oninput="updateCustomBucketAmount(${index}, this.value)" placeholder="Amount">
+      <button class="delete" onclick="deleteBucket(${index})">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function addBucketCategory() {
+  buckets.push({ name: "New bucket", amount: 0 });
+  saveEverything();
+  renderBuckets();
+  renderCustomBuckets();
+  updateTotals();
+}
+
+function renameBucket(index, name) {
+  name = name.trim();
+  if (!name) name = "Bucket";
+  buckets[index].name = name;
+  saveEverything();
+  renderBuckets();
+  renderCustomBuckets();
+  updateTotals();
+}
+
+function updateCustomBucketAmount(index, value) {
+  buckets[index].amount = Number(value) || 0;
+  saveEverything();
+  renderBuckets();
+  updateTotals();
+}
+
+function deleteBucket(index) {
+  if (confirm("Delete " + buckets[index].name + "? Its budget amount will also be removed.")) {
+    buckets.splice(index, 1);
+    saveEverything();
+    renderBuckets();
+    renderCustomBuckets();
+    updateTotals();
+  }
+}
+
+/* ============================================================
+   FINANCIAL GOALS
+   ============================================================ */
+
+function renderGoals() {
+  const container = document.getElementById("goalsList");
+  container.innerHTML = "";
+  if (goals.length === 0) {
+    container.innerHTML = "<div class='empty'>No goals yet. Add your first one below ✨</div>";
+    return;
+  }
+  goals.forEach((goal, index) => {
+    const target = Number(goal.target) || 0;
+    const saved = Number(goal.saved) || 0;
+    const percentage = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+    const div = document.createElement("div");
+    div.className = "goal";
+    div.innerHTML = `
+      <div class="goal-title">
+        <span>${escapeHtml(goal.name)}</span>
+        <button class="delete" onclick="deleteGoal(${index})">✕</button>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label>Goal name</label>
+        <input type="text" value="${escapeAttr(goal.name)}" onchange="updateGoalName(${index}, this.value)">
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Target</label>
+          <div class="money">
+            <span>$</span>
+            <input type="number" min="0" value="${target || ""}" oninput="updateGoalTarget(${index}, this.value)">
+          </div>
+        </div>
+        <div class="field">
+          <label>Saved so far</label>
+          <div class="money">
+            <span>$</span>
+            <input type="number" min="0" value="${saved || ""}" oninput="updateGoalSaved(${index}, this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" style="width:${percentage}%"></div>
+      </div>
+      <div class="small">${money(saved)} of ${money(target)} — ${Math.round(percentage)}%</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addGoal() {
+  goals.push({ name: "New goal", target: 0, saved: 0 });
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalName(index, value) {
+  goals[index].name = value.trim() || "Goal";
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalTarget(index, value) {
+  goals[index].target = Number(value) || 0;
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalSaved(index, value) {
+  goals[index].saved = Number(value) || 0;
+  saveEverything();
+  renderGoals();
+}
+
+function deleteGoal(index) {
+  if (confirm("Delete this financial goal?")) {
+    goals.splice(index, 1);
+    saveEverything();
+    renderGoals();
+  }
+}
+
+/* ============================================================
+   ASSET + DEBT HISTORY
+   ============================================================ */
+
+function recordHistory(item) {
+  if (!Array.isArray(item.history)) item.history = [];
+  const year = new Date().getFullYear();
+  const existing = item.history.find(historyItem => Number(historyItem.year) === year);
+  if (existing) {
+    existing.value = Number(item.value) || 0;
+  } else {
+    item.history.push({ year: year, value: Number(item.value) || 0 });
+  }
+  item.history.sort((a, b) => Number(a.year) - Number(b.year));
+}
+
+function recordCurrentYearValues() {
+  assets.forEach(asset => recordHistory(asset));
+  debts.forEach(debt => recordHistory(debt));
+}
+
+function rebuildNetWorthHistory() {
+  const years = new Set();
+  assets.forEach(asset => {
+    if (Array.isArray(asset.history)) {
+      asset.history.forEach(item => {
+        if (item && item.year !== undefined) years.add(Number(item.year));
+      });
+    }
+  });
+  debts.forEach(debt => {
+    if (Array.isArray(debt.history)) {
+      debt.history.forEach(item => {
+        if (item && item.year !== undefined) years.add(Number(item.year));
+      });
+    }
+  });
+  years.add(new Date().getFullYear());
+  const sortedYears = [...years].filter(year => Number.isFinite(year)).sort((a, b) => a - b);
+
+  netWorthHistory = sortedYears.map(year => {
+    const totalAssets = assets.reduce((sum, asset) => {
+      const record = Array.isArray(asset.history)
+        ? asset.history.find(item => Number(item.year) === year)
+        : null;
+      return sum + (record ? Number(record.value) || 0 : 0);
+    }, 0);
+    const totalDebts = debts.reduce((sum, debt) => {
+      const record = Array.isArray(debt.history)
+        ? debt.history.find(item => Number(item.year) === year)
+        : null;
+      return sum + (record ? Number(record.value) || 0 : 0);
+    }, 0);
+    return { year: year, value: totalAssets - totalDebts };
+  });
+
+  saveEverything();
+}
+
+/* ============================================================
+   NET WORTH SUMMARY + CHART
+   ============================================================ */
+
+function updateNetWorthSummary() {
+  const summary = document.getElementById("netWorthSummary");
+  if (!summary) return;
+  const data = [...netWorthHistory].sort((a, b) => Number(a.year) - Number(b.year));
+
+  if (data.length === 0) {
+    summary.textContent = "Add your assets and debts to start tracking your net worth.";
+    return;
+  }
+  if (data.length === 1) {
+    summary.textContent =
+      "Your current net worth is " + money(data[0].value) +
+      ". Your year-on-year change will appear here once you have another year's record.";
+    return;
+  }
+
+  const previous = Number(data[data.length - 2].value) || 0;
+  const current = Number(data[data.length - 1].value) || 0;
+  const previousYear = Number(data[data.length - 2].year);
+  const currentYear = Number(data[data.length - 1].year);
+
+  if (previous === 0) {
+    summary.textContent = "Your net worth is " + money(current) + ".";
+    return;
+  }
+
+  const percentage = ((current - previous) / Math.abs(previous)) * 100;
+  const rounded = Math.abs(percentage).toFixed(1);
+  const timeText = currentYear === previousYear + 1 ? "since last year" : "since " + previousYear;
+
+  if (percentage > 0) {
+    summary.textContent = "🌸 Your net worth has increased by " + rounded + "% " + timeText + ".";
+  } else if (percentage < 0) {
+    summary.textContent = "Your net worth has decreased by " + rounded + "% " + timeText + ".";
+  } else {
+    summary.textContent = "Your net worth hasn't changed " + timeText + ".";
+  }
+}
+
+function drawNetWorthChart() {
+  const canvas = document.getElementById("netWorthChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const data = [...netWorthHistory].sort((a, b) => Number(a.year) - Number(b.year));
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = { left: 65, right: 25, top: 30, bottom: 60 };
+  const graphWidth = width - padding.left - padding.right;
+  const graphHeight = height - padding.top - padding.bottom;
+
+  if (data.length === 0) {
+    ctx.fillStyle = "#806b8d";
+    ctx.textAlign = "center";
+    ctx.font = "600 17px DM Sans";
+    ctx.fillText("Add your assets and debts", width / 2, height / 2);
+    return;
+  }
+
+  const values = data.map(x => Number(x.value) || 0);
+  const maxValue = Math.max(...values, 1);
+  const minValue = Math.min(...values, 0);
+  const range = maxValue - minValue || 1;
+  const zeroY = padding.top + graphHeight - ((0 - minValue) / range) * graphHeight;
+
+  ctx.strokeStyle = "#eadbea";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(padding.left, padding.top);
+  ctx.lineTo(padding.left, height - padding.bottom);
+  ctx.lineTo(width - padding.right, height - padding.bottom);
+  ctx.stroke();
+
+  for (let i = 0; i <= 4; i++) {
+    const value = minValue + (range * i / 4);
+    const y = padding.top + graphHeight - ((value - minValue) / range) * graphHeight;
+    ctx.strokeStyle = "#f1e8f2";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+    ctx.fillStyle = "#806b8d";
+    ctx.font = "11px DM Sans";
+    ctx.textAlign = "right";
+    ctx.fillText(moneyShort(value), padding.left - 8, y + 4);
+  }
+
+  if (minValue < 0 && maxValue > 0) {
+    ctx.strokeStyle = "#eadbea";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, zeroY);
+    ctx.lineTo(width - padding.right, zeroY);
+    ctx.stroke();
+  }
+
+  const barSpace = graphWidth / data.length;
+  const barWidth = Math.min(70, barSpace * .55);
+
+  data.forEach((item, index) => {
+    const value = Number(item.value) || 0;
+    const yValue = padding.top + graphHeight - ((value - minValue) / range) * graphHeight;
+    const x = padding.left + barSpace * index + (barSpace - barWidth) / 2;
+    const y = Math.min(yValue, zeroY);
+    const barHeight = Math.abs(yValue - zeroY);
+
+    ctx.fillStyle = index % 2 === 0 ? "#ff6f91" : "#9b5de5";
+    ctx.beginPath();
+    roundRect(ctx, x, y, barWidth, Math.max(barHeight, 2), 10);
+    ctx.fill();
+
+    ctx.fillStyle = "#39234d";
+    ctx.textAlign = "center";
+    ctx.font = "700 11px DM Sans";
+    ctx.fillText(
+      moneyShort(value),
+      x + barWidth / 2,
+      value >= 0 ? Math.max(y - 8, 15) : Math.min(y + barHeight + 16, height - padding.bottom + 5)
+    );
+
+    ctx.fillStyle = "#806b8d";
+    ctx.font = "600 12px DM Sans";
+    ctx.fillText(item.year, x + barWidth / 2, height - padding.bottom + 24);
+  });
+}
+
+/* ============================================================
+   ASSETS
+   ============================================================ */
+
+function renderAssets() {
+  const container = document.getElementById("assetsList");
+  container.innerHTML = "";
+
+  if (assets.length === 0) {
+    container.innerHTML = "<div class='empty'>No assets yet. Add your first one below ✨</div>";
+    document.getElementById("totalAssets").textContent = money(0);
+    return;
+  }
+
+  assets.forEach((asset, index) => {
+    const row = document.createElement("div");
+    row.className = "asset-row";
+
+    if (asset.source === "bitcoin") {
+      row.innerHTML = bitcoinAssetRowHtml(asset);
+    } else {
+      row.innerHTML = `
+        <input type="text" value="${escapeAttr(asset.name)}" onchange="renameAsset(${index}, this.value)" placeholder="Asset name">
+        <div class="money">
+          <span>$</span>
+          <input type="number" min="0" step="100" value="${asset.value || ""}" onchange="updateAssetValue(${index}, this.value)" placeholder="Value">
+        </div>
+        <button class="delete" onclick="deleteAsset(${index})">✕</button>
+      `;
+    }
+
+    container.appendChild(row);
+
+    const history = Array.isArray(asset.history)
+      ? [...asset.history].sort((a, b) => Number(a.year) - Number(b.year))
+      : [];
+
+    if (history.length > 0) {
+      const historyDiv = document.createElement("div");
+      historyDiv.className = "asset-history";
+      let historyHtml = "<div class='asset-history-title'>Yearly values</div>";
+      history.forEach(item => {
+        historyHtml += `
+          <div class="asset-history-row">
+            <span>${escapeHtml(item.year)}</span>
+            <span>${money(item.value)}</span>
+          </div>
+        `;
+      });
+      historyDiv.innerHTML = historyHtml;
+      container.appendChild(historyDiv);
+    }
+  });
+
+  const total = assets.reduce((sum, asset) => sum + Number(asset.value || 0), 0);
+  document.getElementById("totalAssets").textContent = money(total);
+}
+
+function addAsset() {
+  assets.push({ name: "New asset", value: 0, history: [] });
+  recordHistory(assets[assets.length - 1]);
+  rebuildNetWorthHistory();
+  renderAssets();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function renameAsset(index, name) {
+  if (assets[index].source === "bitcoin") return;
+  name = name.trim();
+  if (!name) name = "Asset";
+  assets[index].name = name;
+  saveEverything();
+  renderAssets();
+}
+
+function updateAssetValue(index, value) {
+  if (assets[index].source === "bitcoin") return;
+  assets[index].value = Number(value) || 0;
+  recordHistory(assets[index]);
+  rebuildNetWorthHistory();
+  saveEverything();
+  renderAssets();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function deleteAsset(index) {
+  if (confirm("Delete " + assets[index].name + "?")) {
+    if (assets[index].source === "bitcoin") bitcoin.amount = 0;
+    assets.splice(index, 1);
+    rebuildNetWorthHistory();
+    saveEverything();
+    renderAssets();
+    renderBitcoin();
+    updateNetWorthSummary();
+    drawNetWorthChart();
+  }
+}
+
+/* ============================================================
+   DEBTS
+   ============================================================ */
+
+function renderDebts() {
+  const container = document.getElementById("debtsList");
+  container.innerHTML = "";
+
+  if (debts.length === 0) {
+    container.innerHTML = "<div class='empty'>No debts yet. Add your first one below.</div>";
+    document.getElementById("totalDebts").textContent = money(0);
+    return;
+  }
+
+  debts.forEach((debt, index) => {
+    const row = document.createElement("div");
+    row.className = "debt-row";
+    row.innerHTML = `
+      <input type="text" value="${escapeAttr(debt.name)}" onchange="renameDebt(${index}, this.value)" placeholder="Debt name">
+      <div class="money">
+        <span>$</span>
+        <input type="number" min="0" step="100" value="${debt.value || ""}" onchange="updateDebtValue(${index}, this.value)" placeholder="Balance">
+      </div>
+      <button class="delete" onclick="deleteDebt(${index})">✕</button>
+    `;
+    container.appendChild(row);
+
+    const history = Array.isArray(debt.history)
+      ? [...debt.history].sort((a, b) => Number(a.year) - Number(b.year))
+      : [];
+
+    if (history.length > 0) {
+      const historyDiv = document.createElement("div");
+      historyDiv.className = "debt-history";
+      let historyHtml = "<div class='debt-history-title'>Yearly balances</div>";
+      history.forEach(item => {
+        historyHtml += `
+          <div class="debt-history-row">
+            <span>${escapeHtml(item.year)}</span>
+            <span>${money(item.value)}</span>
+          </div>
+        `;
+      });
+      historyDiv.innerHTML = historyHtml;
+      container.appendChild(historyDiv);
+    }
+  });
+
+  const total = debts.reduce((sum, debt) => sum + Number(debt.value || 0), 0);
+  document.getElementById("totalDebts").textContent = money(total);
+}
+
+function addDebt() {
+  debts.push({ name: "New debt", value: 0, history: [] });
+  recordHistory(debts[debts.length - 1]);
+  rebuildNetWorthHistory();
+  renderDebts();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function renameDebt(index, name) {
+  name = name.trim();
+  if (!name) name = "Debt";
+  debts[index].name = name;
+  saveEverything();
+  renderDebts();
+}
+
+function updateDebtValue(index, value) {
+  debts[index].value = Number(value) || 0;
+  recordHistory(debts[index]);
+  rebuildNetWorthHistory();
+  saveEverything();
+  renderDebts();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function deleteDebt(index) {
+  if (confirm("Delete " + debts[index].name + "?")) {
+    debts.splice(index, 1);
+    rebuildNetWorthHistory();
+    saveEverything();
+    renderDebts();
+    updateNetWorthSummary();
+    drawNetWorthChart();
+  }
+}
+
+/* ============================================================
+   INVESTMENT HISTORY + CUSTOM GOAL
+   ============================================================ */
+
+function renderInvestmentInputs() {
+  const container = document.getElementById("investmentInputs");
+  container.innerHTML = "";
+  investmentHistory.sort((a, b) => Number(a.year) - Number(b.year));
+
+  investmentHistory.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "investment-row";
+    row.innerHTML = `
+      <input type="number" value="${item.year}" onchange="updateInvestmentYear(${index}, this.value)" placeholder="Year">
+      <div class="money">
+        <span>$</span>
+        <input type="number" min="0" step="100" value="${item.actual || ""}" oninput="updateInvestmentActual(${index}, this.value)" placeholder="Actual">
+      </div>
+      <div style="padding:9px 6px;text-align:center;font-weight:700;color:#9b5de5;font-size:13px;">
+        ${moneyShort(getInvestmentGoal(item.year))}
+      </div>
+      <button class="delete" onclick="deleteInvestmentYear(${index})">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function getInvestmentGoal(year) {
+  year = Number(year);
+  if (year <= investmentStartYear) return investmentStartAmount;
+  if (year >= investmentEndYear) return investmentFinalGoal;
+  const progress = (year - investmentStartYear) / (investmentEndYear - investmentStartYear);
+  return investmentStartAmount + (investmentFinalGoal - investmentStartAmount) * progress;
+}
+
+function renderInvestmentSettings() {
+  document.getElementById("investmentStartYear").value = investmentStartYear;
+  document.getElementById("investmentStartAmount").value = investmentStartAmount;
+  document.getElementById("investmentEndYear").value = investmentEndYear;
+  document.getElementById("investmentFinalGoal").value = investmentFinalGoal;
+}
+
+function saveInvestmentSettings() {
+  const newStartYear = Number(document.getElementById("investmentStartYear").value);
+  const newStartAmount = Number(document.getElementById("investmentStartAmount").value);
+  const newEndYear = Number(document.getElementById("investmentEndYear").value);
+  const newFinalGoal = Number(document.getElementById("investmentFinalGoal").value);
+
+  if (!newStartYear || !newEndYear) {
+    alert("Please enter a starting year and goal year.");
+    return;
+  }
+  if (newEndYear <= newStartYear) {
+    alert("The goal year must be after the starting year.");
+    return;
+  }
+  if (newStartAmount < 0 || newFinalGoal < 0) {
+    alert("Investment amounts cannot be negative.");
+    return;
+  }
+
+  investmentStartYear = newStartYear;
+  investmentStartAmount = newStartAmount;
+  investmentEndYear = newEndYear;
+  investmentFinalGoal = newFinalGoal;
+  saveEverything();
+  renderInvestmentSettings();
+  renderInvestmentInputs();
+  drawInvestmentChart();
+  document.getElementById("investmentSettingsMessage").textContent = "✓ Investment goal settings saved!";
+}
+
+function addInvestmentYear() {
+  const year = new Date().getFullYear();
+  let newYear = year;
+  if (investmentHistory.some(x => Number(x.year) === newYear)) newYear++;
+  investmentHistory.push({ year: newYear, actual: 0 });
+  saveEverything();
+  renderInvestmentInputs();
+  drawInvestmentChart();
+}
+
+function updateInvestmentYear(index, value) {
+  investmentHistory[index].year = Number(value) || new Date().getFullYear();
+  saveEverything();
+  renderInvestmentInputs();
+  drawInvestmentChart();
+}
+
+function updateInvestmentActual(index, value) {
+  investmentHistory[index].actual = Number(value) || 0;
+  saveEverything();
+  drawInvestmentChart();
+}
+
+function deleteInvestmentYear(index) {
+  investmentHistory.splice(index, 1);
+  saveEverything();
+  renderInvestmentInputs();
+  drawInvestmentChart();
+}
+
+function drawInvestmentChart() {
+  const canvas = document.getElementById("investmentChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const data = [...investmentHistory].sort((a, b) => Number(a.year) - Number(b.year));
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = { left: 65, right: 25, top: 35, bottom: 65 };
+  const graphWidth = width - padding.left - padding.right;
+  const graphHeight = height - padding.top - padding.bottom;
+
+  const allActualValues = data.map(x => Number(x.actual) || 0);
+  const maxValue = Math.max(investmentStartAmount, investmentFinalGoal, ...allActualValues, 1);
+
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + graphHeight - (graphHeight * i / 4);
+    ctx.strokeStyle = "#f1e8f2";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+    ctx.fillStyle = "#806b8d";
+    ctx.font = "11px DM Sans";
+    ctx.textAlign = "right";
+    ctx.fillText(moneyShort(maxValue * i / 4), padding.left - 8, y + 4);
+  }
+
+  ctx.strokeStyle = "#eadbea";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(padding.left, padding.top);
+  ctx.lineTo(padding.left, height - padding.bottom);
+  ctx.lineTo(width - padding.right, height - padding.bottom);
+  ctx.stroke();
+
+  ctx.font = "700 12px DM Sans";
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#ff6f91";
+  ctx.fillRect(90, 8, 12, 12);
+  ctx.fillStyle = "#39234d";
+  ctx.fillText("Actual investments", 108, 19);
+  ctx.fillStyle = "#9b5de5";
+  ctx.fillRect(285, 8, 12, 12);
+  ctx.fillStyle = "#39234d";
+  ctx.fillText("Goal amount", 303, 19);
+
+  const pointsActual = [];
+  data.forEach(item => {
+    const year = Number(item.year);
+    const yearRange = investmentEndYear - investmentStartYear;
+    let x = yearRange <= 0 ? padding.left : padding.left + ((year - investmentStartYear) / yearRange) * graphWidth;
+    const actual = Number(item.actual) || 0;
+    const y = padding.top + graphHeight - (actual / maxValue) * graphHeight;
+    pointsActual.push({ x, y, value: actual, year });
+  });
+
+  const pointsGoal = [];
+  for (let year = investmentStartYear; year <= investmentEndYear; year++) {
+    const goal = getInvestmentGoal(year);
+    const yearRange = investmentEndYear - investmentStartYear;
+    let x = yearRange <= 0 ? padding.left : padding.left + ((year - investmentStartYear) / yearRange) * graphWidth;
+    const y = padding.top + graphHeight - (goal / maxValue) * graphHeight;
+    pointsGoal.push({ x, y, value: goal, year });
+  }
+
+  for (let year = investmentStartYear; year <= investmentEndYear; year++) {
+    const yearRange = investmentEndYear - investmentStartYear;
+    let x = yearRange <= 0 ? padding.left : padding.left + ((year - investmentStartYear) / yearRange) * graphWidth;
+    ctx.fillStyle = "#806b8d";
+    ctx.textAlign = "center";
+    ctx.font = "600 11px DM Sans";
+    if (year % 2 === 1 || year === investmentEndYear || year === investmentStartYear) {
+      ctx.fillText(year, x, height - padding.bottom + 25);
+    }
+  }
+
+  drawLine(ctx, pointsActual, "#ff6f91");
+  drawLine(ctx, pointsGoal, "#9b5de5");
+
+  pointsActual.forEach(point => {
+    ctx.fillStyle = "#ff6f91";
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#39234d";
+    ctx.font = "700 10px DM Sans";
+    ctx.textAlign = "center";
+    ctx.fillText(moneyShort(point.value), point.x, point.y - 10);
+  });
+
+  if (pointsGoal.length > 0) {
+    const finalGoal = pointsGoal[pointsGoal.length - 1];
+    ctx.fillStyle = "#9b5de5";
+    ctx.beginPath();
+    ctx.arc(finalGoal.x, finalGoal.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#39234d";
+    ctx.font = "700 11px DM Sans";
+    ctx.textAlign = "right";
+    ctx.fillText(moneyShort(investmentFinalGoal), finalGoal.x - 8, finalGoal.y - 12);
+  }
+}
+
+function drawLine(ctx, points, color) {
+  if (points.length === 0) return;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  points.forEach((point, index) => {
+    if (index === 0) ctx.moveTo(point.x, point.y);
+    else ctx.lineTo(point.x, point.y);
+  });
+  ctx.stroke();
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function money(value) {
+  return "$" + Number(value || 0).toLocaleString("en-NZ", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function moneyShort(value) {
+  value = Number(value) || 0;
+  if (Math.abs(value) >= 1000000) {
+    return (value < 0 ? "-$" : "$") + (Math.abs(value) / 1000000).toFixed(1) + "m";
+  }
+  if (Math.abs(value) >= 1000) {
+    return (value < 0 ? "-$" : "$") + (Math.abs(value) / 1000).toFixed(0) + "k";
+  }
+  return (value < 0 ? "-$" : "$") + Math.round(Math.abs(value));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  radius = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+/* ============================================================
+   BACKUP & RESTORE
+   ============================================================ */
+
+function createBackupData() {
+  const savedData = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("zara")) {
+      savedData[key] = localStorage.getItem(key);
+    }
+  }
+  return {
+    app: "Zara's Zero Based Budget",
+    backupVersion: 1,
+    backedUpAt: new Date().toISOString(),
+    localStorage: savedData
+  };
+}
+
+async function backupData() {
+  saveEverything();
+  const backup = createBackupData();
+  const json = JSON.stringify(backup, null, 2);
+  const now = new Date();
+  const filename =
+    `zara-budget-backup-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}.json`;
+  const message = document.getElementById("backupMessage");
+
+  try {
+    const file = new File([json], filename, { type: "application/json" });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Zara's Budget Backup",
+        text: "Save this backup file to OneDrive or another safe location."
+      });
+      message.textContent = "✓ Backup ready. Save the file somewhere safe.";
+      return;
+    }
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      message.textContent = "Backup cancelled.";
+      return;
+    }
+  }
+
+  try {
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    message.textContent = "✓ Backup file created. Save it to OneDrive or Files.";
+  } catch (error) {
+    message.textContent = "⚠️ Sorry, the backup could not be created.";
+  }
+}
+
+function restoreData(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const message = document.getElementById("restoreMessage");
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    try {
+      const backup = JSON.parse(event.target.result);
+      if (
+        !backup ||
+        backup.app !== "Zara's Zero Based Budget" ||
+        !backup.localStorage ||
+        typeof backup.localStorage !== "object"
+      ) {
+        throw new Error("Invalid backup");
+      }
+
+      const keys = Object.keys(backup.localStorage);
+      const looksLikeBudgetBackup =
+        keys.includes("zaraExpenses") ||
+        keys.includes("zaraBuckets") ||
+        keys.includes("zaraIncome") ||
+        keys.includes("zaraGoals") ||
+        keys.includes("zaraNetWorthHistory") ||
+        keys.includes("zaraInvestmentHistory") ||
+        keys.includes("zaraAssets") ||
+        keys.includes("zaraDebts");
+
+      if (!looksLikeBudgetBackup) throw new Error("Invalid backup");
+
+      const confirmed = confirm(
+        "Restore this backup?\n\nThis will replace the budget data currently stored in this app with the data from the backup file."
+      );
+      if (!confirmed) {
+        input.value = "";
+        message.textContent = "Restore cancelled.";
+        return;
+      }
+
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("zara")) keysToRemove.push(key);
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      keys.forEach(key => {
+        if (key.startsWith("zara")) {
+          localStorage.setItem(key, String(backup.localStorage[key]));
+        }
+      });
+
+      message.textContent = "✓ Backup restored successfully. Reloading your budget...";
+      setTimeout(() => location.reload(), 700);
+    } catch (error) {
+      message.textContent = "⚠️ That file doesn't look like a valid Zara budget backup.";
+      input.value = "";
+    }
+  };
+
+  reader.onerror = function() {
+    message.textContent = "⚠️ The backup file could not be read.";
+    input.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   INITIALISE
+   ============================================================ */
+
+function initialise() {
+  syncBitcoinAsset();
+  recordCurrentYearValues();
+  rebuildNetWorthHistory();
+
+  renderIncome();
+  renderExpenses();
+  renderBuckets();
+  renderCustomIncome();
+  renderCustomExpenses();
+  renderCustomBuckets();
+  renderGoals();
+  renderInvestmentSettings();
+  renderInvestmentInputs();
+  renderAssets();
+  renderDebts();
+  updateTotals();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+  drawInvestmentChart();
+  renderBitcoin();
+  refreshBitcoinPrice(false);
+}
+
+initialise();
+</script>
+
+</body>
+</html>
