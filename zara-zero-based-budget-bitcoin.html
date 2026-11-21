@@ -1,0 +1,2528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff6f91">
+<title>Zara's Zero Based Budget</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap');
+
+:root {
+  --pink: #ff6f91;
+  --hot-pink: #ff477e;
+  --orange: #ff9f43;
+  --yellow: #ffd166;
+  --purple: #9b5de5;
+  --deep-purple: #6c3fc5;
+  --cream: #fff8f0;
+  --white: #ffffff;
+  --dark: #39234d;
+  --muted: #806b8d;
+  --green: #50b86c;
+  --red: #ed5a6a;
+  --border: #eadbea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #fff3f7 0%, #fff8ef 50%, #f6efff 100%);
+  color: var(--dark);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 18px;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--pink), var(--orange));
+  color: white;
+  padding: 22px;
+  border-radius: 24px;
+  box-shadow: 0 8px 25px rgba(155, 93, 229, .15);
+  margin-bottom: 14px;
+}
+
+.logo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 4px;
+  opacity: .9;
+  font-size: 14px;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-bottom: 15px;
+}
+
+.nav button {
+  border: 0;
+  background: white;
+  color: var(--dark);
+  padding: 11px 5px;
+  border-radius: 14px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(80, 50, 90, .08);
+}
+
+.nav button.active {
+  background: var(--purple);
+  color: white;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+.card {
+  background: rgba(255,255,255,.92);
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 20px rgba(80, 50, 90, .06);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-family: 'Fredoka', sans-serif;
+  color: var(--deep-purple);
+  font-size: 21px;
+}
+
+.card h3 {
+  font-family: 'Fredoka', sans-serif;
+  margin-bottom: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  margin-bottom: 11px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans';
+  font-size: 15px;
+  color: var(--dark);
+  background: #fffdfd;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--pink);
+}
+
+.money {
+  position: relative;
+}
+
+.money span {
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  color: var(--muted);
+}
+
+.money input {
+  padding-left: 27px;
+}
+
+.total {
+  background: linear-gradient(135deg, #fff0f5, #fff6e8);
+  border-radius: 15px;
+  padding: 13px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.balance {
+  padding: 16px;
+  border-radius: 17px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.balance.good {
+  background: #e9f8ed;
+  color: #24763b;
+}
+
+.balance.left {
+  background: #fff4d8;
+  color: #9a6900;
+}
+
+.balance.over {
+  background: #ffe7eb;
+  color: #a82e3e;
+}
+
+button.primary {
+  border: 0;
+  background: linear-gradient(135deg, var(--pink), var(--hot-pink));
+  color: white;
+  padding: 11px 17px;
+  border-radius: 13px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+button.secondary {
+  border: 0;
+  background: var(--purple);
+  color: white;
+  padding: 9px 13px;
+  border-radius: 11px;
+  font-family: 'DM Sans';
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.delete {
+  border: 0;
+  background: #ffe5e9;
+  color: var(--red);
+  padding: 8px 11px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  margin: 5px auto 15px;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.legend {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.goal {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.goal-title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.progress {
+  height: 11px;
+  background: #eee5ef;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 9px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--orange));
+  border-radius: 20px;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 1fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bucket-row {
+  display: grid;
+  grid-template-columns: 1fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 10px 0;
+}
+
+.year-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.investment-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.help {
+  background: #f8efff;
+  border-radius: 14px;
+  padding: 11px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   COMPACT BUDGET PAGE
+   ============================================================ */
+
+#budget .card {
+  padding: 14px;
+}
+
+#budget .field {
+  margin-bottom: 7px;
+}
+
+#budget .money {
+  padding: 8px 12px 8px 27px !important;
+  min-height: 38px !important;
+}
+
+#budget .money span {
+  top: 8px;
+}
+
+#budget .chart-wrap {
+  max-width: 400px;
+  margin: 2px auto 10px;
+}
+
+#budget .legend {
+  gap: 5px;
+  margin-top: 5px;
+}
+
+/* ============================================================
+   TIDY BUDGET CATEGORY ROWS
+   ============================================================ */
+
+.budget-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.budget-row:last-child {
+  border-bottom: 0;
+}
+
+.budget-row-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.budget-row-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   ASSETS + DEBTS
+   ============================================================ */
+
+.asset-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.asset-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.asset-history-title {
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.asset-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.debt-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.debt-history {
+  background: #fff8fc;
+  border-radius: 12px;
+  padding: 9px 11px;
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.debt-history-title {
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.debt-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.net-worth-summary {
+  text-align: center;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-row {
+    grid-template-columns: 1fr 90px auto;
+  }
+
+  .investment-row {
+    grid-template-columns: 65px 1fr 1fr auto;
+  }
+
+  .investment-row input {
+    font-size: 13px;
+    padding: 9px 6px;
+  }
+
+  .asset-row {
+    grid-template-columns: 1fr 90px auto;
+  }
+
+  .debt-row {
+    grid-template-columns: 1fr 90px auto;
+  }
+
+  .nav button {
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="logo">🌸 Zara's Zero Based Budget</div>
+    <div class="subtitle"><center>✨ Give every dollar a job ✨</center></div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('budget', this)">💰 Budget</button>
+    <button class="nav-btn" onclick="showSection('goals', this)">🎯 Goals</button>
+    <button class="nav-btn" onclick="showSection('progress', this)">📈 Progress</button>
+    <button class="nav-btn" onclick="showSection('customize', this)">✨ Customize</button>
+  </div>
+
+  <!-- ================= BUDGET ================= -->
+
+  <div id="budget" class="section active">
+
+    <div class="card">
+      <h2>🌈 Your Budget</h2>
+
+      <div class="chart-wrap">
+        <canvas id="budgetChart" width="470" height="470"></canvas>
+      </div>
+
+      <div id="budgetLegend" class="legend"></div>
+    </div>
+
+    <div class="card">
+      <h2>💵 Income</h2>
+
+      <div id="incomeInputs"></div>
+
+      <div class="total">
+        <span>Total income</span>
+        <span id="totalIncome">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Daily Expenses</h2>
+      <div id="expenseInputs"></div>
+
+      <div class="total">
+        <span>Total expenses</span>
+        <span id="totalExpenses">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🪣 Buckets</h2>
+      <div id="bucketInputs"></div>
+
+      <div class="total">
+        <span>Total buckets</span>
+        <span id="totalBuckets">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚖️ Zero-Based Check</h2>
+      <div id="balanceMessage" class="balance good">
+        Your budget is balanced!
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= GOALS ================= -->
+
+  <div id="goals" class="section">
+
+    <div class="card">
+      <h2>🎯 Financial Goals</h2>
+
+      <div class="help">
+        Track savings goals, holidays, big purchases — whatever you're working toward.
+      </div>
+
+      <div id="goalsList"></div>
+
+      <button class="primary" onclick="addGoal()">＋ Add financial goal</button>
+    </div>
+
+  </div>
+
+  <!-- ================= PROGRESS ================= -->
+
+  <div id="progress" class="section">
+
+    <div class="card">
+      <h2>💎 Net Worth by Year</h2>
+
+      <div id="netWorthSummary" class="help net-worth-summary">
+        Add your assets and debts to start tracking your net worth.
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="netWorthChart" width="700" height="420"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>₿ Bitcoin Holdings</h2>
+
+      <div class="help">
+        Enter the amount of Bitcoin you own. Your NZD value is calculated using the live BTC/NZD market price and included in your net worth.
+      </div>
+
+      <div class="field">
+        <label for="bitcoinAmount">Bitcoin owned (BTC)</label>
+        <input
+          type="number"
+          id="bitcoinAmount"
+          min="0"
+          step="0.00000001"
+          inputmode="decimal"
+          placeholder="e.g. 0.125"
+          onchange="updateBitcoinAmount(this.value)"
+        >
+      </div>
+
+      <div class="total">
+        <span>Live BTC/NZD price</span>
+        <span id="bitcoinPrice">Loading…</span>
+      </div>
+
+      <div class="total">
+        <span>Your Bitcoin value</span>
+        <span id="bitcoinValue">$0.00</span>
+      </div>
+
+      <div class="help" id="bitcoinUpdated">Waiting for market price…</div>
+      <button class="primary" type="button" onclick="fetchBitcoinPrice()">↻ Refresh Bitcoin price</button>
+    </div>
+
+    <div class="card">
+      <h2>🏡 Assets</h2>
+
+      <div class="help">
+        Keep a record of the things you own and what they're worth. Your asset values are kept by year so you can look back and see how they've changed over time.
+      </div>
+
+      <div id="assetsList"></div>
+
+      <div class="total">
+        <span>Total assets</span>
+        <span id="totalAssets">$0.00</span>
+      </div>
+
+      <button class="primary" onclick="addAsset()">＋ Add asset</button>
+    </div>
+
+    <div class="card">
+      <h2>💳 Debts</h2>
+
+      <div class="help">
+        Keep a record of what you owe and your current balances. Your debt values are kept by year so you can look back and see how they've changed over time.
+      </div>
+
+      <div id="debtsList"></div>
+
+      <div class="total">
+        <span>Total debts</span>
+        <span id="totalDebts">$0.00</span>
+      </div>
+
+      <button class="primary" onclick="addDebt()">＋ Add debt</button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Investments vs Goal</h2>
+
+      <div class="help">
+        Add your actual investment total and your target for each year. The graph shows both lines so you can see how you're tracking.
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="investmentChart" width="700" height="420"></canvas>
+      </div>
+
+      <div id="investmentInputs"></div>
+
+      <button class="primary" onclick="addInvestmentYear()">＋ Add year</button>
+    </div>
+
+  </div>
+
+  <!-- ================= CUSTOMIZE ================= -->
+
+  <div id="customize" class="section">
+
+    <!-- ================= CUSTOMIZE INCOME ================= -->
+
+    <div class="card">
+      <h2>💵 Customize Income</h2>
+
+      <div class="help">
+        Add, rename or remove your income categories. Your changes are saved only on your device.
+      </div>
+
+      <div id="customIncomeList"></div>
+
+      <button class="primary" onclick="addIncomeCategory()">
+        ＋ Add income category
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Customize Expenses</h2>
+
+      <div class="help">
+        Everyone can make this budget their own. Add, rename or remove expense categories. Your changes are saved only on your device.
+      </div>
+
+      <div id="customExpenseList"></div>
+
+      <button class="primary" onclick="addExpenseCategory()">
+        ＋ Add expense category
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>🪣 Customize Buckets</h2>
+
+      <div class="help">
+        Create your own buckets — savings, investments, holidays, fun money, emergency funds, or anything else.
+      </div>
+
+      <div id="customBucketList"></div>
+
+      <button class="primary" onclick="addBucketCategory()">
+        ＋ Add bucket category
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Customize Investment Goal</h2>
+
+      <div class="help">
+        Set your own starting investment amount, starting year, goal amount and goal year. The goal line in the Progress section will automatically spread evenly between the two points.
+      </div>
+
+      <div class="grid">
+
+        <div class="field">
+          <label>Starting year</label>
+          <input
+            type="number"
+            id="investmentStartYear"
+            min="1900"
+            max="2200"
+            step="1"
+          >
+        </div>
+
+        <div class="field">
+          <label>Starting investment amount</label>
+          <div class="money">
+            <span>$</span>
+            <input
+              type="number"
+              id="investmentStartAmount"
+              min="0"
+              step="100"
+            >
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Goal year</label>
+          <input
+            type="number"
+            id="investmentEndYear"
+            min="1900"
+            max="2200"
+            step="1"
+          >
+        </div>
+
+        <div class="field">
+          <label>Goal amount</label>
+          <div class="money">
+            <span>$</span>
+            <input
+              type="number"
+              id="investmentFinalGoal"
+              min="0"
+              step="100"
+            >
+          </div>
+        </div>
+
+      </div>
+
+      <button class="primary" onclick="saveInvestmentSettings()">
+        💾 Save investment settings
+      </button>
+
+      <div
+        id="investmentSettingsMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+    </div>
+
+    <!-- ================= BACKUP & RESTORE ================= -->
+
+    <div class="card">
+      <h2>☁️ Backup & Restore</h2>
+
+      <div class="help">
+        Keep a safe copy of all your budgeting data. Back up your budget and save the file to OneDrive. You can use the same file to restore your budget later.
+      </div>
+
+      <button class="primary" onclick="backupData()">
+        ☁️ Back Up My Data
+      </button>
+
+      <div
+        id="backupMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+      <div style="margin-top:18px;">
+
+        <div class="small" style="margin-bottom:8px;">
+          Restore a previous backup from OneDrive or Files.
+        </div>
+
+        <input
+          type="file"
+          id="restoreFile"
+          accept=".json,application/json"
+          onchange="restoreData(this)"
+        >
+
+      </div>
+
+      <div
+        id="restoreMessage"
+        class="small"
+        style="margin-top:10px;"
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* ============================================================
+   DEFAULT DATA
+   ============================================================ */
+
+const defaultExpenses = [
+  "Mortgage",
+  "Rates",
+  "Power",
+  "Phone bill",
+  "Contents insurance",
+  "Car insurance",
+  "Health insurance",
+  "Spotify",
+  "Gas",
+  "Food",
+  "Pets",
+  "Car",
+  "Health & beauty",
+  "Gifts",
+  "House maintenance"
+];
+
+const defaultBuckets = [
+  "Life Raft",
+  "Investments",
+  "Treat Yourself",
+  "Holidays"
+];
+
+const defaultIncome = [
+  "Salary",
+  "Rental income",
+  "Other income"
+];
+
+let expenses = JSON.parse(localStorage.getItem("zaraExpenses"));
+
+if (!expenses) {
+  expenses = defaultExpenses.map(name => ({
+    name: name,
+    amount: 0
+  }));
+}
+
+let buckets = JSON.parse(localStorage.getItem("zaraBuckets"));
+
+if (!buckets) {
+  buckets = defaultBuckets.map(name => ({
+    name: name,
+    amount: 0
+  }));
+}
+
+/*
+  Income migration:
+  Older versions stored income as:
+  {
+    salary: 0,
+    rental: 0,
+    other: 0
+  }
+
+  The new version stores income in the same
+  category format as expenses and buckets.
+*/
+
+let savedIncome =
+  JSON.parse(localStorage.getItem("zaraIncome"));
+
+let income;
+
+if (Array.isArray(savedIncome)) {
+
+  income = savedIncome;
+
+} else {
+
+  income = [
+    {
+      name: "Salary",
+      amount:
+        savedIncome &&
+        savedIncome.salary
+          ? Number(savedIncome.salary)
+          : 0
+    },
+    {
+      name: "Rental income",
+      amount:
+        savedIncome &&
+        savedIncome.rental
+          ? Number(savedIncome.rental)
+          : 0
+    },
+    {
+      name: "Other income",
+      amount:
+        savedIncome &&
+        savedIncome.other
+          ? Number(savedIncome.other)
+          : 0
+    }
+  ];
+
+}
+
+let goals = JSON.parse(localStorage.getItem("zaraGoals")) || [];
+
+/*
+  Net worth is now calculated automatically from
+  asset history and debt history.
+
+  This older key is retained so existing backup files
+  can still be restored safely, but the app no longer
+  uses manually entered net worth values.
+*/
+
+let netWorthHistory =
+  JSON.parse(localStorage.getItem("zaraNetWorthHistory")) || [];
+
+let bitcoinAmount =
+  Number(localStorage.getItem("zaraBitcoinAmount")) || 0;
+
+let bitcoinPriceNZD = null;
+let bitcoinPriceUpdatedAt = null;
+let bitcoinYearHistory =
+  JSON.parse(localStorage.getItem("zaraBitcoinYearHistory")) || {};
+
+if (!bitcoinYearHistory || typeof bitcoinYearHistory !== "object" || Array.isArray(bitcoinYearHistory)) {
+  bitcoinYearHistory = {};
+}
+
+let investmentHistory =
+  JSON.parse(localStorage.getItem("zaraInvestmentHistory")) || [];
+
+/* ============================================================
+   ASSETS
+   ============================================================ */
+
+let assets =
+  JSON.parse(localStorage.getItem("zaraAssets")) || [];
+
+if (!Array.isArray(assets)) {
+  assets = [];
+}
+
+assets = assets.map(asset => ({
+  name: asset && asset.name
+    ? asset.name
+    : "Asset",
+
+  value:
+    asset && asset.value !== undefined
+      ? Number(asset.value) || 0
+      : 0,
+
+  history:
+    asset && Array.isArray(asset.history)
+      ? asset.history
+      : []
+}));
+
+/* ============================================================
+   DEBTS
+   ============================================================ */
+
+let debts =
+  JSON.parse(localStorage.getItem("zaraDebts")) || [];
+
+if (!Array.isArray(debts)) {
+  debts = [];
+}
+
+debts = debts.map(debt => ({
+  name: debt && debt.name
+    ? debt.name
+    : "Debt",
+
+  value:
+    debt && debt.value !== undefined
+      ? Number(debt.value) || 0
+      : 0,
+
+  history:
+    debt && Array.isArray(debt.history)
+      ? debt.history
+      : []
+}));
+
+/* ============================================================
+   CUSTOM INVESTMENT GOAL SETTINGS
+   ============================================================ */
+
+const savedInvestmentStartYear =
+  localStorage.getItem("zaraInvestmentStartYear");
+
+const savedInvestmentStartAmount =
+  localStorage.getItem("zaraInvestmentStartAmount");
+
+const savedInvestmentEndYear =
+  localStorage.getItem("zaraInvestmentEndYear");
+
+const savedInvestmentFinalGoal =
+  localStorage.getItem("zaraInvestmentFinalGoal");
+
+let investmentStartYear =
+  savedInvestmentStartYear !== null
+    ? Number(savedInvestmentStartYear)
+    : 2025;
+
+let investmentStartAmount =
+  savedInvestmentStartAmount !== null
+    ? Number(savedInvestmentStartAmount)
+    : 85000;
+
+let investmentEndYear =
+  savedInvestmentEndYear !== null
+    ? Number(savedInvestmentEndYear)
+    : 2042;
+
+let investmentFinalGoal =
+  savedInvestmentFinalGoal !== null
+    ? Number(savedInvestmentFinalGoal)
+    : 1000000;
+
+/* ============================================================
+   SAVE
+   ============================================================ */
+
+function saveEverything() {
+
+  localStorage.setItem(
+    "zaraExpenses",
+    JSON.stringify(expenses)
+  );
+
+  localStorage.setItem(
+    "zaraBuckets",
+    JSON.stringify(buckets)
+  );
+
+  localStorage.setItem(
+    "zaraIncome",
+    JSON.stringify(income)
+  );
+
+  localStorage.setItem(
+    "zaraGoals",
+    JSON.stringify(goals)
+  );
+
+  localStorage.setItem(
+    "zaraNetWorthHistory",
+    JSON.stringify(netWorthHistory)
+  );
+
+  localStorage.setItem(
+    "zaraBitcoinAmount",
+    String(bitcoinAmount)
+  );
+
+  localStorage.setItem(
+    "zaraBitcoinYearHistory",
+    JSON.stringify(bitcoinYearHistory)
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentHistory",
+    JSON.stringify(investmentHistory)
+  );
+
+  localStorage.setItem(
+    "zaraAssets",
+    JSON.stringify(assets)
+  );
+
+  localStorage.setItem(
+    "zaraDebts",
+    JSON.stringify(debts)
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentStartYear",
+    investmentStartYear
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentStartAmount",
+    investmentStartAmount
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentEndYear",
+    investmentEndYear
+  );
+
+  localStorage.setItem(
+    "zaraInvestmentFinalGoal",
+    investmentFinalGoal
+  );
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+function showSection(id, button) {
+
+  document.querySelectorAll(".section").forEach(section => {
+    section.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  if (id === "progress") {
+    drawNetWorthChart();
+    drawInvestmentChart();
+    updateNetWorthSummary();
+  }
+}
+
+/* ============================================================
+   INCOME
+   ============================================================ */
+
+/*
+  Main Budget screen:
+  Income is now display-only.
+  Amounts are edited from Customize Income.
+*/
+
+function renderIncome() {
+
+  const container =
+    document.getElementById("incomeInputs");
+
+  container.innerHTML = "";
+
+  income.forEach(incomeItem => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "budget-row";
+
+    div.innerHTML = `
+      <span class="budget-row-name">
+        ${escapeHtml(incomeItem.name)}
+      </span>
+
+      <span class="budget-row-amount">
+        ${money(incomeItem.amount)}
+      </span>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+/* ============================================================
+   EXPENSES
+   ============================================================ */
+
+/*
+  Main Budget screen:
+  Expense amounts are now display-only.
+  Amounts are edited from Customize Expenses.
+*/
+
+function renderExpenses() {
+
+  const container =
+    document.getElementById("expenseInputs");
+
+  container.innerHTML = "";
+
+  expenses.forEach(expense => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "budget-row";
+
+    div.innerHTML = `
+      <span class="budget-row-name">
+        ${escapeHtml(expense.name)}
+      </span>
+
+      <span class="budget-row-amount">
+        ${money(expense.amount)}
+      </span>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+/* ============================================================
+   BUCKETS
+   ============================================================ */
+
+/*
+  Main Budget screen:
+  Bucket amounts are now display-only.
+  Amounts are edited from Customize Buckets.
+*/
+
+function renderBuckets() {
+
+  const container =
+    document.getElementById("bucketInputs");
+
+  container.innerHTML = "";
+
+  buckets.forEach(bucket => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "budget-row";
+
+    div.innerHTML = `
+      <span class="budget-row-name">
+        ${escapeHtml(bucket.name)}
+      </span>
+
+      <span class="budget-row-amount">
+        ${money(bucket.amount)}
+      </span>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+/* ============================================================
+   TOTALS + ZERO BASED
+   ============================================================ */
+
+function updateTotals() {
+
+  const totalIncome =
+    income.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const totalExpenses =
+    expenses.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const totalBuckets =
+    buckets.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const remaining =
+    totalIncome -
+    totalExpenses -
+    totalBuckets;
+
+  document.getElementById("totalIncome").textContent =
+    money(totalIncome);
+
+  document.getElementById("totalExpenses").textContent =
+    money(totalExpenses);
+
+  document.getElementById("totalBuckets").textContent =
+    money(totalBuckets);
+
+  const balance =
+    document.getElementById("balanceMessage");
+
+  balance.className = "balance";
+
+  if (Math.abs(remaining) < 0.01) {
+
+    balance.classList.add("good");
+
+    balance.innerHTML =
+      "🎉 Your budget is balanced! Every dollar has a job.";
+
+  } else if (remaining > 0) {
+
+    balance.classList.add("left");
+
+    balance.innerHTML =
+      "✨ You have " +
+      money(remaining) +
+      " left to give a job.";
+
+  } else {
+
+    balance.classList.add("over");
+
+    balance.innerHTML =
+      "⚠️ You're " +
+      money(Math.abs(remaining)) +
+      " over budget.";
+  }
+
+  drawBudgetChart();
+}
+
+/* ============================================================
+   BUDGET PIE CHART
+   ============================================================ */
+
+const chartColors = [
+  "#ff6f91",
+  "#ff9f43",
+  "#9b5de5",
+  "#50b86c",
+  "#ffd166",
+  "#00b4d8",
+  "#f15bb5",
+  "#8338ec",
+  "#fb5607",
+  "#43aa8b"
+];
+
+function drawBudgetChart() {
+
+  const canvas =
+    document.getElementById("budgetChart");
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  const totalExpenses =
+    expenses.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+  const data = [
+    {
+      name: "Daily expenses",
+      value: totalExpenses
+    },
+
+    ...buckets.map(bucket => ({
+      name: bucket.name,
+      value: Number(bucket.amount || 0)
+    }))
+  ].filter(item => item.value > 0);
+
+  const total =
+    data.reduce(
+      (sum, item) =>
+        sum + item.value,
+      0
+    );
+
+  const cx = 235;
+  const cy = 235;
+  const radius = 165;
+
+  if (total <= 0) {
+
+    ctx.beginPath();
+
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle = "#eadbea";
+    ctx.fill();
+
+    ctx.fillStyle = "#806b8d";
+    ctx.textAlign = "center";
+    ctx.font = "600 18px DM Sans";
+
+    ctx.fillText(
+      "Add your budget",
+      cx,
+      cy
+    );
+
+    document.getElementById("budgetLegend").innerHTML =
+      "<div class='small'>Your chart will appear as you add amounts.</div>";
+
+    return;
+  }
+
+  let angle = -Math.PI / 2;
+
+  data.forEach((item, index) => {
+
+    const slice =
+      (item.value / total) *
+      Math.PI *
+      2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(cx, cy);
+
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      angle,
+      angle + slice
+    );
+
+    ctx.closePath();
+
+    ctx.fillStyle =
+      chartColors[
+        index % chartColors.length
+      ];
+
+    ctx.fill();
+
+    angle += slice;
+  });
+
+  /* Hole in centre */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    cx,
+    cy,
+    82,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+
+  ctx.fillStyle = "#39234d";
+  ctx.textAlign = "center";
+
+  ctx.font = "700 17px Fredoka";
+
+  ctx.fillText(
+    "Total budget",
+    cx,
+    cy - 7
+  );
+
+  ctx.font = "700 20px DM Sans";
+
+  ctx.fillText(
+    money(total),
+    cx,
+    cy + 20
+  );
+
+  const legend =
+    document.getElementById("budgetLegend");
+
+  legend.innerHTML = "";
+
+  data.forEach((item, index) => {
+
+    const percentage =
+      Math.round(
+        (item.value / total) * 100
+      );
+
+    const row =
+      document.createElement("div");
+
+    row.className = "legend-item";
+
+    row.innerHTML = `
+      <span
+        class="dot"
+        style="background:${chartColors[index % chartColors.length]}"
+      ></span>
+
+      <span>
+        ${escapeHtml(item.name)}
+        — ${money(item.value)}
+        (${percentage}%)
+      </span>
+    `;
+
+    legend.appendChild(row);
+  });
+}
+
+/* ============================================================
+   CUSTOMIZE INCOME
+   ============================================================ */
+
+function renderCustomIncome() {
+
+  const container =
+    document.getElementById("customIncomeList");
+
+  container.innerHTML = "";
+
+  if (income.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No income categories yet.</div>";
+
+    return;
+  }
+
+  income.forEach((incomeItem, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "category-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(incomeItem.name)}"
+        onchange="renameIncome(${index}, this.value)"
+        placeholder="Income name"
+      >
+
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        value="${incomeItem.amount || ""}"
+        oninput="updateCustomIncomeAmount(${index}, this.value)"
+        placeholder="Amount"
+      >
+
+      <button
+        class="delete"
+        onclick="deleteIncome(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+function addIncomeCategory() {
+
+  income.push({
+    name: "New income",
+    amount: 0
+  });
+
+  saveEverything();
+
+  renderIncome();
+  renderCustomIncome();
+
+  updateTotals();
+}
+
+function renameIncome(index, name) {
+
+  name = name.trim();
+
+  if (!name) {
+    name = "Income";
+  }
+
+  income[index].name = name;
+
+  saveEverything();
+
+  renderIncome();
+  renderCustomIncome();
+
+  updateTotals();
+}
+
+function updateCustomIncomeAmount(index, value) {
+
+  income[index].amount =
+    Number(value) || 0;
+
+  saveEverything();
+
+  renderIncome();
+  updateTotals();
+}
+
+function deleteIncome(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      income[index].name +
+      "? Its budget amount will also be removed."
+    )
+  ) {
+
+    income.splice(index, 1);
+
+    saveEverything();
+
+    renderIncome();
+    renderCustomIncome();
+
+    updateTotals();
+  }
+}
+
+/* ============================================================
+   CUSTOMIZE EXPENSES
+   ============================================================ */
+
+function renderCustomExpenses() {
+
+  const container =
+    document.getElementById("customExpenseList");
+
+  container.innerHTML = "";
+
+  if (expenses.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No expense categories yet.</div>";
+
+    return;
+  }
+
+  expenses.forEach((expense, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "category-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(expense.name)}"
+        onchange="renameExpense(${index}, this.value)"
+        placeholder="Category name"
+      >
+
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        value="${expense.amount || ""}"
+        oninput="updateCustomExpenseAmount(${index}, this.value)"
+        placeholder="Amount"
+      >
+
+      <button
+        class="delete"
+        onclick="deleteExpense(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+function addExpenseCategory() {
+
+  expenses.push({
+    name: "New expense",
+    amount: 0
+  });
+
+  saveEverything();
+
+  renderExpenses();
+  renderCustomExpenses();
+
+  updateTotals();
+}
+
+function renameExpense(index, name) {
+
+  name = name.trim();
+
+  if (!name) {
+    name = "Expense";
+  }
+
+  expenses[index].name = name;
+
+  saveEverything();
+
+  renderExpenses();
+  renderCustomExpenses();
+
+  updateTotals();
+}
+
+function updateCustomExpenseAmount(index, value) {
+
+  expenses[index].amount =
+    Number(value) || 0;
+
+  saveEverything();
+
+  renderExpenses();
+  updateTotals();
+}
+
+function deleteExpense(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      expenses[index].name +
+      "? Its budget amount will also be removed."
+    )
+  ) {
+
+    expenses.splice(index, 1);
+
+    saveEverything();
+
+    renderExpenses();
+    renderCustomExpenses();
+
+    updateTotals();
+  }
+}
+
+/* ============================================================
+   CUSTOMIZE BUCKETS
+   ============================================================ */
+
+function renderCustomBuckets() {
+
+  const container =
+    document.getElementById("customBucketList");
+
+  container.innerHTML = "";
+
+  if (buckets.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No bucket categories yet.</div>";
+
+    return;
+  }
+
+  buckets.forEach((bucket, index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "bucket-row";
+
+    row.innerHTML = `
+      <input
+        type="text"
+        value="${escapeAttr(bucket.name)}"
+        onchange="renameBucket(${index}, this.value)"
+        placeholder="Bucket name"
+      >
+
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        value="${bucket.amount || ""}"
+        oninput="updateCustomBucketAmount(${index}, this.value)"
+        placeholder="Amount"
+      >
+
+      <button
+        class="delete"
+        onclick="deleteBucket(${index})"
+      >✕</button>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+function addBucketCategory() {
+
+  buckets.push({
+    name: "New bucket",
+    amount: 0
+  });
+
+  saveEverything();
+
+  renderBuckets();
+  renderCustomBuckets();
+
+  updateTotals();
+}
+
+function renameBucket(index, name) {
+
+  name = name.trim();
+
+  if (!name) {
+    name = "Bucket";
+  }
+
+  buckets[index].name = name;
+
+  saveEverything();
+
+  renderBuckets();
+  renderCustomBuckets();
+
+  updateTotals();
+}
+
+function updateCustomBucketAmount(index, value) {
+
+  buckets[index].amount =
+    Number(value) || 0;
+
+  saveEverything();
+
+  renderBuckets();
+  updateTotals();
+}
+
+function deleteBucket(index) {
+
+  if (
+    confirm(
+      "Delete " +
+      buckets[index].name +
+      "? Its budget amount will also be removed."
+    )
+  ) {
+
+    buckets.splice(index, 1);
+
+    saveEverything();
+
+    renderBuckets();
+    renderCustomBuckets();
+
+    updateTotals();
+  }
+}
+
+/* ============================================================
+   FINANCIAL GOALS
+   ============================================================ */
+
+function renderGoals() {
+
+  const container =
+    document.getElementById("goalsList");
+
+  container.innerHTML = "";
+
+  if (goals.length === 0) {
+
+    container.innerHTML =
+      "<div class='empty'>No goals yet. Add your first one below ✨</div>";
+
+    return;
+  }
+
+  goals.forEach((goal, index) => {
+
+    const target =
+      Number(goal.target) || 0;
+
+    const saved =
+      Number(goal.saved) || 0;
+
+    const percentage =
+      target > 0
+        ? Math.min(100, (saved / target) * 100)
+        : 0;
+
+    const div =
+      document.createElement("div");
+
+    div.className = "goal";
+
+    div.innerHTML = `
+
+      <div class="goal-title">
+
+        <span>
+          ${escapeHtml(goal.name)}
+        </span>
+
+        <button
+          class="delete"
+          onclick="deleteGoal(${index})"
+        >✕</button>
+
+      </div>
+
+      <div
+        class="field"
+        style="margin-top:10px;"
+      >
+
+        <label>Goal name</label>
+
+        <input
+          type="text"
+          value="${escapeAttr(goal.name)}"
+          onchange="updateGoalName(${index}, this.value)"
+        >
+
+      </div>
+
+      <div class="grid">
+
+        <div class="field">
+
+          <label>Target</label>
+
+          <div class="money">
+            <span>$</span>
+
+            <input
+              type="number"
+              min="0"
+              value="${target || ""}"
+              oninput="updateGoalTarget(${index}, this.value)"
+            >
+          </div>
+
+        </div>
+
+        <div class="field">
+
+          <label>Saved so far</label>
+
+          <div class="money">
+            <span>$</span>
+
+            <input
+              type="number"
+              min="0"
+              value="${saved || ""}"
+              oninput="updateGoalSaved(${index}, this.value)"
+            >
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="width:${percentage}%"
+        ></div>
+
+      </div>
+
+      <div class="small">
+        ${money(saved)} of ${money(target)}
+        — ${Math.round(percentage)}%
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function addGoal() {
+
+  goals.push({
+    name: "New goal",
+    target: 0,
+    saved: 0
+  });
+
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalName(index, value) {
+
+  goals[index].name =
+    value.trim() || "Goal";
+
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalTarget(index, value) {
+
+  goals[index].target =
+    Number(value) || 0;
+
+  saveEverything();
+  renderGoals();
+}
+
+function updateGoalSaved(index, value) {
+
+  goals[index].saved =
+    Number(value) || 0;
+
+  saveEverything();
+  renderGoals();
+}
+
+function deleteGoal(index) {
+
+  if (confirm("Delete this financial goal?")) {
+
+    goals.splice(index, 1);
+
+    saveEverything();
+    renderGoals();
+  }
+}
+
+/* ============================================================
+   ASSET + DEBT HISTORY
+   ============================================================ */
+
+function recordHistory(item) {
+
+  if (!Array.isArray(item.history)) {
+    item.history = [];
+  }
+
+  const year =
+    new Date().getFullYear();
+
+  const existing =
+    item.history.find(
+      historyItem =>
+        Number(historyItem.year) === year
+    );
+
+  if (existing) {
+
+    existing.value =
+      Number(item.value) || 0;
+
+  } else {
+
+    item.history.push({
+      year: year,
+      value: Number(item.value) || 0
+    });
+  }
+
+  item.history.sort(
+    (a,b) =>
+      Number(a.year) -
+      Number(b.year)
+  );
+}
+
+/*
+  Make sure every current asset and debt has a
+  value recorded for the current year.
+*/
+
+function recordCurrentYearValues() {
+
+  assets.forEach(asset => {
+    recordHistory(asset);
+  });
+
+  debts.forEach(debt => {
+    recordHistory(debt);
+  });
+}
+
+/*
+  Build the Net Worth history automatically.
+
+  For every year that appears in an asset or debt
+  history:
+
+    Net worth = Total assets - Total debts
+*/
+
+function rebuildNetWorthHistory() {
+
+  const years = new Set();
+
+  assets.forEach(asset => {
+
+    if (Array.isArray(asset.history)) {
+
+      asset.history.forEach(item => {
+
+        if (
+          item &&
+          item.year !== undefined
+        ) {
+
+          years.add(
+            Number(item.year)
+          );
+        }
+      });
+    }
+  });
+
+  debts.forEach(debt => {
+
+    if (Array.isArray(debt.history)) {
+
+      debt.history.forEach(item => {
+
+        if (
+          item &&
+          item.year !== undefined
+        ) {
+
+          years.add(
+            Number(item.year)
+          );
+        }
+      });
+    }
+  });
+
+  const currentYear =
+    new Date().getFullYear();
+
+  years.add(currentYear);
+
+  const sortedYears =
+    [...years]
+      .filter(year => Number.isFinite(year))
+      .sort((a,b) => a - b);
+
+  netWorthHistory =
+    sortedYears.map(year => {
+
+      const totalAssets =
+        assets.reduce(
+          (sum, asset) => {
+
+            const record =
+              Array.isArray(asset.history)
+                ? asset.history.find(
+                    item =>
+                      Number(item.year) === year
+                  )
+                : null;
+
+            return sum +
+              (
+                record
+                  ? Number(record.value) || 0
+                  : 0
+              );
+          },
+          0
+        );
+
+      const totalDebts =
+        debts.reduce(
+          (sum, debt) => {
+
+            const record =
+              Array.isArray(debt.history)
+                ? debt.history.find(
+                    item =>
+                      Number(item.year) === year
+                  )
+                : null;
+
+            return sum +
+              (
+                record
+                  ? Number(record.value) || 0
+                  : 0
+              );
+          },
+          0
+        );
+
+      return {
+        year: year,
+        value:
+          totalAssets -
+          totalDebts
+      };
+    });
+
+  saveEverything();
+}
+
+/* ============================================================
+   BITCOIN HOLDINGS
+   ============================================================ */
+
+function updateBitcoinAmount(value) {
+
+  const parsed = Number(value);
+  bitcoinAmount = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+
+  saveEverything();
+  renderBitcoinHolding();
+  updateNetWorthSummary();
+  drawNetWorthChart();
+}
+
+function renderBitcoinHolding() {
+
+  const amountInput = document.getElementById("bitcoinAmount");
+  const priceElement = document.getElementById("bitcoinPrice");
+  const valueElement = document.getElementById("bitcoinValue");
+  const updatedElement = document.getElementById("bitcoinUpdated");
+
+  if (amountInput && document.activeElement !== amountInput) {
+    amountInput.value = bitcoinAmount || "";
+  }
+
+  if (priceElement) {
+    priceElement.textContent = bitcoinPriceNZD === null
+      ? "Unavailable"
+      : money(bitcoinPriceNZD) + " per BTC";
+  }
+
+  if (valueElement) {
+    valueElement.textContent = bitcoinPriceNZD === null
+      ? "Waiting for price"
+      : money(bitcoinAmount * bitcoinPriceNZD);
+  }
+
+  if (updatedElement) {
+    if (bitcoinPriceUpdatedAt) {
+      updatedElement.textContent =
+        "Last updated: " + bitcoinPriceUpdatedAt.toLocaleString();
+    } else if (bitcoinPriceNZD === null) {
+      updatedElement.textContent =
+        "Price unavailable. Check your internet connection and refresh.";
+    }
+  }
+}
+
+async function fetchBitcoinPrice() {
+
+  const updatedElement = document.getElementById("bitcoinUpdated");
+  if (updatedElement && bitcoinPriceNZD === null) {
+    updatedElement.textContent = "Fetching live BTC/NZD price…";
+  }
+
+  try {
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=nzd",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("Bitcoin price request failed");
+    }
+
+    const result = await response.json();
+    const price = Number(result && result.bitcoin && result.bitcoin.nzd);
+
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error("Bitcoin price was not available");
+    }
+
+    bitcoinPriceNZD = price;
+    bitcoinPriceUpdatedAt = new Date();
+
+    /*
+      Keep one fixed Bitcoin valuation for each completed historical year.
+      The current year is shown live in the chart; once a year has passed,
+      its first successful valuation remains fixed and is never overwritten
+      by later market-price refreshes.
+    */
+    const year = new Date().getFullYear();
+    if (bitcoinAmount > 0 && bitcoinYearHistory[year] === undefined) {
+      bitcoinYearHistory[year] = bitcoinAmount * bitcoinPriceNZD;
+      saveEverything();
+    }
+
+    renderBitcoinHolding();
+    updateNetWorthSummary();
+    drawNetWorthChart();
+
+  } catch (error) {
+    if (updatedElement) {
+      updatedElement.textContent =
+        bitcoinPriceNZD === null
+          ? "Could not load the BTC/NZD price. Check your connection and try again."
+          : "Price refresh failed. Showing the last successful price from " +
+            bitcoinPriceUpdatedAt.toLocaleString() + ".";
+    }
+  }
+}
+
+function bitcoinValueForYear(year) {
+  const currentYear = new Date().getFullYear();
+
+  if (Number(year) === currentYear && bitcoinPriceNZD !== null) {
+    return bitcoinAmount * bitcoinPriceNZD;
+  }
+
+  return Number(bitcoinYearHistory[year]) || 0;
+}
+
+/* ============================================================
+   NET WORTH SUMMARY
+   ============================================================ */
+
+function updateNetWorthSummary() {
+
+  const summary =
+    document.getElementById("netWorthSummary");
+
+  if (!summary) return;
+
+  const data =
+    [...netWorthHistory]
+      .sort(
+        (a,b) =>
+          Number(a.year) -
+          Number(b.year)
+      )
+      .map(item => ({
+        year: Number(item.year),
+        value: (Number(item.value) || 0) + bitcoinValueForYear(Number(item.year))
+      }));
+
+  if (data.length === 0) {
+
+    summary.textContent =
+      "Add your assets and debts to start tracking your net worth.";
+
+    return;
+  }
+
+  if (data.length === 1) {
+
+    summary.textContent =
+      "Your current net worth is " +
+      money(data[0].value) +
+      ". Your year-on-year change will appear here once you have another year's record.";
+
+    return;
+  }
+
+  const previous =
+    Number(
+      data[data.length - 2].value
+    ) || 0;
+
+  const current =
+    Number(
+      data[data.length - 1].value
+    ) || 0;
+
+  const previousYear =
+    Number(
+      data[data.length - 2].year
+    );
+
+  const currentYear =
+    Number(
+      data[data.length - 1].year
+    );
+
+  if (previous === 0) {
+
+    summary.textContent =
+      "Your net worth is " +
+      money(current) +
+      ".";
+
+    return;
+  }
+
+  const percentage =
+    ((current - previous) /
+      Math.abs(previous)) *
+    100;
+
+  const rounded =
+    Math.abs(percentage).toFixed(1);
+
+  const timeText =
+    currentYear === previousYear + 1
+      ? "since last year"
+      : "since " + previousYear;
+
+  if (percentage > 0) {
+
+    summary.textContent =
+      "🌸 Your net worth has increased by " +
+      rounded +
+      "% " +
+      timeText +
+      ".";
+
+  } else if (percentage < 0) {
+
+    summary.textContent =
+      "Your net worth has decreased by " +
+      rounded +
+      "% " +
+      timeText +
+      ".";
+
+  } else {
+
+    summary.textContent =
+      "Your net worth hasn't changed " +
+      timeText +
+      ".";
+  }
+}
+
+/* ============================================================
+   NET WORTH BAR GRAPH
+   ============================================================ */
+
+function drawNetWorthChart() {
+
+  const canvas =
+    document.getElementById("netWorthChart");
+
+  if (!canvas) return;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canva
